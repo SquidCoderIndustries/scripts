@@ -43,14 +43,6 @@ StocksWindow.ATTRS({
 })
 
 function StocksWindow:init()
-	--dfhack.printerr("StocksWindow:init() called!")
-	--[[
-	COLOR_RESET, COLOR_BLACK, COLOR_BLUE, COLOR_GREEN, COLOR_CYAN,
-    COLOR_RED, COLOR_MAGENTA, COLOR_BROWN, COLOR_GREY, COLOR_DARKGREY,
-    COLOR_LIGHTBLUE, COLOR_LIGHTGREEN, COLOR_LIGHTCYAN, COLOR_LIGHTRED,
-    COLOR_LIGHTMAGENTA, COLOR_YELLOW, COLOR_WHITE
-	--]]
-
 	self:addviews({
 		widgets.Panel({
 			view_id = "left_panel",
@@ -74,9 +66,7 @@ function StocksWindow:init()
 				}),
 				widgets.List({
 					view_id = "item_list",
-					--edit_below = false,
 					frame = {t = 4, b = 1, l = 1, r = 1},
-					--not_found_label = "empty?",
 					text_pen = {fg = COLOR_GREY, bg = COLOR_BLACK},
 					text_hpen = {fg = COLOR_BLACK, bg = COLOR_GREY},
 					cursor_pen = {fg = COLOR_LIGHTGREEN, bg = COLOR_DARKGREY},
@@ -160,19 +150,6 @@ function StocksWindow:populate_item_table()
 		
 		-- store item description and an item ref
 		table.insert(temp_table, { desc = item_desc, ref = v })
-		
-		--[[
-		for i,g in pairs(v.general_refs) do
-			local t = g:getType()
-		
-			if t == df.general_ref_type.CONTAINED_IN_ITEM then
-				for i2,g2 in ipairs(g:getItem().general_refs) do
-					if g2:getType() == df.general_ref_type.UNIT_HOLDER then
-						dfhack.printerr(string.format("found a contained_in_item <-> unit_holder link!  contained item: %s, container item: %s, ", item_desc, dfhack.items.getDescription(g:getItem(), g:getItem():getType())))
-					end
-				end
-			end		   
-		end--]]
 	end
 	
 	-- sort alphabetically
@@ -236,28 +213,6 @@ function is_valid_melt_item(item)
 end
 
 function StocksWindow:onInput(keys)
-	--[[dfhack.printerr("window onInput called!")
-	for k,v in pairs(keys) do
-		dfhack.printerr(k)
-		dfhack.printerr(v)
-	end--]]
-	
-	-- JXOFDEMICT
-	--[[
-	local filter_states = {
-	in_job = true,
-	rotten = true,
-	owned = true,
-	forbidden = true,
-	dump = true,
-	on_fire = true,
-	melt = true,
-	in_inv = true,
-	caged = true,
-	trade = true,
-	no_flags = true,
-}--]]
-
 	-- FILTERS -------------------
 	local refresh_list = false
 	
@@ -374,8 +329,6 @@ function StocksWindow:onInput(keys)
 		
 		refresh_list = true
 	end
-	
-	
 	
 	
 	if refresh_list then
@@ -533,20 +486,7 @@ function StocksWindow:filter_list(filter)
 		if item:getWear() < min_wear then goto continue end
 		
 		local wear_tags = {"", "x", "X", "XX"}
-		--[[
-		JXOFDEMICT
 
-		J: in job	lightblue
-		X: rotten	cyan
-		O: owned	green
-		F: forbidden	red?
-		D: dump		lightmagenta
-		E: on fire	lightred?
-		M: melt		blue
-		I: in inventory	white
-		C: caged	lightred
-		T: marked for trade	lightgreen
-		--]]
 		if not filter or #filter < 1 or string.match(string.lower(v.desc), filter) then
 			local full_item_desc
 			if item:getWear() > 0 then
@@ -581,120 +521,6 @@ function StocksWindow:filter_list(filter)
 	self.subviews.actions_item_count_label:setText({
 			{text = "Actions (", pen = COLOR_BROWN}, {text = tostring(#list_contents), pen = COLOR_LIGHTGREEN}, {text = " Items)", pen = COLOR_BROWN}
 	})
-	dfhack.printerr("done.")
-end
-
-function StocksWindow:filter_list_old(filter)
-	dfhack.printerr(string.format("filter_list() called with \"%s\"", filter))
-	local world = df.global.world
-	local list_contents = {}
-	local item_string
-	
-	local quality_labels = {"", "WellCrafted", "FinelyCrafted", "Superior", "Exceptional", "Masterful", "Artifact"}
-	local quality_pens = {COLOR_BLACK, COLOR_BROWN, COLOR_CYAN, COLOR_LIGHTBLUE, COLOR_GREEN, COLOR_LIGHTGREEN, COLOR_BLUE}
-	
-	dfhack.printerr("iterating over all world items...")
-	for k,v in pairs(world.items.other[df.items_other_id.IN_PLAY]) do repeat
-		local item_desc = dfhack.items.getDescription(v, v:getType())
-		
-			-- JXOFDEMICT
-			--[[
-			local filter_states = {
-				in_job = true,
-				rotten = true,
-				owned = true,
-				forbidden = true,
-				dump = true,
-				on_fire = true,
-				melt = true,
-				in_inv = true,
-				caged = true,
-				trade = true,
-				no_flags = true,
-			}--]]
-		
-		-- see if item is in job
-		local job_char
-		local ref = dfhack.items.getSpecificRef(v, df.specific_ref_type.JOB)
-		if ref and ref.data.job then job_char = 'J' else job_char = ' ' end
-		if not filter_states.in_job and job_char == 'J' then do break end end
-		
-		-- check various flags
-		local rotten_char
-		if v.flags.rotten then rotten_char = 'X' else rotten_char = ' ' end
-		if not filter_states.rotten and v.flags.rotten then do break end end
-		
-		local owned_char
-		if v.flags.owned then owned_char = 'O' else owned_char = ' ' end
-		if not filter_states.owned and v.flags.owned then do break end end
-		
-		local forbidden_char
-		if v.flags.forbid then forbidden_char = 'F' else forbidden_char = ' ' end
-		if not filter_states.forbidden and v.flags.forbid then do break end end
-		
-		local dump_char
-		if v.flags.dump then dump_char = 'D' else dump_char = ' ' end
-		if not filter_states.dump and v.flags.dump then do break end end
-		
-		local on_fire_char
-		if v.flags.on_fire then on_fire_char = 'E' else on_fire_char = ' ' end
-		if not filter_states.on_fire and v.flags.on_fire then do break end end
-		
-		local melt_char
-		if v.flags.melt then melt_char = 'M' else melt_char = ' ' end
-		if not filter_states.melt and v.flags.melt then do break end end
-		
-		local in_inv_char
-		if v.flags.in_inventory then in_inv_char = 'I' else in_inv_char = ' ' end
-		if not filter_states.in_inv and v.flags.in_inventory then do break end end
-		
-		-- check quality		
-		local quality_label, quality_pen
-		quality_label = quality_labels[v:getQuality()]
-		quality_pen = quality_pens[v:getQuality()]
-		
-		--[[
-		JXOFDEMICT
-
-		J: in job	lightblue
-		X: rotten	cyan
-		O: owned	green
-		F: forbidden	red?
-		D: dump		lightmagenta
-		E: on fire	lightred?
-		M: melt		blue
-		I: in inventory	white
-		C: caged	lightred
-		T: marked for trade	lightgreen
-		--]]
-		if not filter or #filter < 1 or string.match(string.lower(item_desc), filter) then
-			table.insert(list_contents, {
-				text = {
-					{text = item_desc, width = item_desc_width, rjustify = false, pad_char = ' '}, ' ',
-					{text = job_char, width = 1, pen = COLOR_LIGHTBLUE},
-					{text = rotten_char, width = 1, pen = COLOR_CYAN},
-					{text = owned_char, width = 1, pen = COLOR_GREEN},
-					{text = forbidden_char, width = 1, pen = COLOR_RED},
-					{text = dump_char, width = 1, pen = COLOR_LIGHTMAGENTA},
-					{text = on_fire_char, width = 1, pen = COLOR_LIGHTRED},
-					{text = melt_char, width = 1, pen = COLOR_BLUE},
-					{text = in_inv_char, width = 1, pen = COLOR_WHITE}, "   ",
-					{text = quality_label, width = 13, rjustify = false, pad_char = ' ', pen = quality_pen},
-				}
-			})
-		end
-	until true end
-	
-	
-	local spec = { key = function(v) return v.text[1].text end }
-	local order = utils.make_sort_order(list_contents, { spec })
-	local sorted_list_contents = {}
-	
-	for i = 1, #order do sorted_list_contents[i] = list_contents[order[i]] end
-	
-	--self.subviews.item_list:setChoices(list_contents)
-	self.subviews.item_list:setChoices(sorted_list_contents)
-	self.subviews.item_count_label:setText(string.format("Items: %d", #sorted_list_contents))
 	dfhack.printerr("done.")
 end
 
