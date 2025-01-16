@@ -636,7 +636,7 @@ function GmEditorUi:getStringValue(trg, field)
             elseif df.coord2d:is_instance(f) then
                 text=('(%d, %d) %s'):format(f.x, f.y, text)
             elseif df.language_name:is_instance(f) then
-                text=('%s (%s) %s'):format(dfhack.TranslateName(f, false), dfhack.TranslateName(f, true), text)
+                text=('%s (%s) %s'):format(dfhack.translation.translateName(f, false), dfhack.translation.translateName(f, true), text)
             end
         end
         local enum = f._type

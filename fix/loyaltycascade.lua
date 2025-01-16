@@ -51,7 +51,7 @@ local function fixUnit(unit)
     -- If the unit is a former member of your civilization, as well as now an
     -- enemy of it, we make it become a member again.
     if former_civ_index and enemy_civ_index then
-        local civ_name = dfhack.TranslateName(df.historical_entity.find(df.global.plotinfo.civ_id).name)
+        local civ_name = dfhack.translation.translateName(df.historical_entity.find(df.global.plotinfo.civ_id).name)
 
         convertUnit(unit, df.global.plotinfo.civ_id, former_civ_index, enemy_civ_index)
 
@@ -62,7 +62,7 @@ local function fixUnit(unit)
     end
 
     if former_group_index and enemy_group_index then
-        local group_name = dfhack.TranslateName(df.historical_entity.find(df.global.plotinfo.group_id).name)
+        local group_name = dfhack.translation.translateName(df.historical_entity.find(df.global.plotinfo.group_id).name)
 
         convertUnit(unit, df.global.plotinfo.group_id, former_group_index, enemy_group_index)
 

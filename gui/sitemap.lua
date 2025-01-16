@@ -1,3 +1,5 @@
+--@ module = true
+
 local gui = require('gui')
 local utils = require('utils')
 local widgets = require('gui.widgets')
@@ -18,7 +20,8 @@ local function to_title_case(str)
     return dfhack.capitalizeStringWords(dfhack.lowerCp437(str:gsub('_', ' ')))
 end
 
-local function get_location_desc(loc)
+-- also called by gui/rename
+function get_location_desc(loc)
     if df.abstract_building_hospitalst:is_instance(loc) then
         return 'Hospital', COLOR_WHITE
     elseif df.abstract_building_inn_tavernst:is_instance(loc) then
@@ -35,7 +38,7 @@ local function get_location_desc(loc)
         local entity = is_deity and df.historical_figure.find(id) or df.historical_entity.find(id)
         local desc = 'Temple'
         if not entity then return desc, COLOR_YELLOW end
-        local name = dfhack.TranslateName(entity.name, true)
+        local name = dfhack.translation.translateName(entity.name, true)
         if #name > 0 then
             desc = ('%s to %s'):format(desc, name)
         end
@@ -47,7 +50,7 @@ end
 
 local function get_location_label(loc, zones)
     local tokens = {}
-    table.insert(tokens, dfhack.TranslateName(loc.name, true))
+    table.insert(tokens, dfhack.translation.translateName(loc.name, true))
     local desc, pen = get_location_desc(loc)
     if desc then
         table.insert(tokens, ' (')
@@ -103,7 +106,7 @@ end
 local function get_affiliation(unit)
     local he = df.historical_entity.find(unit.civ_id)
     if not he then return 'Unknown affiliation' end
-    local et_name = dfhack.TranslateName(he.name, true)
+    local et_name = dfhack.translation.translateName(he.name, true)
     local et_type = df.historical_entity_type[he.type]:gsub('(%l)(%u)', '%1 %2')
     return ('%s%s %s'):format(#et_name > 0 and et_name or 'Unknown', #et_name > 0 and ',' or '', et_type)
 end
@@ -307,6 +310,10 @@ end
 
 function SitemapScreen:onDismiss()
     view = nil
+end
+
+if dfhack_flags.module then
+    return
 end
 
 if not dfhack.isMapLoaded() then

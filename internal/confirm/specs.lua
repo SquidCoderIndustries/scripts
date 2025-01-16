@@ -424,7 +424,7 @@ ConfirmSpec{
             selected_pos = scroll_pos + (y - first_portrait_rect.y1) // 3
         end
         local unit = dfhack.gui.getWidget(scroll_rows, selected_pos, 0).u
-        selected_convict_name = dfhack.TranslateName(dfhack.units.getVisibleName(unit))
+        selected_convict_name = dfhack.translation.translateName(dfhack.units.getVisibleName(unit))
         if selected_convict_name == '' then
             selected_convict_name = 'this creature'
         end

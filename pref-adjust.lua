@@ -236,7 +236,7 @@ function build_all_lists(printflag)
     list_of_poems_string = ""
     vec=df.global.world.poetic_forms.all
     for k=0,#vec-1 do
-        name=dfhack.TranslateName(vec[k].name,true)
+        name=dfhack.translation.translateName(vec[k].name,true)
         list_of_poems[name]=k
         list_of_poems_string=list_of_poems_string..k..":"..name..","
     end
@@ -248,7 +248,7 @@ function build_all_lists(printflag)
     list_of_music_string = ""
     vec=df.global.world.musical_forms.all
     for k=0,#vec-1 do
-        name=dfhack.TranslateName(vec[k].name,true)
+        name=dfhack.translation.translateName(vec[k].name,true)
         list_of_music[name]=k
         list_of_music_string=list_of_music_string..k..":"..name..","
     end
@@ -260,7 +260,7 @@ function build_all_lists(printflag)
     list_of_dances_string = ""
     vec=df.global.world.dance_forms.all
     for k=0,#vec-1 do
-        name=dfhack.TranslateName(vec[k].name,true)
+        name=dfhack.translation.translateName(vec[k].name,true)
         list_of_dances[name]=k
         list_of_dances_string=list_of_dances_string..k..":"..name..","
     end
@@ -270,7 +270,7 @@ function build_all_lists(printflag)
 end -- end func build_all_lists
 -- ---------------------------------------------------------------------------
 function unit_name_to_console(unit)
-    return dfhack.df2console(dfhack.TranslateName(dfhack.units.getVisibleName(unit)))
+    return dfhack.df2console(dfhack.units.getReadableName(unit))
 end
 
 

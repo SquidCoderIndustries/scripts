@@ -143,9 +143,13 @@ RightClickOverlay.ATTRS{
 function RightClickOverlay:onInput(keys)
     if keys._MOUSE_R or keys.LEAVESCREEN then
         -- building mode
-        if uibs.selection_pos.x >= 0 then
-            uibs.selection_pos:clear()
-            return true
+        if dfhack.gui.matchFocusString('dwarfmode/Building/Placement',
+            dfhack.gui.getDFViewscreen(true))
+        then
+            if uibs.selection_pos.x >= 0 then
+                uibs.selection_pos:clear()
+                return true
+            end
         -- all other modes
         elseif selection_rect.start_x >= 0 then
             selection_rect.start_x = -30000

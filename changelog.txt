@@ -28,20 +28,26 @@ Template for new versions:
 
 ## New Tools
 - `fix/stuck-squad`: allow squads and messengers returning from missions to rescue squads that have gotten stuck on the world map
+- `gui/rename`: (reinstated) give new in-game language-based names to anything that can be named (e.g. units, governments, fortresses, or the world)
 
 ## New Features
 - `gui/settings-manager`: new overlay on the Labor -> Standing Orders tab for configuring the number of barrels to reserve for job use (so you can brew alcohol and not have all your barrels claimed by stockpiles for container storage)
 - `gui/settings-manager`: standing orders save/load now includes the reserved barrels setting
+- `gui/rename`: add overlay to worldgen screen allowing you to rename the world before the new world is saved
+- `gui/rename`: add overlay to the "Prepare carefully" embark screen that transparently fixes a DF bug where you can't give units nicknames or custom professions
+- `gui/notify`: new notification type: save reminder; appears if you have gone more than 15 minutes without saving; click to autosave
 
 ## Fixes
 - `fix/dry-buckets`: don't empty buckets for wells that are actively in use
 - `gui/unit-info-viewer`: skill progress bars now show correct XP thresholds for skills past Legendary+5
+- `caravan`: no longer incorrectly identify wood-based plant items and plant-based soaps as being ethically unsuitable for trading with the elves
+- `gui/design`: don't require an extra right click on the first cancel of building area designations
+- `gui/gm-unit`: refresh unit sprite when profession is changed
 
 ## Misc Improvements
 - `immortal-cravings`: goblins and other naturally non-eating/non-drinking races will now also satisfy their needs for eating and drinking
 - `caravan`: add filter for written works in display furniture assignment dialog
 - `fix/wildlife`: don't vaporize stuck wildlife that is onscreen -- kill them instead (as if they died from old age)
-- `gui/gm-unit`: refresh unit sprite when profession is changed
 - `gui/sitemap`: show primary group affiliation for visitors and invaders (e.g. civilization name or performance troupe)
 
 ## Removed

@@ -70,8 +70,8 @@ function showNemesisPrompt(advSetUpScreen)
                 end
                 if histFig.name.has_name then
                     name = name ..
-                         '\n' .. dfhack.TranslateName(histFig.name) ..
-                         '\n"' .. dfhack.TranslateName(histFig.name, true) .. '"'
+                         '\n' .. dfhack.translation.translateName(histFig.name) ..
+                         '\n"' .. dfhack.translation.translateName(histFig.name, true) .. '"'
                 else
                     name = name ..
                      '\nUnnamed'

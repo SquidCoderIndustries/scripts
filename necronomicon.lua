@@ -60,7 +60,7 @@ function necronomicon(include_slabs)
         for _, item in ipairs(df.global.world.items.other.SLAB) do
             if check_slab_secrets(item) then
                 local artifact = get_item_artifact(item)
-                local name = dfhack.TranslateName(artifact.name)
+                local name = dfhack.translation.translateName(artifact.name)
                 print("  " .. dfhack.df2console(name))
             end
         end
@@ -87,7 +87,7 @@ function necronomicon_world(include_slabs)
         print()
         for _,rec in ipairs(df.global.world.artifacts.all) do
             if df.item_slabst:is_instance(rec.item) and check_slab_secrets(rec.item) then
-                print(dfhack.df2console(dfhack.TranslateName(rec.name)))
+                print(dfhack.df2console(dfhack.translation.translateName(rec.name)))
             end
         end
         print()

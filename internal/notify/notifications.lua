@@ -524,6 +524,23 @@ NOTIFICATIONS_BY_IDX = {
         adv_fn=curry(get_bar, get_blood, get_max_blood, "Blood", COLOR_RED),
         on_click=nil,
     },
+    {
+        name='save-reminder',
+        desc='Shows a reminder if it has been more than 15 minutes since your last save.',
+        default=true,
+        dwarf_fn=function ()
+            local minsSinceSave = dfhack.persistent.getUnsavedSeconds()//60
+            if minsSinceSave >= 15 then
+                return "Last save: ".. (dfhack.formatInt(minsSinceSave)) ..' mins ago'
+            end
+        end,
+        on_click=function()
+            local minsSinceSave = dfhack.persistent.getUnsavedSeconds()//60
+            local message = 'It has been ' .. dfhack.formatInt(minsSinceSave) .. ' minutes since your last save. \n\nWould you like to save now? ' ..
+            '(Note: You can also close this reminder and save manually)'
+            dlg.showYesNoPrompt('Save now?', message, nil, function() dfhack.run_script('quicksave') end)
+        end,
+    },
 }
 
 NOTIFICATIONS_BY_NAME = {}

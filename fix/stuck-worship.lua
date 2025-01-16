@@ -87,10 +87,6 @@ local function get_prayer_targets(unit)
     end
 end
 
-local function unit_name(unit)
-    return dfhack.df2console(dfhack.TranslateName(dfhack.units.getVisibleName(unit)))
-end
-
 local count = 0
 for _,unit in ipairs(dfhack.units.getCitizens(false, true)) do
     local prayer_targets = get_prayer_targets(unit)
@@ -101,7 +97,7 @@ for _,unit in ipairs(dfhack.units.getCitizens(false, true)) do
     if shuffle_prayer_needs(needs, prayer_targets) then
         count = count + 1
         if verbose then
-            print('Shuffled prayer target for '..unit_name(unit))
+            print('Shuffled prayer target for '..dfhack.df2console(dfhack.units.getReadableName(unit)))
         end
     end
     ::next_unit::

@@ -34,7 +34,7 @@ end
 
 function desert(u,method,civ)
     u.following = nil
-    local line = dfhack.TranslateName(dfhack.units.getVisibleName(u)) .. " has "
+    local line = dfhack.units.getReadableName(u) .. " has "
     if method == 'merchant' then
         line = line.."joined the merchants"
         u.flags1.merchant = true
