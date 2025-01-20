@@ -12,10 +12,10 @@ local HIGHLIGHT_PEN = dfhack.pen.parse{
 
 HelloWorldWindow = defclass(HelloWorldWindow, widgets.Window)
 HelloWorldWindow.ATTRS{
-    frame={w=25, h=20},
+    frame={w=25, h=25},
     frame_title='Hello World',
     autoarrange_subviews=true,
-    autoarrange_gap=1,
+    autoarrange_gap=2,
     resizable=true,
     resize_min={w=25, h=20},
 }
@@ -28,7 +28,7 @@ function HelloWorldWindow:init()
         {label='Pro', value=4},
         {label='Insane', value=5},
     }
-    
+
     self:addviews{
         widgets.Label{text={{text='Hello, world!', pen=COLOR_LIGHTGREEN}}},
         widgets.HotkeyLabel{
@@ -42,9 +42,12 @@ function HelloWorldWindow:init()
             frame={w=10, h=5},
             frame_style=gui.INTERIOR_FRAME,
         },
+        widgets.Divider{
+            frame={l=0,t=3}
+        },
         widgets.CycleHotkeyLabel{
             view_id='level',
-            frame={l=1, t=0, w=16},
+            frame={l=0, t=3, w=16},
             label='Level:',
             label_below=true,
             key_back='CUSTOM_SHIFT_C',
