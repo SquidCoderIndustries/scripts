@@ -253,16 +253,19 @@ local function select_new_target(cb)
     if #df.global.world.items.other.ANY_ARTIFACT > 0 then
         table.insert(choices, {text='An artifact', data={fn=select_artifact}})
     end
+    if #df.global.world.units.all > 0 then
+        table.insert(choices, {text='A unit', data={fn=select_unit}})
+    end
     local site = dfhack.world.getCurrentSite()
     local is_fort_mode = dfhack.world.isFortressMode()
     local fort = is_fort_mode and df.historical_entity.find(df.global.plotinfo.group_id)
     local civ = is_fort_mode and df.historical_entity.find(df.global.plotinfo.civ_id)
     if site then
-        if #site.buildings > 0 then
-            table.insert(choices, {text='A location', data={fn=curry(select_location, site)}})
-        end
         if fort and #fort.squads > 0 then
             table.insert(choices, {text='A squad', data={fn=curry(select_squad, fort)}})
+        end
+        if #site.buildings > 0 then
+            table.insert(choices, {text='A location', data={fn=curry(select_location, site)}})
         end
         table.insert(choices, {text='This fortress/site', data={fn=curry(select_site, site)}})
     end
@@ -272,10 +275,7 @@ local function select_new_target(cb)
     if civ then
         table.insert(choices, {text='The civilization of this fortress', data={fn=curry(select_entity, civ)}})
     end
-    if #df.global.world.units.all > 0 then
-        table.insert(choices, {text='A unit', data={fn=select_unit}})
-    end
-    table.insert(choices, {text='This world', data={fn=select_world}})
+    table.insert(choices, {text='The world', data={fn=select_world}})
     dlg.showListPrompt('Rename', 'What would you like to rename?', COLOR_WHITE,
         choices, function(_, choice) choice.data.fn(cb) end)
 end

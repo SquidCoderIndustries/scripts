@@ -536,8 +536,8 @@ NOTIFICATIONS_BY_IDX = {
         end,
         on_click=function()
             local minsSinceSave = dfhack.persistent.getUnsavedSeconds()//60
-            local message = 'It has been ' .. dfhack.formatInt(minsSinceSave) .. ' minutes since your last save. \n\nWould you like to save now? ' ..
-            '(Note: You can also close this reminder and save manually)'
+            local message = 'It has been ' .. dfhack.formatInt(minsSinceSave) .. ' minutes since your last save. \n\nWould you like to save now?\n\n' ..
+            'You can also close this reminder and save manually.'
             dlg.showYesNoPrompt('Save now?', message, nil, function() dfhack.run_script('quicksave') end)
         end,
     },

@@ -653,7 +653,8 @@ function Spreadsheet:init()
                 data_fn=curry(toggle_sorted_vec_data, wd.assigned_units),
                 toggle_fn=function(unit_id, prev_val)
                     toggle_sorted_vec(wd.assigned_units, unit_id, prev_val)
-                    -- TODO: poke DF to actually apply the work details to units
+                    local unit = df.unit.find(unit_id)
+                    if unit then dfhack.units.setAutomaticProfessions(unit) end
                 end,
             }
         }

@@ -27,8 +27,31 @@ Template for new versions:
 # Future
 
 ## New Tools
+
+- `autocheese`: automatically make cheese using barrels that have accumulated sufficient milk
+
+## New Features
+
+## Fixes
+
+## Misc Improvements
+- `assign-preferences`: new ``--show`` option to display the preferences of the selected unit
+- `pref-adjust`: new ``show`` command to display the preferences of the selected unit
+- `hide-tutorials`: if enabled, also hide tutorial popups for adventure mode
+- `hide-tutorials`: new ``reset`` command that will re-enable popups in the current game
+
+## Removed
+
+# 51.02-r1
+
+## Fixes
+- `deathcause`: fix error when retrieving the name of a historical figure
+
+# 50.15-r2
+
+## New Tools
 - `fix/stuck-squad`: allow squads and messengers returning from missions to rescue squads that have gotten stuck on the world map
-- `gui/rename`: (reinstated) give new in-game language-based names to anything that can be named (e.g. units, governments, fortresses, or the world)
+- `gui/rename`: (reinstated) give new in-game language-based names to anything that can be named (units, governments, fortresses, the world, etc.)
 
 ## New Features
 - `gui/settings-manager`: new overlay on the Labor -> Standing Orders tab for configuring the number of barrels to reserve for job use (so you can brew alcohol and not have all your barrels claimed by stockpiles for container storage)
@@ -49,8 +72,6 @@ Template for new versions:
 - `caravan`: add filter for written works in display furniture assignment dialog
 - `fix/wildlife`: don't vaporize stuck wildlife that is onscreen -- kill them instead (as if they died from old age)
 - `gui/sitemap`: show primary group affiliation for visitors and invaders (e.g. civilization name or performance troupe)
-
-## Removed
 
 # 50.15-r1
 

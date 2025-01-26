@@ -75,7 +75,7 @@ function displayDeathEventHistFigUnit(histfig_unit, event)
     if slayer_histfig then
         str = str .. (", killed by the %s %s"):format(
                 getRaceNameSingular(slayer_histfig.race),
-                dfhack.translation.translateName(dfhack.units.getVisiblename(slayer_histfig))
+                dfhack.translation.translateName(dfhack.units.getVisibleName(slayer_histfig))
         )
     end
 
