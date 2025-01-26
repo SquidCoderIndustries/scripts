@@ -17,7 +17,7 @@ HelloWorldWindow.ATTRS{
     autoarrange_subviews=true,
     autoarrange_gap=2,
     resizable=true,
-    resize_min={w=25, h=20},
+    resize_min={w=25, h=25},
 }
 
 function HelloWorldWindow:init()
@@ -32,7 +32,7 @@ function HelloWorldWindow:init()
     self:addviews{
         widgets.Label{text={{text='Hello, world!', pen=COLOR_LIGHTGREEN}}},
         widgets.HotkeyLabel{
-            frame={l=0, t=0},
+            frame={l=0},
             label='Click me',
             key='CUSTOM_CTRL_A',
             on_activate=self:callback('toggleHighlight'),
@@ -43,23 +43,25 @@ function HelloWorldWindow:init()
             frame_style=gui.INTERIOR_FRAME,
         },
         widgets.Divider{
-            frame={l=0,t=3}
+            frame={h=1},
+            frame_style_l=false,
+            frame_style_r=false,
         },
         widgets.CycleHotkeyLabel{
             view_id='level',
-            frame={l=0, t=3, w=16},
+            frame={l=0, w=20},
             label='Level:',
-            label_below=true,
+            label_below=false,
             key_back='CUSTOM_SHIFT_C',
             key='CUSTOM_SHIFT_V',
             options=LEVEL_OPTIONS,
             initial_option=LEVEL_OPTIONS[1].value,
             on_change=function(val)
-                self.subviews.level:setOption(val)
+                self.callback{Slider.on_change(val)}
             end,
         },
         widgets.Slider{
-            frame={l=1, t=3},
+            frame={l=1},
             num_stops=#LEVEL_OPTIONS,
             get_idx_fn=function()
                 return self.subviews.level:getOptionValue()
