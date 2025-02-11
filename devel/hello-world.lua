@@ -51,14 +51,10 @@ function HelloWorldWindow:init()
             view_id='level',
             frame={l=0, w=20},
             label='Level:',
-            label_below=false,
             key_back='CUSTOM_SHIFT_C',
             key='CUSTOM_SHIFT_V',
             options=LEVEL_OPTIONS,
             initial_option=LEVEL_OPTIONS[1].value,
-            on_change=function(val)
-                self.callback{Slider.on_change(val)}
-            end,
         },
         widgets.Slider{
             frame={l=1},
