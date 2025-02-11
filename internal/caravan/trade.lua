@@ -309,7 +309,7 @@ function Trade:init()
         widgets.HotkeyLabel{
             frame={l=0, b=0},
             label='Select all/none',
-            key='CUSTOM_CTRL_A',
+            key='CUSTOM_CTRL_N',
             on_activate=self:callback('toggle_visible'),
             auto_width=true,
         },
@@ -891,7 +891,7 @@ function Ethics:init()
         },
         widgets.HotkeyLabel{
             frame={l=0, b=0},
-            key='CUSTOM_CTRL_A',
+            key='CUSTOM_CTRL_N',
             label='Deselect items in trade list',
             auto_width=true,
             on_activate=self:callback('deselect_transgressions'),
