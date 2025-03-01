@@ -81,9 +81,9 @@ function getAllCititzen()
         if unit.civ_id == my_civ and dfhack.units.isCitizen(unit) then
             if unit.profession ~= df.profession.BABY and unit.profession ~= df.profession.CHILD then
                 if ( not unit.status.labors[ignore_flag] ) then
-					table.insert(citizen, unit)				
-				else	
-					ignore_count = ignore_count +1 
+					table.insert(citizen, unit)
+				else
+					ignore_count = ignore_count +1
 				end
             end
         end
@@ -101,7 +101,7 @@ function findNeed(unit,need_id)
             need_index = k
             break
         end
-    end    if (need_index ~= -1 ) then 
+    end    if (need_index ~= -1 ) then
         return needs[need_index]
     end
     return nil
@@ -226,9 +226,9 @@ end
 function start() 
 	threshold = -5000
 	dfhack.println(scriptname ..  " | START")
-	
+
 	if (args.t) then 
-		threshold = 0-tonumber(args.t) 
+		threshold = 0-tonumber(args.t)
 	end
 
 	running = true
