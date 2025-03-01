@@ -21,7 +21,7 @@ NOTE-Dwarfs with the labor "Fish Dissection" enabled are ignored
 Make a Dwarven labour with only the Fish Dissection enabled, set to "Only selected do this" and assign it to a dwarf to ignore them.
 
 Usage
---------
+-----
 
     Gym [<options>]
 
@@ -60,7 +60,7 @@ local utils=require('utils')
 validArgs = utils.invert({
     'start',
     'stop',
-	't'
+    't'
 })
 
 local args = utils.processArgs({...}, validArgs)
@@ -75,20 +75,20 @@ local squadname ="Gym"
 --Functions
 --######
 function getAllCititzen()
-	local citizen = {}
-	local my_civ = df.global.world.world_data.active_site[0].entity_links[0].entity_id
-	for n, unit in ipairs(df.global.world.units.all) do
+    local citizen = {}
+    local my_civ = df.global.world.world_data.active_site[0].entity_links[0].entity_id
+    for n, unit in ipairs(df.global.world.units.all) do
         if unit.civ_id == my_civ and dfhack.units.isCitizen(unit) then
             if unit.profession ~= df.profession.BABY and unit.profession ~= df.profession.CHILD then
                 if ( not unit.status.labors[ignore_flag] ) then
-					table.insert(citizen, unit)
-				else
-					ignore_count = ignore_count +1
-				end
+                    table.insert(citizen, unit)
+                else
+                    ignore_count = ignore_count +1
+                end
             end
         end
-	end
-	return citizen
+    end
+    return citizen
 end
 
 local citizen = getAllCititzen()
@@ -112,135 +112,135 @@ end
 --######
 
 function getByID(id)
-	for n, unit in ipairs(citizen) do
-		if (unit.hist_figure_id == id) then
-			return unit
-		end
-	end
+    for n, unit in ipairs(citizen) do
+        if (unit.hist_figure_id == id) then
+            return unit
+        end
+    end
 
-	return nil
+    return nil
 end
 
 -- Find all training squads
 -- Abort if no squads found
 function checkSquads()
-	local squads = {}
-	local count = 0
-	for n, mil in ipairs(df.global.world.squads.all) do
-		if (mil.alias == squadname) then 
-			local leader = mil.positions[0].occupant
-			if ( leader ~= -1) then
-				table.insert(squads,mil)
-				count = count +1
-			end
-		end
-	end
+    local squads = {}
+    local count = 0
+    for n, mil in ipairs(df.global.world.squads.all) do
+        if (mil.alias == squadname) then
+            local leader = mil.positions[0].occupant
+            if ( leader ~= -1) then
+                table.insert(squads,mil)
+                count = count +1
+            end
+        end
+    end
 
-	if (count == 0) then
-		dfhack.print(scriptname.." | ")
+    if (count == 0) then
+        dfhack.print(scriptname.." | ")
         dfhack.printerr('ERROR: You need a squad with the name ' .. squadname)
-		dfhack.print(scriptname.." | ")
-		dfhack.printerr('That has an active Squad Leader')
-		dfhack.color(-1)
-		return nil
-	end
+        dfhack.print(scriptname.." | ")
+        dfhack.printerr('That has an active Squad Leader')
+        dfhack.color(-1)
+        return nil
+    end
 
-	return squads
+    return squads
 end
 
 function addTraining(squads,unit)
-	for n, squad in ipairs(squads) do
-		for i=1,9,1   do
-			if (unit.hist_figure_id == squad.positions[i].occupant) then
-				return true
-			end
+    for n, squad in ipairs(squads) do
+        for i=1,9,1   do
+            if (unit.hist_figure_id == squad.positions[i].occupant) then
+                return true
+            end
 
-			if (unit.military.squad_id ~= -1) then
-				return false
-			end
+            if (unit.military.squad_id ~= -1) then
+                return false
+            end
 
-			if ( squad.positions[i].occupant  == -1 ) then
-				squad.positions[i].occupant = unit.hist_figure_id
-				return true
-			end
-		end
-	end
+            if ( squad.positions[i].occupant  == -1 ) then
+                squad.positions[i].occupant = unit.hist_figure_id
+                return true
+            end
+        end
+    end
 
-	return false
+    return false
 end
 
 function removeTraining(squads,unit)
-	for n, squad in ipairs(squads) do
-		for i=1,9,1   do
-			if ( unit.hist_figure_id  == squad.positions[i].occupant ) then
-				unit.military.squad_id = -1
-				unit.military.squad_position = -1
-				squad.positions[i].occupant = -1
-				return true
-			end
-		end
-	end
-	return false
+    for n, squad in ipairs(squads) do
+        for i=1,9,1   do
+            if ( unit.hist_figure_id  == squad.positions[i].occupant ) then
+                unit.military.squad_id = -1
+                unit.military.squad_position = -1
+                squad.positions[i].occupant = -1
+                return true
+            end
+        end
+    end
+    return false
 end
 
 function removeAll(squads)
-	if ( squads == nil) then return end
-	for n, squad in ipairs(squads) do
-		for i=1,9,1 do
-			local dwarf = getByID(squad.positions[i].occupant)
-			if (dwarf ~= nil) then
-				dwarf.military.squad_id = -1
-				dwarf.military.squad_position = -1
-				squad.positions[i].occupant = -1
-			end
-		end
-	end
+    if ( squads == nil) then return end
+    for n, squad in ipairs(squads) do
+        for i=1,9,1 do
+            local dwarf = getByID(squad.positions[i].occupant)
+            if (dwarf ~= nil) then
+                dwarf.military.squad_id = -1
+                dwarf.military.squad_position = -1
+                squad.positions[i].occupant = -1
+            end
+        end
+    end
 end
 
 
 function check()
-	local squads = checkSquads()
-	local intraining_count = 0
-	local inque_count = 0
-	if ( squads == nil)then return end
-	for n, unit in ipairs(citizen) do
-		local need = findNeed(unit,need_id)
-		if ( need  ~= nil ) then
-			if ( need.focus_level  < threshold ) then
-				local bol = addTraining(squads,unit)
-				if ( bol ) then
-					intraining_count = intraining_count +1
-				else
-					inque_count = inque_count +1
-				end
-			else
-				removeTraining(squads,unit)
-			end
-		end
-	end
+    local squads = checkSquads()
+    local intraining_count = 0
+    local inque_count = 0
+    if ( squads == nil)then return end
+    for n, unit in ipairs(citizen) do
+        local need = findNeed(unit,need_id)
+        if ( need  ~= nil ) then
+            if ( need.focus_level  < threshold ) then
+                local bol = addTraining(squads,unit)
+                if ( bol ) then
+                    intraining_count = intraining_count +1
+                else
+                    inque_count = inque_count +1
+                end
+            else
+                removeTraining(squads,unit)
+            end
+        end
+    end
 
-	dfhack.println(scriptname .. " | IGN: " .. ignore_count .. " TRAIN: " .. intraining_count .. " QUE: " ..inque_count )
+    dfhack.println(scriptname .. " | IGN: " .. ignore_count .. " TRAIN: " .. intraining_count .. " QUE: " ..inque_count )
 end
 
 
 function start()
-	threshold = -5000
-	dfhack.println(scriptname ..  " | START")
+    threshold = -5000
+    dfhack.println(scriptname ..  " | START")
 
-	if (args.t) then
-		threshold = 0-tonumber(args.t)
-	end
+    if (args.t) then
+        threshold = 0-tonumber(args.t)
+    end
 
-	running = true
-	repeatUtil.scheduleEvery(scriptname,1000,'ticks',check)
+    running = true
+    repeatUtil.scheduleEvery(scriptname,1000,'ticks',check)
 end
 
 function stop()
-	repeatUtil.cancel(scriptname)
-	local squads = checkSquads()
-	removeAll(squads)
-	running = false
-	dfhack.println(scriptname .. " | STOP")
+    repeatUtil.cancel(scriptname)
+    local squads = checkSquads()
+    removeAll(squads)
+    running = false
+    dfhack.println(scriptname .. " | STOP")
 end
 
 if (args.stop) then
