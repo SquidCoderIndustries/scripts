@@ -1,7 +1,7 @@
 -- Code for dwarves to hit the gym when they yearn for the gains.
 --[====[
 Gym
-=================
+===
 
 Tags: Fort| Needs | BugFix | Units
 
@@ -93,7 +93,7 @@ end
 
 local citizen = getAllCititzen()
 
-function findNeed(unit,need_id) 
+function findNeed(unit,need_id)
     local needs =  unit.status.current_soul.personality.needs
     local need_index = -1
     for k = #needs-1,0,-1 do
@@ -111,7 +111,7 @@ end
 --Main
 --######
 
-function getByID(id) 
+function getByID(id)
 	for n, unit in ipairs(citizen) do
 		if (unit.hist_figure_id == id) then
 			return unit
@@ -169,7 +169,7 @@ function addTraining(squads,unit)
 	return false
 end
 
-function removeTraining(squads,unit) 
+function removeTraining(squads,unit)
 	for n, squad in ipairs(squads) do
 		for i=1,9,1   do
 			if ( unit.hist_figure_id  == squad.positions[i].occupant ) then
@@ -183,7 +183,7 @@ function removeTraining(squads,unit)
 	return false
 end
 
-function removeAll(squads) 
+function removeAll(squads)
 	if ( squads == nil) then return end
 	for n, squad in ipairs(squads) do
 		for i=1,9,1 do
@@ -208,9 +208,9 @@ function check()
 		if ( need  ~= nil ) then
 			if ( need.focus_level  < threshold ) then
 				local bol = addTraining(squads,unit)
-				if ( bol ) then 
+				if ( bol ) then
 					intraining_count = intraining_count +1
-				else 
+				else
 					inque_count = inque_count +1
 				end
 			else
@@ -223,11 +223,11 @@ function check()
 end
 
 
-function start() 
+function start()
 	threshold = -5000
 	dfhack.println(scriptname ..  " | START")
 
-	if (args.t) then 
+	if (args.t) then
 		threshold = 0-tonumber(args.t)
 	end
 
@@ -246,9 +246,9 @@ end
 if (args.stop) then
     if (running) then stop() end
     return
-end 
+end
 
-if (args.start) then	
+if (args.start) then
     if (running) then stop() end
     start()
     return
