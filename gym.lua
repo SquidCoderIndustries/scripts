@@ -128,7 +128,7 @@ function checkSquads()
 	local count = 0
 	for n, mil in ipairs(df.global.world.squads.all) do
 		if (mil.alias == squadname) then 
-			local leader = mil.positions[0].occupant 
+			local leader = mil.positions[0].occupant
 			if ( leader ~= -1) then
 				table.insert(squads,mil)
 				count = count +1
@@ -160,7 +160,7 @@ function addTraining(squads,unit)
 			end
 
 			if ( squad.positions[i].occupant  == -1 ) then
-				squad.positions[i].occupant = unit.hist_figure_id 
+				squad.positions[i].occupant = unit.hist_figure_id
 				return true
 			end
 		end
