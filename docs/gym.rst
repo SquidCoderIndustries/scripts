@@ -3,7 +3,7 @@ gym
 
 .. dfhack-tool::
     :summary: Assigns Dwarves to a military squad until they have fulfilled their need for Martial Training
-    :tags: Fort Needs BugFix Units
+    :tags: fort Needs BugFix Units
 
 Assigns Dwarves to a military squad until they have fulfilled their need for Martial Training. Also Passively builds military skills and physical stats.
 
