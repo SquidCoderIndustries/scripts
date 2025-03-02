@@ -1,4 +1,4 @@
-Gym
+gym
 ===
 
 .. dfhack-tool::
