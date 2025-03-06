@@ -23,43 +23,42 @@ NOTE: Dwarfs with the labor "Fish Dissection" enabled are ignored. Make a Dwarve
 Usage
 -----
 
-    Gym [<options>]
+    gym [<options>]
 
 Examples
 --------
 
-Gym
+gym
     Current status of script
 
-Gym -start
+enable gym
     Checks to see if you have fullfilled the creation of a training gym.
     Searches your fort for dwarves with a need to go to the gym, and begins assigning them to said gym.
     Once they have fulfilled their need they will be removed from the gym squad to be replaced by the next dwarf in the list.
 
-Gym -stop
+disable gym
     Dwarves currently in the Gym squad, with the exception of the squad leader, will be unassigned and no new dwarves will be added to the squad.
 
 Options
 -------
-    -start
-        Starts the script
-        If there is no squad named `Gym` with a squadleader assigned it will not proceed.
-
-    -stop
-        Stops the script
 
     -t
         Use integer values. (Default 3000)
         The negative need threshhold to trigger for each citizen
         The greater the number the longer before a dwarf is added to the waiting list.
 ]====]
+--@ enable = true
+--@ module = true
+
+enabled = enabled or false
+function isEnabled()
+    return enabled
+end
 
 local repeatUtil = require 'repeat-util'
 local utils=require('utils')
 
 validArgs = utils.invert({
-    'start',
-    'stop',
     't'
 })
 
@@ -222,7 +221,6 @@ function check()
     dfhack.println(scriptname .. " | IGN: " .. ignore_count .. " TRAIN: " .. intraining_count .. " QUE: " ..inque_count )
 end
 
-
 function start()
     threshold = -5000
     dfhack.println(scriptname ..  " | START")
@@ -243,19 +241,22 @@ function stop()
     dfhack.println(scriptname .. " | STOP")
 end
 
-if (args.stop) then
-    if (running) then stop() end
-    return
+if dfhack_flags.enable then
+    if dfhack_flags.enable_state then
+        start()
+        enabled = true
+    else
+        stop()
+        enabled = false
+    end
 end
 
-if (args.start) then
-    if (running) then stop() end
-    start()
+if dfhack_flags.module then
     return
 end
 
 if ( running ) then
     dfhack.println(scriptname .."    | Enabled")
 else
-    dfhack.println(scriptname .."   | Disabled")
+    dfhack.println(scriptname .."    | Disabled")
 end
