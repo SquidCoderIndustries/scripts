@@ -1,5 +1,5 @@
 autotraining
-===
+============
 
 .. dfhack-tool::
     :summary: Assigns citizens to a military squad until they have fulfilled their need for Martial Training
