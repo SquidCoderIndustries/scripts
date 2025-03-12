@@ -9,10 +9,10 @@ Code for dwarves to hit the gym when they yearn for the gains. Also passively bu
 
 Critical setup:
 
-- Minimum 1 squad with the name "Gym"
-- An assigned squadleader in "Gym"
-- An assigned Barracks for the squad "Gym"
-- Active Training orders for the squad "Gym"
+- Minimum 1 squad with the correct name (default is "Gym")
+- An assigned squad leader in the squad
+- An assigned Barracks for the squad
+- Active Training orders for the squad
 
 This should be a new non-military-use squad. The uniform should be set to "No Uniform" and the squad should be set to "Constant Training" in the military screen.
 Set the squad's schedule to full time training with at least 8 or 9 training.
@@ -33,7 +33,7 @@ Examples
 
 ``enable gym``
     Checks to see if you have fullfilled the creation of a training gym.
-    If there is no squad named ``Gym`` with a squadleader assigned it will not proceed.
+    If there is no squad named ``Gym`` with a squad leader assigned it will not proceed.
     Searches your fort for dwarves with a need to go to the gym, and begins assigning them to said gym.
     Once they have fulfilled their need they will be removed from the gym squad to be replaced by the next dwarf in the list.
 
@@ -43,6 +43,10 @@ Examples
 Options
 -------
     ``-t``
-        Use integer values. (Default 3000)
+        Use integer values. (Default 5000)
         The negative need threshhold to trigger for each citizen
         The greater the number the longer before a dwarf is added to the waiting list.
+
+    ``-n``
+        Use a string. (Default 'Gym')
+        Pick a different name for the squad the script looks for.

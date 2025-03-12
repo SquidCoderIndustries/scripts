@@ -1,24 +1,51 @@
 --@ enable = true
 --@ module = true
 
-enabled = enabled or false
-function isEnabled()
-    return enabled
-end
-
 local repeatUtil = require 'repeat-util'
 local utils=require('utils')
 
 validArgs = utils.invert({
-    't'
+    't',
+    'n'
 })
 
 local args = utils.processArgs({...}, validArgs)
-local scriptname = "Gym"
-local ignore_flag = 43 -- Fish Dissection labor id
+local GLOBAL_KEY  = "autotraining"
+local ignore_flag = df.unit_labor['DISSECT_FISH']
 local ignore_count = 0
 local need_id = 14
-local squadname ="Gym"
+
+local function get_default_state()
+    return {
+        enabled=false,
+        threshold=-5000,
+        squadname='Gym'
+    }
+end
+
+state = state or get_default_state()
+
+function isEnabled()
+    return state.enabled
+end
+
+dfhack.onStateChange[GLOBAL_KEY] = function(sc)
+    -- the state changed, is a map loaded and is that map in fort mode?
+    if sc ~= SC_MAP_LOADED or df.global.gamemode ~= df.game_mode.DWARF then
+        -- no its isnt, so bail
+        return
+    end
+    -- yes it was so:
+    -- retrieve state saved in game. merge with default state so config
+    -- saved from previous versions can pick up newer defaults.
+    state = get_default_state()
+    utils.assign(state, dfhack.persistent.getSiteData(GLOBAL_KEY, state))
+end
+
+-- Save any configurations in the save data
+local function persist_state()
+    dfhack.persistent.saveSiteData(GLOBAL_KEY, state)
+end
 
 
 --######
@@ -45,14 +72,10 @@ local citizen = getAllCititzen()
 
 function findNeed(unit,need_id)
     local needs =  unit.status.current_soul.personality.needs
-    local need_index = -1
-    for k = #needs-1,0,-1 do
-        if needs[k].id == need_id then
-            need_index = k
-            break
+    for _, need in ipairs(needs) do
+        if need.id == need_id then
+            return need
         end
-    end    if (need_index ~= -1 ) then
-        return needs[need_index]
     end
     return nil
 end
@@ -77,7 +100,7 @@ function checkSquads()
     local squads = {}
     local count = 0
     for n, mil in ipairs(df.global.world.squads.all) do
-        if (mil.alias == squadname) then
+        if (mil.alias == state.squadname) then
             local leader = mil.positions[0].occupant
             if ( leader ~= -1) then
                 table.insert(squads,mil)
@@ -87,9 +110,9 @@ function checkSquads()
     end
 
     if (count == 0) then
-        dfhack.print(scriptname.." | ")
-        dfhack.printerr('ERROR: You need a squad with the name ' .. squadname)
-        dfhack.print(scriptname.." | ")
+        dfhack.print(GLOBAL_KEY .." | ")
+        dfhack.printerr('ERROR: You need a squad with the name ' .. state.squadname)
+        dfhack.print(GLOBAL_KEY .." | ")
         dfhack.printerr('That has an active Squad Leader')
         dfhack.color(-1)
         return nil
@@ -111,6 +134,8 @@ function addTraining(squads,unit)
 
             if ( squad.positions[i].occupant  == -1 ) then
                 squad.positions[i].occupant = unit.hist_figure_id
+                unit.military.squad_id = squad.id
+                unit.military.squad_position = i
                 return true
             end
         end
@@ -169,36 +194,38 @@ function check()
         end
     end
 
-    dfhack.println(scriptname .. " | IGN: " .. ignore_count .. " TRAIN: " .. intraining_count .. " QUE: " ..inque_count )
+    dfhack.println(GLOBAL_KEY  .. " | IGN: " .. ignore_count .. " TRAIN: " .. intraining_count .. " QUE: " ..inque_count )
 end
 
 function start()
-    threshold = -5000
-    dfhack.println(scriptname ..  " | START")
+    dfhack.println(GLOBAL_KEY  ..  " | START")
 
     if (args.t) then
-        threshold = 0-tonumber(args.t)
+        state.threshold = 0-tonumber(args.t)
+    end
+    if (args.n) then
+        state.squadname = args.n
     end
 
-    running = true
-    repeatUtil.scheduleEvery(scriptname,1000,'ticks',check)
+    repeatUtil.scheduleEvery(GLOBAL_KEY, 997, 'ticks', check) -- 997 is the closest prime to 1000
 end
 
 function stop()
-    repeatUtil.cancel(scriptname)
+    repeatUtil.cancel(GLOBAL_KEY)
     local squads = checkSquads()
     removeAll(squads)
-    running = false
-    dfhack.println(scriptname .. " | STOP")
+    dfhack.println(GLOBAL_KEY  .. " | STOP")
 end
 
 if dfhack_flags.enable then
     if dfhack_flags.enable_state then
         start()
-        enabled = true
+        state.enabled = true
+        persist_state()
     else
         stop()
-        enabled = false
+        state.enabled = false
+        persist_state()
     end
 end
 
@@ -206,8 +233,8 @@ if dfhack_flags.module then
     return
 end
 
-if ( running ) then
-    dfhack.println(scriptname .."    | Enabled")
+if ( state.enabled ) then
+    dfhack.println(GLOBAL_KEY  .."    | Enabled")
 else
-    dfhack.println(scriptname .."    | Disabled")
+    dfhack.println(GLOBAL_KEY  .."    | Disabled")
 end
