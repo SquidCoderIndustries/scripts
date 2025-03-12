@@ -2,8 +2,9 @@
 --@ enable = true
 --@ module = true
 
-local repeatUtil = require 'repeat-util'
+local repeatUtil = require('repeat-util')
 local utils=require('utils')
+local dlg = require('gui.dialogs')
 
 validArgs = utils.invert({
     't',
@@ -30,6 +31,11 @@ function isEnabled()
     return state.enabled
 end
 
+-- Save any configurations in the save data
+local function persist_state()
+    dfhack.persistent.saveSiteData(GLOBAL_KEY, state)
+end
+
 dfhack.onStateChange[GLOBAL_KEY] = function(sc)
     -- the state changed, is a map loaded and is that map in fort mode?
     if sc ~= SC_MAP_LOADED or df.global.gamemode ~= df.game_mode.DWARF then
@@ -37,18 +43,21 @@ dfhack.onStateChange[GLOBAL_KEY] = function(sc)
         return
     end
     -- yes it was, so:
+
     -- retrieve state saved in game. merge with default state so config
     -- saved from previous versions can pick up newer defaults.
     state = get_default_state()
     utils.assign(state, dfhack.persistent.getSiteData(GLOBAL_KEY, state))
+    if ( state.enabled ) then
+        start()
+    else
+        stop()
+    end
+    -- start can change the enabled state if the squad cant be found
     if state.enabled then
         dfhack.print(GLOBAL_KEY .." was persisted with the following data:\nThreshold: ".. state.threshold .. ' | Squad name: '..state.squadname ..'.\n')
     end
-end
-
--- Save any configurations in the save data
-local function persist_state()
-    dfhack.persistent.saveSiteData(GLOBAL_KEY, state)
+    persist_state()
 end
 
 
@@ -111,11 +120,11 @@ function checkSquads()
     end
 
     if (count == 0) then
-        dfhack.print(GLOBAL_KEY .." | ")
-        dfhack.printerr('ERROR: You need a squad with the name ' .. state.squadname)
-        dfhack.print(GLOBAL_KEY .." | ")
-        dfhack.printerr('That has an active Squad Leader')
-        dfhack.color(-1)
+        local message = ''
+        message = message .. (GLOBAL_KEY .." | ")
+        message = message .. ('ERROR: You need a squad with the name ' .. state.squadname)
+        message = message .. (' that has an active Squad Leader.')
+        dlg.showMessage('Could not enable autotraining', message, COLOR_WHITE)
         return nil
     end
 
@@ -178,7 +187,11 @@ function check()
     local squads = checkSquads()
     local intraining_count = 0
     local inque_count = 0
-    if ( squads == nil)then return end
+    if ( squads == nil)then
+        repeatUtil.cancel(GLOBAL_KEY)
+        state.enabled = false
+        dfhack.println(GLOBAL_KEY  .. " | STOP")
+        return end
     local citizen = getAllCititzen()
     for n, unit in ipairs(citizen) do
         local need = findNeed(unit)
@@ -214,21 +227,16 @@ end
 
 function stop()
     repeatUtil.cancel(GLOBAL_KEY)
-    local squads = checkSquads()
-    removeAll(squads)
     dfhack.println(GLOBAL_KEY  .. " | STOP")
 end
 
 if dfhack_flags.enable then
     if dfhack_flags.enable_state then
-        start()
         state.enabled = true
-        persist_state()
     else
-        stop()
         state.enabled = false
-        persist_state()
     end
+    persist_state()
 end
 
 if dfhack_flags.module then
@@ -236,7 +244,10 @@ if dfhack_flags.module then
 end
 
 if ( state.enabled ) then
+    start()
     dfhack.println(GLOBAL_KEY  .." | Enabled")
 else
+    stop()
     dfhack.println(GLOBAL_KEY  .." | Disabled")
 end
+persist_state()
