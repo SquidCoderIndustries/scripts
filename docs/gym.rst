@@ -5,7 +5,7 @@ gym
     :summary: Assigns Dwarves to a military squad until they have fulfilled their need for Martial Training
     :tags: fort auto bugfix units
 
-Also passively builds military skills and physical stats.
+Code for dwarves to hit the gym when they yearn for the gains. Also passively builds military skills and physical stats.
 
 Critical setup:
 
@@ -31,23 +31,17 @@ Examples
 ``gym``
     Current status of script
 
-``gym -start``
+``enable gym``
     Checks to see if you have fullfilled the creation of a training gym.
+    If there is no squad named ``Gym`` with a squadleader assigned it will not proceed.
     Searches your fort for dwarves with a need to go to the gym, and begins assigning them to said gym.
     Once they have fulfilled their need they will be removed from the gym squad to be replaced by the next dwarf in the list.
 
-``gym -stop``
+``disable gym``
     Dwarves currently in the Gym squad, with the exception of the squad leader, will be unassigned and no new dwarves will be added to the squad.
 
 Options
 -------
-    ``-start``
-        Starts the script
-        If there is no squad named ``Gym`` with a squadleader assigned it will not proceed.
-
-    ``-stop``
-        Stops the script
-
     ``-t``
         Use integer values. (Default 3000)
         The negative need threshhold to trigger for each citizen
