@@ -13,7 +13,7 @@ local args = utils.processArgs({...}, validArgs)
 local GLOBAL_KEY  = "autotraining"
 local ignore_flag = df.unit_labor['DISSECT_FISH']
 local ignore_count = 0
-local need_id = 14
+local need_id = df.need_type['MartialTraining']
 
 local function get_default_state()
     return {
@@ -35,11 +35,14 @@ dfhack.onStateChange[GLOBAL_KEY] = function(sc)
         -- no its isnt, so bail
         return
     end
-    -- yes it was so:
+    -- yes it was, so:
     -- retrieve state saved in game. merge with default state so config
     -- saved from previous versions can pick up newer defaults.
     state = get_default_state()
     utils.assign(state, dfhack.persistent.getSiteData(GLOBAL_KEY, state))
+    if state.enabled then
+        dfhack.print(GLOBAL_KEY .." was persisted with the following data:\nThreshold: ".. state.threshold .. ' | Squad name: '..state.squadname ..'.\n')
+    end
 end
 
 -- Save any configurations in the save data
@@ -52,25 +55,21 @@ end
 --Functions
 --######
 function getAllCititzen()
-    local citizen = {}
-    local my_civ = df.global.world.world_data.active_site[0].entity_links[0].entity_id
-    for n, unit in ipairs(df.global.world.units.all) do
-        if unit.civ_id == my_civ and dfhack.units.isCitizen(unit) then
-            if unit.profession ~= df.profession.BABY and unit.profession ~= df.profession.CHILD then
-                if ( not unit.status.labors[ignore_flag] ) then
-                    table.insert(citizen, unit)
-                else
-                    ignore_count = ignore_count +1
-                end
+    local ret = {}
+    local citizen = dfhack.units.getCitizens(true)
+    for _, unit in ipairs(citizen) do
+        if unit.profession ~= df.profession.BABY and unit.profession ~= df.profession.CHILD then
+            if ( not unit.status.labors[ignore_flag] ) then
+                table.insert(ret, unit)
+            else
+                ignore_count = ignore_count +1
             end
         end
     end
-    return citizen
+    return ret
 end
 
-local citizen = getAllCititzen()
-
-function findNeed(unit,need_id)
+function findNeed(unit)
     local needs =  unit.status.current_soul.personality.needs
     for _, need in ipairs(needs) do
         if need.id == need_id then
@@ -85,6 +84,7 @@ end
 --######
 
 function getByID(id)
+    local citizen = getAllCititzen()
     for n, unit in ipairs(citizen) do
         if (unit.hist_figure_id == id) then
             return unit
@@ -178,10 +178,11 @@ function check()
     local intraining_count = 0
     local inque_count = 0
     if ( squads == nil)then return end
+    local citizen = getAllCititzen()
     for n, unit in ipairs(citizen) do
-        local need = findNeed(unit,need_id)
+        local need = findNeed(unit)
         if ( need  ~= nil ) then
-            if ( need.focus_level  < threshold ) then
+            if ( need.focus_level  < state.threshold ) then
                 local bol = addTraining(squads,unit)
                 if ( bol ) then
                     intraining_count = intraining_count +1
@@ -198,7 +199,7 @@ function check()
 end
 
 function start()
-    dfhack.println(GLOBAL_KEY  ..  " | START")
+    dfhack.println(GLOBAL_KEY  .. " | START")
 
     if (args.t) then
         state.threshold = 0-tonumber(args.t)
@@ -234,7 +235,7 @@ if dfhack_flags.module then
 end
 
 if ( state.enabled ) then
-    dfhack.println(GLOBAL_KEY  .."    | Enabled")
+    dfhack.println(GLOBAL_KEY  .." | Enabled")
 else
-    dfhack.println(GLOBAL_KEY  .."    | Disabled")
+    dfhack.println(GLOBAL_KEY  .." | Disabled")
 end
