@@ -1,3 +1,4 @@
+-- Based on the original code by RNGStrategist (who also got some help from Uncle Danny)
 --@ enable = true
 --@ module = true
 
