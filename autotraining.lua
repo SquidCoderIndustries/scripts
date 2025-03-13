@@ -109,12 +109,16 @@ end
 function checkSquads()
     local squads = {}
     local count = 0
-    for n, mil in ipairs(df.global.world.squads.all) do
-        if (mil.alias == state.squadname) then
-            local leader = mil.positions[0].occupant
-            if ( leader ~= -1) then
-                table.insert(squads,mil)
-                count = count +1
+    for _, mil in ipairs(df.global.world.squads.all) do
+        for _, link in ipairs(dfhack.world.getCurrentSite().entity_links) do
+            if mil.entity_id == link.entity_id then
+                if (mil.alias == state.squadname) then
+                    local leader = mil.positions[0].occupant
+                    if ( leader ~= -1) then
+                        table.insert(squads,mil)
+                        count = count +1
+                    end
+                end
             end
         end
     end
