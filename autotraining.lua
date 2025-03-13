@@ -55,7 +55,7 @@ dfhack.onStateChange[GLOBAL_KEY] = function(sc)
     end
     -- start can change the enabled state if the squad cant be found
     if state.enabled then
-        dfhack.print(GLOBAL_KEY .." was persisted with the following data:\nThreshold: ".. state.threshold .. ' | Squad name: '..state.squadname ..'.\n')
+        dfhack.print(GLOBAL_KEY .." was persisted with the following data:\nThreshold: ".. state.threshold .. ' | Squad name: '..state.squadname ..'\n')
     end
     persist_state()
 end
