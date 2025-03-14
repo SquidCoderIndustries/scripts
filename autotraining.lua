@@ -143,7 +143,7 @@ function addTraining(squads,unit)
             end
 
             if (unit.military.squad_id ~= -1) then
-                return false
+                return (squad.alias == state.squadname)
             end
 
             if ( squad.positions[i].occupant  == -1 ) then
