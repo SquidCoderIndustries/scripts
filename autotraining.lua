@@ -14,7 +14,6 @@ validArgs = utils.invert({
 local args = utils.processArgs({...}, validArgs)
 local GLOBAL_KEY  = "autotraining"
 local ignore_flag = df.unit_labor['DISSECT_FISH']
-local ignore_count = 0
 local need_id = df.need_type['MartialTraining']
 
 local function get_default_state()
@@ -67,6 +66,7 @@ end
 function getAllCititzen()
     local ret = {}
     local citizen = dfhack.units.getCitizens(true)
+    local ignore_count = 0
     for _, unit in ipairs(citizen) do
         if unit.profession ~= df.profession.BABY and unit.profession ~= df.profession.CHILD then
             if ( not unit.status.labors[ignore_flag] ) then
