@@ -64,12 +64,12 @@ end
 --######
 --Functions
 --######
-function getAllCititzen()
+function getTrainingCandidates()
     local ret = {}
     local citizen = dfhack.units.getCitizens(true)
     ignore_count = 0
     for _, unit in ipairs(citizen) do
-        if unit.profession ~= df.profession.BABY and unit.profession ~= df.profession.CHILD then
+        if dfhack.units.isAdult(unit) then
             if ( not unit.status.labors[ignore_flag] ) then
                 table.insert(ret, unit)
             else
@@ -95,8 +95,7 @@ end
 --######
 
 function getByID(id)
-    local citizen = getAllCititzen()
-    for n, unit in ipairs(citizen) do
+    for n, unit in ipairs(getTrainingCandidates()) do
         if (unit.hist_figure_id == id) then
             return unit
         end
@@ -111,14 +110,12 @@ function checkSquads()
     local squads = {}
     local count = 0
     for _, mil in ipairs(df.global.world.squads.all) do
-        for _, link in ipairs(dfhack.world.getCurrentSite().entity_links) do
-            if mil.entity_id == link.entity_id then
-                if (mil.alias == state.squadname) then
-                    local leader = mil.positions[0].occupant
-                    if ( leader ~= -1) then
-                        table.insert(squads,mil)
-                        count = count +1
-                    end
+        if squad.entity_id == df.global.plotinfo.group_id then
+            if (mil.alias == state.squadname) then
+                local leader = mil.positions[0].occupant
+                if ( leader ~= -1) then
+                    table.insert(squads,mil)
+                    count = count +1
                 end
             end
         end
@@ -197,8 +194,7 @@ function check()
         state.enabled = false
         dfhack.println(GLOBAL_KEY  .. " | STOP")
         return end
-    local citizen = getAllCititzen()
-    for n, unit in ipairs(citizen) do
+    for n, unit in ipairs(getTrainingCandidates()) do
         local need = findNeed(unit)
         if ( need  ~= nil ) then
             if ( need.focus_level  < state.threshold ) then
