@@ -372,7 +372,7 @@ NOTIFICATIONS_BY_IDX = {
         default=true,
         dwarf_fn=function()
             local at = reqscript('autotraining')
-            if (at.checkSquads() == nil) then
+            if (at.isEnabled() and at.checkSquads() == nil) then
                 return {{text="autotraining: no squads selected",pen=COLOR_LIGHTRED}}
             end
         end,

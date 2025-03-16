@@ -32,11 +32,10 @@ end
 
 -- persisting a table with numeric keys results in a json array with a huge number of null entries
 -- therefore, we convert the keys to strings for persistence
--- also, we clear the frame counter values since the frame counter gets reset on load
 local function to_persist(persistable)
     local persistable_ignored = {}
-    for thing in pairs(persistable) do
-        persistable_ignored[tostring(thing)] = -1
+    for k, v in pairs(persistable) do
+        persistable_ignored[tostring(k)] = v
     end
     return persistable_ignored
 end
@@ -47,13 +46,13 @@ local function from_persist(persistable)
         return
     end
     local ret = {}
-    for thing in pairs(persistable) do
-        ret[tonumber(thing)] = -1
+    for k, v in pairs(persistable) do
+        ret[tonumber(k)] = v
     end
     return ret
 end
 
-local function persist_state()
+function persist_state()
     dfhack.persistent.saveSiteData(GLOBAL_KEY, {
         enabled=state.enabled,
         threshold=state.threshold,
@@ -68,7 +67,7 @@ local function load_state()
     local persisted_data = dfhack.persistent.getSiteData(GLOBAL_KEY, {})
     state.enabled = persisted_data.enabled or state.enabled
     state.threshold = persisted_data.threshold or state.threshold
-    state.allowed = from_persist(persisted_data.ignored) or state.allowed
+    state.ignored = from_persist(persisted_data.ignored) or state.ignored
     state.training_squads = from_persist(persisted_data.training_squads) or state.training_squads
     return state
 end
@@ -116,6 +115,20 @@ function getTrainingCandidates()
     return ret
 end
 
+function getTrainingSquads()
+    local squads = {}
+    for squad_id, _ in pairs(state.training_squads) do
+        local squad = df.squad.find(squad_id)
+        if squad then
+            table.insert(squads, squad)
+        else
+            -- setting to nil during iteration is permitted by lua
+            state.training_squads[squad_id] = nil
+        end
+    end
+    return squads
+end
+
 function findNeed(unit)
     local needs =  unit.status.current_soul.personality.needs
     for _, need in ipairs(needs) do
@@ -124,14 +137,6 @@ function findNeed(unit)
         end
     end
     return nil
-end
-
-function ignoreUnit(unit)
-    state.ignored[unit.id] = true
-end
-
-function unignoreUnit(unit)
-    state.ignored[unit.id] = false
 end
 
 --######
@@ -152,12 +157,11 @@ end
 -- Abort if no squads found
 function checkSquads()
     local squads = {}
-    for _, squad_id in ipairs(state.training_squads) do
-        local mil = df.squad:find(squad_id)
-        if mil.entity_id == df.global.plotinfo.group_id then
-            local leader = mil.positions[0].occupant
+    for _, squad in ipairs(getTrainingSquads()) do
+        if squad.entity_id == df.global.plotinfo.group_id then
+            local leader = squad.positions[0].occupant
             if ( leader ~= -1) then
-                table.insert(squads,mil)
+                table.insert(squads,squad)
             end
         end
     end
@@ -172,14 +176,14 @@ end
 function addTraining(unit)
     if (unit.military.squad_id ~= -1) then
         local inTraining = false
-        for _, squad in ipairs(state.training_squads) do
+        for _, squad in ipairs(getTrainingSquads()) do
             if unit.military.squad_id == squad then
                 inTraining = true
             end
         end
         return inTraining
     end
-    for _, squad in ipairs(state.training_squads) do
+    for _, squad in ipairs(getTrainingSquads()) do
         for i=1,9,1   do
             if ( squad.positions[i].occupant  == -1 ) then
                 squad.positions[i].occupant = unit.hist_figure_id
@@ -194,7 +198,7 @@ function addTraining(unit)
 end
 
 function removeTraining(unit)
-    for n, squad in ipairs(state.training_squads) do
+    for _, squad in ipairs(getTrainingSquads()) do
         for i=1,9,1   do
             if ( unit.hist_figure_id  == squad.positions[i].occupant ) then
                 unit.military.squad_id = -1
@@ -209,7 +213,7 @@ end
 
 function removeAll()
     if ( state.training_squads == nil) then return end
-    for n, squad in ipairs(state.training_squads) do
+    for _, squad in ipairs(getTrainingSquads()) do
         for i=1,9,1 do
             local dwarf = getByID(squad.positions[i].occupant)
             if (dwarf ~= nil) then
