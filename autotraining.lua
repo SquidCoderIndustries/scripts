@@ -4,7 +4,6 @@
 
 local repeatUtil = require('repeat-util')
 local utils=require('utils')
-local dlg = require('gui.dialogs')
 
 validArgs = utils.invert({
     't'
