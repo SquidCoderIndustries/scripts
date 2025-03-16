@@ -110,7 +110,7 @@ function checkSquads()
     local squads = {}
     local count = 0
     for _, mil in ipairs(df.global.world.squads.all) do
-        if squad.entity_id == df.global.plotinfo.group_id then
+        if mil.entity_id == df.global.plotinfo.group_id then
             if (mil.alias == state.squadname) then
                 local leader = mil.positions[0].occupant
                 if ( leader ~= -1) then
