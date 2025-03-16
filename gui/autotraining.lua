@@ -31,7 +31,7 @@ function AutoTrain:getSquads()
             goto continue
         end
         table.insert(squads, {
-            text = dfhack.translation.translateName(squad.name, true),
+            text = dfhack.translation.translateName(squad.name, true)..' ('..squad.alias..')',
             icon = self:callback("getSquadIcon", squad.id ),
             id   = squad.id
         })
