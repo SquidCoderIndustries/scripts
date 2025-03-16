@@ -12,7 +12,6 @@ validArgs = utils.invert({
 
 local args = utils.processArgs({...}, validArgs)
 local GLOBAL_KEY  = "autotraining"
-local ignore_flag = df.unit_labor['DISSECT_FISH']
 local need_id = df.need_type['MartialTraining']
 local ignore_count = 0
 
@@ -56,8 +55,8 @@ end
 
 local function persist_state()
     dfhack.persistent.saveSiteData(GLOBAL_KEY, {
-        enabled=enabled,
-        threshold=threshold,
+        enabled=state.enabled,
+        threshold=state.threshold,
         ignored=to_persist(state.ignored),
         training_squads=to_persist(state.training_squads)
     })
@@ -67,10 +66,11 @@ end
 local function load_state()
     -- load persistent data
     local persisted_data = dfhack.persistent.getSiteData(GLOBAL_KEY, {})
-    state.enabled = persisted_data.enabled or false
-    state.threshold = persisted_data.threshold or -5000
-    state.allowed = from_persist(persisted_data.ignored) or {}
-    state.training_squads = from_persist(persisted_data.training_squads) or {}
+    state.enabled = persisted_data.enabled or state.enabled
+    state.threshold = persisted_data.threshold or state.threshold
+    state.allowed = from_persist(persisted_data.ignored) or state.allowed
+    state.training_squads = from_persist(persisted_data.training_squads) or state.training_squads
+    return state
 end
 
 dfhack.onStateChange[GLOBAL_KEY] = function(sc)
@@ -83,8 +83,7 @@ dfhack.onStateChange[GLOBAL_KEY] = function(sc)
 
     -- retrieve state saved in game. merge with default state so config
     -- saved from previous versions can pick up newer defaults.
-    state = get_default_state()
-    utils.assign(state, load_state())
+    load_state()
     if ( state.enabled ) then
         start()
     else
