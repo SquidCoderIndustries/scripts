@@ -141,7 +141,7 @@ function addTraining(squads,unit)
             end
 
             if (unit.military.squad_id ~= -1) then
-                return (squad.alias == state.squadname)
+                return (df.squad.find(unit.military.squad_id).alias == state.squadname)
             end
 
             if ( squad.positions[i].occupant  == -1 ) then
