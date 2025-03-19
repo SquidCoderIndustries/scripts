@@ -167,7 +167,7 @@ function AutoTrainScreen:onDismiss()
 end
 
 if not dfhack.world.isFortressMode() or not dfhack.isMapLoaded() then
-    qerror('gui/autotrain requires a fortress map to be loaded')
+    qerror('gui/autotraining requires a fortress map to be loaded')
 end
 
 view = view and view:raise() or AutoTrainScreen{}:show()
