@@ -174,13 +174,12 @@ end
 
 function addTraining(unit)
     if (unit.military.squad_id ~= -1) then
-        local inTraining = false
         for _, squad in ipairs(getTrainingSquads()) do
-            if unit.military.squad_id == squad then
-                inTraining = true
+            if unit.military.squad_id == squad.id then
+                return true
             end
         end
-        return inTraining
+        return false
     end
     for _, squad in ipairs(getTrainingSquads()) do
         for i=1,9,1   do
