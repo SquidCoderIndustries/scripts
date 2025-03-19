@@ -39,7 +39,3 @@ Options
         Use integer values. (Default 5000)
         The negative need threshhold to trigger for each citizen
         The greater the number the longer before a dwarf is added to the waiting list.
-
-    ``-n``
-        Use a string. (Default ``Gym``)
-        Pick a different name for the squad the script looks for.
