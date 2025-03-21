@@ -101,7 +101,6 @@ end
 local function add_positions(positions, entity)
     if not entity then return end
     for _,position in pairs(entity.positions.own) do
-        print(position.code..' '..position.id)
         positions[position.id] = {
             id=position.id+1,
             code=position.code,
