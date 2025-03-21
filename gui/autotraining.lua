@@ -160,19 +160,19 @@ function AutoTrain:init()
     self:addviews{
         widgets.Label{
             frame={ t = 0 , h = 1 },
-            text = "Select squads for automatic training",
+            text = "Select squads for automatic training:",
         },
         widgets.List{
             view_id = "squad_list",
             icon_width = 2,
-            frame = { t = 2, h = 5 },
+            frame = { t = 1, h = 5 },
             choices = self:getSquads(),
             on_submit=self:callback("toggleSquad")
         },
         widgets.Divider{ frame={t=6, h=1}, frame_style_l = false, frame_style_r = false},
         widgets.Label{
             frame={ t = 7 , h = 1 },
-            text = "General options",
+            text = "General options:",
         },
         widgets.EditField {
             view_id = "threshold",
@@ -195,7 +195,7 @@ function AutoTrain:init()
         widgets.Divider{ frame={t=9, h=1}, frame_style_l = false, frame_style_r = false},
         widgets.Label{
             frame={ t = 10 , h = 1 },
-            text = "Ignored noble positions",
+            text = "Ignored noble positions:",
         },
         widgets.List{
             frame = { t = 11 , h = 11},
@@ -207,7 +207,7 @@ function AutoTrain:init()
         widgets.Divider{ frame={t=22, h=1}, frame_style_l = false, frame_style_r = false},
         widgets.Label{
             frame={ t = 23 , h = 1 },
-            text = "Select units to exclude from automatic training"
+            text = "Select units to exclude from automatic training:"
         },
         widgets.FilteredList{
             frame = { t = 24 },
