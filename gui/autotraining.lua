@@ -7,6 +7,7 @@ local autotraining = reqscript('autotraining')
 
 local training_squads  = autotraining.state.training_squads
 local ignored_units = autotraining.state.ignored
+local ignored_nobles = autotraining.state.ignored_nobles
 
 AutoTrain = defclass(AutoTrain, widgets.Window)
 AutoTrain.ATTRS {
@@ -55,6 +56,13 @@ function AutoTrain:getUnitIcon(unit_id)
     return nil
 end
 
+function AutoTrain:getNobleIcon(noble_code)
+    if ignored_nobles[noble_code] then
+        return IGNORED_ICON
+    end
+    return nil
+end
+
 function AutoTrain:getUnits()
     local unit_choices = {}
     for _, unit in ipairs(dfhack.units.getCitizens(true,false)) do
@@ -78,16 +86,78 @@ function AutoTrain:toggleUnit(_, choice)
     self:updateLayout()
 end
 
+local function to_title_case(str)
+    return dfhack.capitalizeStringWords(dfhack.lowerCp437(str:gsub('_', ' ')))
+end
+
+function toSet(list)
+    local set = {}
+    for _, v in ipairs(list) do
+        set[v] = true
+    end
+    return set
+end
+
+local function add_positions(positions, entity)
+    if not entity then return end
+    for _,position in pairs(entity.positions.own) do
+        print(position.code..' '..position.id)
+        positions[position.id] = {
+            id=position.id+1,
+            code=position.code,
+        }
+    end
+end
+
+function AutoTrain:getPositions()
+    local positions = {}
+    local excludedPositions = toSet({
+        'MILITIA_CAPTAIN',
+        'MILITIA_COMMANDER',
+        'OUTPOST_LIAISON',
+        'CAPTAIN_OF_THE_GUARD',
+    })
+
+    add_positions(positions, df.historical_entity.find(df.global.plotinfo.civ_id))
+    add_positions(positions, df.historical_entity.find(df.global.plotinfo.group_id))
+
+    -- Step 1: Extract values into a sortable array
+    local sortedPositions = {}
+    for _, val in pairs(positions) do
+        if val and not excludedPositions[val.code] then
+            table.insert(sortedPositions, val)
+        end
+    end
+
+    -- Step 2: Sort the positions (optional, adjust sorting criteria)
+    table.sort(sortedPositions, function(a, b)
+        return a.id < b.id  -- Sort alphabetically by code
+    end)
+
+    -- Step 3: Rebuild the table without gaps
+    positions = {}  -- Reset positions table
+    for i, val in ipairs(sortedPositions) do
+        positions[i] = {
+            text = to_title_case(val.code),
+            value = val.code,
+            pen = COLOR_LIGHTCYAN,
+            icon = self:callback("getNobleIcon", val.code),
+            id = val.id
+        }
+    end
+
+    return positions
+end
+
+
+
+function AutoTrain:toggleNoble(_, choice)
+    ignored_nobles[choice.value] = not ignored_nobles[choice.value]
+    autotraining.persist_state()
+    self:updateLayout()
+end
+
 function AutoTrain:init()
-
-    -- TODO: provide actual values, and write to configuration
-    -- (once the base tool actually supports this)
-    local position_options = {
-        { label = "none", val = nil, pen = COLOR_LIGHTCYAN },
-        { label = "manager", val = nil, pen = COLOR_LIGHTCYAN },
-        { label = "manager and chief medical dwarf", val = nil, pen = COLOR_LIGHTCYAN },
-    }
-
     self:addviews{
         widgets.Label{
             frame={ t = 0 , h = 1 },
@@ -96,18 +166,18 @@ function AutoTrain:init()
         widgets.List{
             view_id = "squad_list",
             icon_width = 2,
-            frame = { t = 2, h = 10 },
+            frame = { t = 2, h = 5 },
             choices = self:getSquads(),
             on_submit=self:callback("toggleSquad")
         },
-        widgets.Divider{ frame={t=12, h=1}, frame_style_l = false, frame_style_r = false},
+        widgets.Divider{ frame={t=6, h=1}, frame_style_l = false, frame_style_r = false},
         widgets.Label{
-            frame={ t = 13 , h = 1 },
+            frame={ t = 7 , h = 1 },
             text = "General options",
         },
         widgets.EditField {
             view_id = "threshold",
-            frame={ t = 15 , h = 1 },
+            frame={ t = 8 , h = 1 },
             key = "CUSTOM_T",
             label_text = "Need threshold for training: ",
             text = tostring(-autotraining.state.threshold),
@@ -123,22 +193,25 @@ function AutoTrain:init()
                 self.subviews.threshold:setText(tostring(entered_number))
             end
         },
-        widgets.CycleHotkeyLabel {
-            view_id = "ignored_positions",
-            frame={ t = 16 , h = 2 },
-            key = "CUSTOM_P",
-            label = "Positions to keep from training: ",
-            label_below = true,
-            options = position_options,
-            initial_option = 3
-        },
-        widgets.Divider{ frame={t=19, h=1}, frame_style_l = false, frame_style_r = false},
+        widgets.Divider{ frame={t=9, h=1}, frame_style_l = false, frame_style_r = false},
         widgets.Label{
-            frame={ t = 20 , h = 1 },
+            frame={ t = 10 , h = 1 },
+            text = "Ignored noble positions",
+        },
+        widgets.List{
+            frame = { t = 11 , h = 11},
+            view_id = "nobles_list",
+            icon_width = 2,
+            choices = self:getPositions(),
+            on_submit=self:callback("toggleNoble")
+        },
+        widgets.Divider{ frame={t=22, h=1}, frame_style_l = false, frame_style_r = false},
+        widgets.Label{
+            frame={ t = 23 , h = 1 },
             text = "Select units to exclude from automatic training"
         },
         widgets.FilteredList{
-            frame = { t = 22 },
+            frame = { t = 24 },
             view_id = "unit_list",
             edit_key = "CUSTOM_CTRL_F",
             icon_width = 2,

@@ -19,6 +19,7 @@ local function get_default_state()
         enabled=false,
         threshold=-5000,
         ignored={},
+        ignored_nobles={},
         training_squads = {},
     }
 end
@@ -56,6 +57,7 @@ function persist_state()
         enabled=state.enabled,
         threshold=state.threshold,
         ignored=to_persist(state.ignored),
+        ignored_nobles=state.ignored_nobles,
         training_squads=to_persist(state.training_squads)
     })
 end
@@ -67,6 +69,7 @@ local function load_state()
     state.enabled = persisted_data.enabled or state.enabled
     state.threshold = persisted_data.threshold or state.threshold
     state.ignored = from_persist(persisted_data.ignored) or state.ignored
+    state.ignored_nobles = persisted_data.ignored_nobles or state.ignored_nobles
     state.training_squads = from_persist(persisted_data.training_squads) or state.training_squads
     return state
 end
@@ -104,9 +107,25 @@ function getTrainingCandidates()
     ignore_count = 0
     for _, unit in ipairs(citizen) do
         if dfhack.units.isAdult(unit) then
+            local noblePos = dfhack.units.getNoblePositions(unit)
+            local isIgnNoble = false
             if ( not state.ignored[unit.id] ) then
-                table.insert(ret, unit)
+                if noblePos ~=nil then
+                    for _, position in ipairs(noblePos) do
+                        if state.ignored_nobles[position.position.code] then
+                            isIgnNoble = true
+                            break
+                        end
+                    end
+                end
+                if not isIgnNoble then
+                    table.insert(ret, unit)
+                else
+                    removeTraining(unit)
+                    ignore_count = ignore_count +1
+                end
             else
+                removeTraining(unit)
                 ignore_count = ignore_count +1
             end
         end
@@ -229,7 +248,7 @@ function check()
     local intraining_count = 0
     local inque_count = 0
     if ( squads == nil) then return end
-    for n, unit in ipairs(getTrainingCandidates()) do
+    for _, unit in ipairs(getTrainingCandidates()) do
         local need = findNeed(unit)
         if ( need  ~= nil ) then
             if ( need.focus_level  < state.threshold ) then
@@ -254,7 +273,7 @@ function start()
     if (args.t) then
         state.threshold = 0-tonumber(args.t)
     end
-    repeatUtil.scheduleEvery(GLOBAL_KEY, 997, 'ticks', check) -- 997 is the closest prime to 1000
+    repeatUtil.scheduleEvery(GLOBAL_KEY, 1, 'days', check) -- 997 is the closest prime to 1000
 end
 
 function stop()
