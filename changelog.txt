@@ -38,6 +38,7 @@ Template for new versions:
 - `starvingdead`: properly restore to correct enabled state when loading a new game that is different from the first game loaded in this session
 - `starvingdead`: ensure undead decay does not happen faster than the declared decay rate when saving and loading the game
 - `confirm`: only show pause option for pausable confirmations
+- `confirm`: when editing a uniform, confirm discard of changes when exiting with Escape
 
 ## Misc Improvements
 

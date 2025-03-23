@@ -325,13 +325,13 @@ ConfirmSpec{
     id='uniform-discard-changes',
     title='Discard uniform changes',
     message='Are you sure you want to discard changes to this uniform?',
-    intercept_keys={'_MOUSE_L', '_MOUSE_R'},
+    intercept_keys={'LEAVESCREEN', '_MOUSE_L', '_MOUSE_R'},
     -- sticks out the left side so it can move with the panel
     -- when the screen is resized too narrow
     intercept_frame={r=32, t=19, w=101, b=3},
     context='dwarfmode/Squads/Equipment/Customizing/Default',
     predicate=function(keys, mouse_offset)
-        if keys._MOUSE_R then
+        if keys.LEAVESCREEN or keys._MOUSE_R then
             return uniform_has_changes()
         end
         if clicked_on_confirm_button(mouse_offset) then
