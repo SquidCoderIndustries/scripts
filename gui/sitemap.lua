@@ -371,7 +371,7 @@ SitemapToolbarOverlay.ATTRS{
     default_pos={x=35, y=-1},
     default_enabled=true,
     viewscreens='dwarfmode',
-    frame={w=28, h=9},
+    frame={w=28, h=10},
 }
 
 function SitemapToolbarOverlay:init()
@@ -383,7 +383,7 @@ function SitemapToolbarOverlay:init()
 
     self:addviews{
         widgets.Panel{
-            frame={t=0, l=0, w=26, h=5},
+            frame={t=0, l=0, w=27, h=6},
             frame_style=gui.FRAME_PANEL,
             frame_background=gui.CLEAR_PEN,
             frame_inset={l=1, r=1},
