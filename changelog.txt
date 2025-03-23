@@ -42,6 +42,7 @@ Template for new versions:
 - `confirm`: when removing a manager order, show correct order description when using non-100% interface setting
 - `confirm`: when removing a manager order, show correct order description after prior order removal or window resize (when scrolled to bottom of order list)
 - `confirm`: when removing a manager order, show specific item/job type for ammo, shield, helm, gloves, shoes, trap component, and meal orders
+- `confirm`: the pause option now only pauses future instances of the current confirmation instead of all confirmations in the current context
 
 ## Misc Improvements
 

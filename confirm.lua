@@ -108,12 +108,15 @@ function ConfirmOverlay:matches_conf(conf, keys, scr)
 end
 
 function ConfirmOverlay:onInput(keys)
-    if self.paused_conf or self.simulating then
+    if self.simulating then
         return false
     end
     local scr = dfhack.gui.getDFViewscreen(true)
     for id, conf in pairs(specs.REGISTRY) do
         if specs.config.data[id].enabled and self:matches_conf(conf, keys, scr) then
+            if conf == self.paused_conf then
+                return false
+            end
             local mouse_pos = xy2pos(dfhack.screen.getMousePos())
             local propagate_fn = function(pause)
                 if conf.on_propagate then
