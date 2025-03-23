@@ -131,8 +131,9 @@ function ConfirmOverlay:onInput(keys)
                 gui.simulateInput(scr, keys)
                 self.simulating = false
             end
+            local pause_fn = conf.pausable and curry(propagate_fn, true) or nil
             dialogs.showYesNoPrompt(conf.title, utils.getval(conf.message):wrap(45), COLOR_YELLOW,
-                propagate_fn, nil, curry(propagate_fn, true), curry(dfhack.run_script, 'gui/confirm', tostring(conf.id)))
+                propagate_fn, nil, pause_fn, curry(dfhack.run_script, 'gui/confirm', tostring(conf.id)))
             return true
         end
     end
