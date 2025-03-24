@@ -40,6 +40,7 @@ Template for new versions:
 - `confirm`: only show pause option for pausable confirmations
 - `confirm`: when editing a uniform, confirm discard of changes when exiting with Escape
 - `confirm`: when removing a manager order, show correct order description when using non-100% interface setting
+- `confirm`: when removing a manager order, show correct order description after prior order removal or window resize (when scrolled to bottom of order list)
 
 ## Misc Improvements
 

@@ -458,7 +458,16 @@ ConfirmSpec{
     message=function()
         local order_desc = ''
         local scroll_pos = mi.info.work_orders.scroll_position_work_orders
-        local y_offset = gui.get_interface_rect().width > 154 and 8 or 10
+        local ir = gui.get_interface_rect()
+        local y_offset = ir.width > 154 and 8 or 10
+        local order_rows = (ir.height - y_offset - 9) // 3
+        local max_scroll_pos = math.max(0, #orders - order_rows) -- DF keeps list view "full" (no empty rows at bottom), if possible
+        if scroll_pos > max_scroll_pos then
+            -- sometimes, DF does not adjust scroll_position_work_orders (when
+            -- scrolled to bottom: order removed, or list view height grew);
+            -- compensate to keep order_idx in sync (and in bounds)
+            scroll_pos = max_scroll_pos
+        end
         local _, y = dfhack.screen.getMousePos()
         if y then
             local order_idx = scroll_pos + (y - y_offset) // 3
