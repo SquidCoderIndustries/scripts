@@ -431,7 +431,7 @@ ConfirmSpec{
     end,
 }
 
-local function make_order_desc(order, noun)
+local function make_order_material_desc(order, noun)
     local desc = ''
     if order.mat_type >= 0 then
         local matinfo = dfhack.matinfo.decode(order.mat_type, order.mat_index)
@@ -452,6 +452,34 @@ end
 local orders = df.global.world.manager_orders.all
 local itemdefs = df.global.world.raws.itemdefs
 local reactions = df.global.world.raws.reactions.reactions
+
+local function make_order_desc(order)
+    if order.job_type == df.job_type.CustomReaction then
+        for _, reaction in ipairs(reactions) do
+            if reaction.code == order.reaction_name then
+                return reaction.name
+            end
+        end
+        return ''
+    end
+    local noun
+    if order.job_type == df.job_type.MakeArmor then
+        noun = itemdefs.armor[order.item_subtype].name
+    elseif order.job_type == df.job_type.MakeWeapon then
+        noun = itemdefs.weapons[order.item_subtype].name
+    elseif order.job_type == df.job_type.MakePants then
+        noun = itemdefs.pants[order.item_subtype].name
+    elseif order.job_type == df.job_type.MakeTool then
+        noun = itemdefs.tools[order.item_subtype].name
+    elseif order.job_type == df.job_type.SmeltOre then
+        noun = 'ore'
+    else
+        -- caption is usually "verb noun(-phrase)"
+        noun = df.job_type.attrs[order.job_type].caption
+    end
+    return make_order_material_desc(order, noun)
+end
+
 ConfirmSpec{
     id='order-remove',
     title='Remove manger order',
@@ -471,25 +499,9 @@ ConfirmSpec{
         local _, y = dfhack.screen.getMousePos()
         if y then
             local order_idx = scroll_pos + (y - y_offset) // 3
-            local order = orders[order_idx]
-            if order.job_type == df.job_type.CustomReaction then
-                for _, reaction in ipairs(reactions) do
-                    if reaction.code == order.reaction_name then
-                        order_desc = reaction.name
-                    end
-                end
-            elseif order.job_type == df.job_type.MakeArmor then
-                order_desc = make_order_desc(order, itemdefs.armor[order.item_subtype].name)
-            elseif order.job_type == df.job_type.MakeWeapon then
-                order_desc = make_order_desc(order, itemdefs.weapons[order.item_subtype].name)
-            elseif order.job_type == df.job_type.MakePants then
-                order_desc = make_order_desc(order, itemdefs.pants[order.item_subtype].name)
-            elseif order.job_type == df.job_type.SmeltOre then
-                order_desc = make_order_desc(order, 'ore')
-            elseif order.job_type == df.job_type.MakeTool then
-                order_desc = make_order_desc(order, itemdefs.tools[order.item_subtype].name)
-            else
-                order_desc = make_order_desc(order, df.job_type.attrs[order.job_type].caption)
+            local order = safe_index(orders, order_idx)
+            if order then
+                order_desc = make_order_desc(order)
             end
         end
         return ('Are you sure you want to remove this manager order?\n\n%s'):format(dfhack.capitalizeStringWords(order_desc))
