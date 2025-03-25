@@ -453,6 +453,12 @@ local orders = df.global.world.manager_orders.all
 local itemdefs = df.global.world.raws.itemdefs
 local reactions = df.global.world.raws.reactions.reactions
 
+local meal_type_by_ingredient_count = {
+    [2] = 'easy',
+    [3] = 'fine',
+    [4] = 'lavish',
+}
+
 local function make_order_desc(order)
     if order.job_type == df.job_type.CustomReaction then
         for _, reaction in ipairs(reactions) do
@@ -461,16 +467,35 @@ local function make_order_desc(order)
             end
         end
         return ''
+    elseif order.job_type == df.job_type.PrepareMeal then
+        -- DF uses mat_type as ingredient count?
+        local meal_type = meal_type_by_ingredient_count[order.mat_type]
+        if meal_type then
+            return 'prepare ' .. meal_type .. ' meal'
+        end
+        return 'prepare meal'
     end
     local noun
     if order.job_type == df.job_type.MakeArmor then
         noun = itemdefs.armor[order.item_subtype].name
     elseif order.job_type == df.job_type.MakeWeapon then
         noun = itemdefs.weapons[order.item_subtype].name
+    elseif order.job_type == df.job_type.MakeShield then
+        noun = itemdefs.shields[order.item_subtype].name
+    elseif order.job_type == df.job_type.MakeAmmo then
+        noun = itemdefs.ammo[order.item_subtype].name
+    elseif order.job_type == df.job_type.MakeHelm then
+        noun = itemdefs.helms[order.item_subtype].name
+    elseif order.job_type == df.job_type.MakeGloves then
+        noun = itemdefs.gloves[order.item_subtype].name
     elseif order.job_type == df.job_type.MakePants then
         noun = itemdefs.pants[order.item_subtype].name
+    elseif order.job_type == df.job_type.MakeShoes then
+        noun = itemdefs.shoes[order.item_subtype].name
     elseif order.job_type == df.job_type.MakeTool then
         noun = itemdefs.tools[order.item_subtype].name
+    elseif order.job_type == df.job_type.MakeTrapComponent then
+        noun = itemdefs.trapcomps[order.item_subtype].name
     elseif order.job_type == df.job_type.SmeltOre then
         noun = 'ore'
     else
