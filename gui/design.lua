@@ -1627,7 +1627,7 @@ function DesignToolbarOverlay:init()
                         tileset_offset=1,
                         tileset_stride=8,
                     },
-                    on_click=launch_sitemap,
+                    on_click=launch_design,
                     visible=function () return not self.subviews.icon:getMousePos() end,
                 },
                 widgets.Label{
