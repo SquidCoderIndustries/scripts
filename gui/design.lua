@@ -1580,7 +1580,7 @@ end
 DesignToolbarOverlay = defclass(DesignToolbarOverlay, overlay.OverlayWidget)
 DesignToolbarOverlay.ATTRS{
     desc='Adds a button to the toolbar at the bottom of the screen for launching gui/design.',
-    default_pos={x=40, y=-1},
+    default_pos={x=50, y=-1},
     default_enabled=true,
     viewscreens='dwarfmode',
     frame={w=28, h=10},
