@@ -313,7 +313,7 @@ secondary_toolbar_demo = ToolbarDemoPanel{
     visible = function() return visible() and secondary_visible end,
 }
 
----@param secondary CenterToolbarSecondaryToolbarNames
+---@param secondary? CenterToolbarSecondaryToolbarNames
 function update_demonstrations(secondary)
     -- by default, draw primary toolbar demonstrations right above the primary toolbars:
     -- {l demo}   {c demo}   {r demo}
@@ -406,7 +406,7 @@ local tool_from_bottom = {
     -- df.main_bottom_mode_type.ARENA_MUD_PAINT
     -- df.main_bottom_mode_type.ARENA_REMOVE_PAINT
 }
----@return CenterToolbarSecondaryToolbarNames
+---@return CenterToolbarSecondaryToolbarNames?
 local function active_secondary()
     local designation = df.global.game.main_interface.main_designation_selected
     if designation ~= df.main_designation_type.NONE then
