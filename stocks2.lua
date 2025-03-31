@@ -38,8 +38,7 @@ StocksWindow = defclass(StocksWindow, widgets.Window)
 StocksWindow.ATTRS({
     frame = {w = stocks_window_width, h = stocks_window_height},
     frame_title = "Stocks",
-    autoarrange_subviews = false,
-    autoarrange_gap = 0,
+    frame_inset=0
 })
 
 function StocksWindow:init()
@@ -50,10 +49,10 @@ function StocksWindow:init()
             frame_style = gui.INTERIOR_FRAME,
             subviews = {
                 widgets.EditField({
-                    view_id = "search_box",
+                    view_id = "search",
                     frame = {t = 1, l = 0},
                     label_text = "Search: ",
-                    on_char = function(ch) return ch:match("[%l%s]") end,
+                    on_char=function(ch) return ch:match('[%l -]') end,
                     on_change = function(new_text, old_text)
                         current_search_query = new_text
                         self:filter_list(current_search_query)
@@ -65,7 +64,7 @@ function StocksWindow:init()
                     view_id = "item_count_label"
                 }),
                 widgets.List({
-                    view_id = "item_list",
+                    view_id = "list",
                     frame = {t = 4, b = 1, l = 1, r = 1},
                     text_pen = {fg = COLOR_GREY, bg = COLOR_BLACK},
                     text_hpen = {fg = COLOR_BLACK, bg = COLOR_GREY},
