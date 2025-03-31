@@ -256,14 +256,6 @@ function fort.right:frame(interface_rect)
     }
 end
 
----@param interface_rect gui.dimension
----@return gui.dimension
-function fort.right:rect(interface_rect)
-    local width = self.width
-    local height = 3
-    return gui.mkdims_wh(interface_rect.x2 - (width - 1), interface_rect.y2 - (height - 1), width, height)
-end
-
 if dfhack_flags.module then return end
 
 if not dfhack.world.isFortressMode() then
