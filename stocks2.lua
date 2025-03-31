@@ -1,6 +1,3 @@
--- a v50 script remake of the older stocks plugin
--- chawkzero, Aug 2023
-
 local gui = require("gui")
 local widgets = require("gui.widgets")
 local utils = require("utils")
@@ -38,7 +35,8 @@ StocksWindow = defclass(StocksWindow, widgets.Window)
 StocksWindow.ATTRS({
     frame = {w = stocks_window_width, h = stocks_window_height},
     frame_title = "Stocks",
-    frame_inset=0
+    frame_inset=0,
+    resizable=true
 })
 
 function StocksWindow:init()
@@ -204,7 +202,7 @@ function is_valid_melt_item(item)
     end
 
     -- lastly, don't melt masterworks
-    if item:getQuality() >= 5 then
+    if item:getQuality() >= df.item_quality.Masterful then
         return false
     end
 
