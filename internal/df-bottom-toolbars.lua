@@ -348,75 +348,73 @@ function update_demonstrations(secondary)
 end
 
 local tool_from_designation = {
-    -- from df.main_designation_type
-    NONE = nil,
-    DIG_DIG = 'dig',
-    DIG_REMOVE_STAIRS_RAMPS = 'dig',
-    DIG_STAIR_UP = 'dig',
-    DIG_STAIR_UPDOWN = 'dig',
-    DIG_STAIR_DOWN = 'dig',
-    DIG_RAMP = 'dig',
-    DIG_CHANNEL = 'dig',
-    CHOP = 'chop',
-    GATHER = 'gather',
-    SMOOTH = 'smooth',
-    TRACK = 'smooth',
-    ENGRAVE = 'smooth',
-    FORTIFY = 'smooth',
-    -- REMOVE_CONSTRUCTION -- not used?
-    CLAIM = 'mass_designation',
-    UNCLAIM = 'mass_designation',
-    MELT = 'mass_designation',
-    NO_MELT = 'mass_designation',
-    DUMP = 'mass_designation',
-    NO_DUMP = 'mass_designation',
-    HIDE = 'mass_designation',
-    NO_HIDE = 'mass_designation',
-    -- TOGGLE_ENGRAVING -- not used?
-    DIG_FROM_MARKER = 'dig',
-    DIG_TO_MARKER = 'dig',
-    CHOP_FROM_MARKER = 'chop',
-    CHOP_TO_MARKER = 'chop',
-    GATHER_FROM_MARKER = 'gather',
-    GATHER_TO_MARKER = 'gather',
-    SMOOTH_FROM_MARKER = 'smooth',
-    SMOOTH_TO_MARKER = 'smooth',
-    DESIGNATE_TRAFFIC_HIGH = 'traffic',
-    DESIGNATE_TRAFFIC_NORMAL = 'traffic',
-    DESIGNATE_TRAFFIC_LOW = 'traffic',
-    DESIGNATE_TRAFFIC_RESTRICTED = 'traffic',
-    ERASE = 'erase',
+    -- df.main_designation_type.NONE -- not a tool
+    [df.main_designation_type.DIG_DIG] = 'dig',
+    [df.main_designation_type.DIG_REMOVE_STAIRS_RAMPS] = 'dig',
+    [df.main_designation_type.DIG_STAIR_UP] = 'dig',
+    [df.main_designation_type.DIG_STAIR_UPDOWN] = 'dig',
+    [df.main_designation_type.DIG_STAIR_DOWN] = 'dig',
+    [df.main_designation_type.DIG_RAMP] = 'dig',
+    [df.main_designation_type.DIG_CHANNEL] = 'dig',
+    [df.main_designation_type.CHOP] = 'chop',
+    [df.main_designation_type.GATHER] = 'gather',
+    [df.main_designation_type.SMOOTH] = 'smooth',
+    [df.main_designation_type.TRACK] = 'smooth',
+    [df.main_designation_type.ENGRAVE] = 'smooth',
+    [df.main_designation_type.FORTIFY] = 'smooth',
+    -- df.main_designation_type.REMOVE_CONSTRUCTION -- not used?
+    [df.main_designation_type.CLAIM] = 'mass_designation',
+    [df.main_designation_type.UNCLAIM] = 'mass_designation',
+    [df.main_designation_type.MELT] = 'mass_designation',
+    [df.main_designation_type.NO_MELT] = 'mass_designation',
+    [df.main_designation_type.DUMP] = 'mass_designation',
+    [df.main_designation_type.NO_DUMP] = 'mass_designation',
+    [df.main_designation_type.HIDE] = 'mass_designation',
+    [df.main_designation_type.NO_HIDE] = 'mass_designation',
+    -- df.main_designation_type.TOGGLE_ENGRAVING -- not used?
+    [df.main_designation_type.DIG_FROM_MARKER] = 'dig',
+    [df.main_designation_type.DIG_TO_MARKER] = 'dig',
+    [df.main_designation_type.CHOP_FROM_MARKER] = 'chop',
+    [df.main_designation_type.CHOP_TO_MARKER] = 'chop',
+    [df.main_designation_type.GATHER_FROM_MARKER] = 'gather',
+    [df.main_designation_type.GATHER_TO_MARKER] = 'gather',
+    [df.main_designation_type.SMOOTH_FROM_MARKER] = 'smooth',
+    [df.main_designation_type.SMOOTH_TO_MARKER] = 'smooth',
+    [df.main_designation_type.DESIGNATE_TRAFFIC_HIGH] = 'traffic',
+    [df.main_designation_type.DESIGNATE_TRAFFIC_NORMAL] = 'traffic',
+    [df.main_designation_type.DESIGNATE_TRAFFIC_LOW] = 'traffic',
+    [df.main_designation_type.DESIGNATE_TRAFFIC_RESTRICTED] = 'traffic',
+    [df.main_designation_type.ERASE] = 'erase',
 }
 local tool_from_bottom = {
-    -- from df.main_bottom_mode_type
-    -- NONE
-    -- BUILDING
-    -- BUILDING_PLACEMENT
-    -- BUILDING_PICK_MATERIALS
-    -- ZONE
-    -- ZONE_PAINT
-    STOCKPILE = 'stockpile',
-    STOCKPILE_PAINT = 'stockpile_paint',
-    -- BURROW
-    BURROW_PAINT = 'burrow_paint'
-    -- HAULING
-    -- ARENA_UNIT
-    -- ARENA_TREE
-    -- ARENA_WATER_PAINT
-    -- ARENA_MAGMA_PAINT
-    -- ARENA_SNOW_PAINT
-    -- ARENA_MUD_PAINT
-    -- ARENA_REMOVE_PAINT
+    -- df.main_bottom_mode_type.NONE
+    -- df.main_bottom_mode_type.BUILDING
+    -- df.main_bottom_mode_type.BUILDING_PLACEMENT
+    -- df.main_bottom_mode_type.BUILDING_PICK_MATERIALS
+    -- df.main_bottom_mode_type.ZONE
+    -- df.main_bottom_mode_type.ZONE_PAINT
+    [df.main_bottom_mode_type.STOCKPILE] = 'stockpile',
+    [df.main_bottom_mode_type.STOCKPILE_PAINT] = 'stockpile_paint',
+    -- df.main_bottom_mode_type.BURROW
+    [df.main_bottom_mode_type.BURROW_PAINT] = 'burrow_paint'
+    -- df.main_bottom_mode_type.HAULING
+    -- df.main_bottom_mode_type.ARENA_UNIT
+    -- df.main_bottom_mode_type.ARENA_TREE
+    -- df.main_bottom_mode_type.ARENA_WATER_PAINT
+    -- df.main_bottom_mode_type.ARENA_MAGMA_PAINT
+    -- df.main_bottom_mode_type.ARENA_SNOW_PAINT
+    -- df.main_bottom_mode_type.ARENA_MUD_PAINT
+    -- df.main_bottom_mode_type.ARENA_REMOVE_PAINT
 }
 ---@return CenterToolbarSecondaryToolbarNames
 local function active_secondary()
     local designation = df.global.game.main_interface.main_designation_selected
     if designation ~= df.main_designation_type.NONE then
-        return tool_from_designation[df.main_designation_type[designation]]
+        return tool_from_designation[designation]
     end
     local bottom = df.global.game.main_interface.bottom_mode_selected
     if bottom ~= df.main_bottom_mode_type.NONE then
-        return tool_from_bottom[df.main_bottom_mode_type[bottom]]
+        return tool_from_bottom[bottom]
     end
 end
 
