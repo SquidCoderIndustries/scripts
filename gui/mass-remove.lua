@@ -422,7 +422,7 @@ local MR_WIDTH = math.max(MR_BUTTON_WIDTH, MR_TOOLTIP_WIDTH)
 local MR_HEIGHT = MR_TOOLTIP_HEIGHT + 1 --[[empty line]] + MR_BUTTON_HEIGHT
 
 local function mass_remove_button_offsets(interface_rect)
-    local remove_buttons = tb.CENTER_TOOLBAR:secondary_toolbar_frame(interface_rect, 'erase')
+    local remove_buttons = tb.fort.center:secondary_toolbar_frame(interface_rect, 'erase')
     return {
         l = remove_buttons.l + remove_buttons.w,
         r = remove_buttons.r - MR_BUTTON_WIDTH,

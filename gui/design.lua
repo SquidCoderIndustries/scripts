@@ -1577,13 +1577,36 @@ end
 -- DesignToolbarOverlay
 --
 
+local tb = reqscript('internal/df-bottom-toolbars')
+
+local BP_BUTTON_WIDTH = 4
+local BP_BUTTON_HEIGHT = 3
+local BP_TOOLTIP_WIDTH = 20
+local BP_TOOLTIP_HEIGHT = 6
+local BP_WIDTH = math.max(BP_BUTTON_WIDTH, BP_TOOLTIP_WIDTH)
+local BP_HEIGHT = BP_TOOLTIP_HEIGHT + 1 --[[empty line]] + BP_BUTTON_HEIGHT
+
+local function design_button_offsets(interface_rect)
+    local center_bar = tb.fort.center:frame(interface_rect)
+    return {
+        l = center_bar.l + center_bar.w,
+        r = center_bar.r - BP_BUTTON_WIDTH,
+        t = center_bar.t,
+        b = center_bar.b,
+    }
+end
+
+local BP_MIN_OFFSETS = design_button_offsets(tb.MINIMUM_INTERFACE_RECT)
+
+
+
 DesignToolbarOverlay = defclass(DesignToolbarOverlay, overlay.OverlayWidget)
 DesignToolbarOverlay.ATTRS{
     desc='Adds a button to the toolbar at the bottom of the screen for launching gui/design.',
-    default_pos={x=50, y=-1},
+    default_pos={x=BP_MIN_OFFSETS.l+1, y=-(BP_MIN_OFFSETS.b+1)},
     default_enabled=true,
-    viewscreens='dwarfmode',
-    frame={w=28, h=10},
+    viewscreens='dwarfmode/Default',
+    frame={w=BP_WIDTH, h=BP_HEIGHT},
 }
 
 function DesignToolbarOverlay:init()
@@ -1595,7 +1618,8 @@ function DesignToolbarOverlay:init()
 
     self:addviews{
         widgets.Panel{
-            frame={t=0, l=0, w=20, h=6},
+            view_id='tooltip',
+            frame={t=0, r=0, w=BP_WIDTH, h=BP_TOOLTIP_HEIGHT},
             frame_style=gui.FRAME_PANEL,
             frame_background=gui.CLEAR_PEN,
             frame_inset={l=1, r=1},
@@ -1613,7 +1637,7 @@ function DesignToolbarOverlay:init()
         },
         widgets.Panel{
             view_id='icon',
-            frame={b=0, l=0, w=4, h=3},
+            frame={b=0, r=BP_WIDTH-BP_BUTTON_WIDTH, w=BP_BUTTON_WIDTH, h=tb.TOOLBAR_HEIGHT},
             subviews={
                 widgets.Label{
                     text=widgets.makeButtonLabelText{
@@ -1648,6 +1672,33 @@ function DesignToolbarOverlay:init()
             },
         },
     }
+end
+
+function DesignToolbarOverlay:preUpdateLayout(parent_rect)
+    self.frame.w = (parent_rect.width+1)//2 - 16
+    local extra_width
+    local offsets = design_button_offsets(parent_rect)
+    if self.frame.l then
+        extra_width = offsets.l - BP_MIN_OFFSETS.l
+        self.subviews.tooltip.frame.l = nil
+        self.subviews.tooltip.frame.r = 0
+        self.subviews.icon.frame.l = nil
+        self.subviews.icon.frame.r = BP_WIDTH-BP_BUTTON_WIDTH
+    else
+        extra_width = offsets.r - BP_MIN_OFFSETS.r
+        self.subviews.tooltip.frame.r = nil
+        self.subviews.tooltip.frame.l = 0
+        self.subviews.icon.frame.r = nil
+        self.subviews.icon.frame.l = 0
+    end
+    local extra_height
+    if self.frame.b then
+        extra_height = offsets.b - BP_MIN_OFFSETS.b
+    else
+        extra_height = offsets.t - BP_MIN_OFFSETS.t
+    end
+    self.frame.w = BP_WIDTH + extra_width
+    self.frame.h = BP_HEIGHT + extra_height
 end
 
 function DesignToolbarOverlay:onInput(keys)
