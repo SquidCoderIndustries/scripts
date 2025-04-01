@@ -21,12 +21,15 @@ end
 
 ---@alias NamedWidth table<string,integer> -- single entry, value is width
 ---@alias NamedOffsets table<string,integer> -- multiple entries, values are offsets
+---@alias Button { offset: integer, width: integer }
+---@alias NamedButtons table<string,Button> -- multiple entries
 
 ---@class Toolbar
----@field button_offsets NamedOffsets
+---@field button_offsets NamedOffsets deprecated, use buttons[name].offset
+---@field buttons NamedButtons
 ---@field width integer
 
----@class Toolbar.Widget.frame
+---@class Toolbar.Widget.frame: widgets.Widget.frame
 ---@field l integer Gap between the left edge of the frame and the parent.
 ---@field t integer Gap between the top edge of the frame and the parent.
 ---@field r integer Gap between the right edge of the frame and the parent.
@@ -38,17 +41,19 @@ end
 ---@return Toolbar
 local function button_widths_to_toolbar(widths)
     local offsets = {}
+    local buttons = {}
     local offset = 0
     for _, ww in ipairs(widths) do
         local name, w = next(ww)
         if name then
             if not name:startswith('_') then
                 offsets[name] = offset
+                buttons[name] = { offset = offset, width = w }
             end
             offset = offset + w
         end
     end
-    return { button_offsets = offsets, width = offset }
+    return { button_offsets = offsets, buttons = buttons, width = offset }
 end
 
 ---@param buttons string[]
@@ -146,10 +151,10 @@ function fort.center:secondary_toolbar_frame(interface_rect, toolbar_name)
         tool_name = toolbar_name --[[@as CenterToolbarToolNames]]
     end
     local toolbar_offset = self:frame(interface_rect).l
-    local toolbar_button_offset = self.button_offsets[tool_name] or dfhack.error('invalid tool name: ' .. tool_name)
+    local toolbar_button = self.buttons[tool_name] or dfhack.error('invalid tool name: ' .. tool_name)
 
     -- Ideally, the secondary toolbar is positioned directly above the (main) toolbar button
-    local ideal_offset = toolbar_offset + toolbar_button_offset
+    local ideal_offset = toolbar_offset + toolbar_button.offset
 
     -- In "narrow" interfaces conditions, a wide secondary toolbar (pretty much
     -- any tool that has "advanced" options) that was ideally positioned above
