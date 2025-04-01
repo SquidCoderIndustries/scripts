@@ -414,7 +414,7 @@ function SitemapToolbarOverlay:init()
                 widgets.Label{
                     text={
                         'Open the general search', NEWLINE,
-                        'interface.', NEWLINE,
+                        'and zoom interface.', NEWLINE,
                         NEWLINE,
                         {text='Hotkey: ', pen=COLOR_GRAY}, {key='CUSTOM_CTRL_G'},
                     },
