@@ -451,52 +451,57 @@ function MassRemoveToolbarOverlay:init()
 
     self:addviews{
         widgets.Panel{
-            view_id='tooltip',
-            frame={t=0, r=0, w=MR_WIDTH, h=MR_TOOLTIP_HEIGHT},
-            frame_style=gui.FRAME_PANEL,
-            frame_background=gui.CLEAR_PEN,
-            frame_inset={l=1, r=1},
-            visible=function() return self.subviews.icon:getMousePos() end,
-            subviews={
-                widgets.Label{
-                    text={
-                        'Open mass removal', NEWLINE,
-                        'interface.', NEWLINE,
-                        NEWLINE,
-                        {text='Hotkey: ', pen=COLOR_GRAY}, {key='CUSTOM_M'},
-                    },
-                },
-            },
-        },
-        widgets.Panel{
-            view_id='icon',
-            frame={b=0, r=MR_WIDTH-MR_BUTTON_WIDTH, w=MR_BUTTON_WIDTH, h=tb.SECONDARY_TOOLBAR_HEIGHT},
-            subviews={
-                widgets.Label{
-                    text=widgets.makeButtonLabelText{
-                        chars=button_chars,
-                        pens=COLOR_GRAY,
-                        tileset=toolbar_textures,
-                        tileset_offset=1,
-                        tileset_stride=8,
-                    },
-                    on_click=launch_mass_remove,
-                    visible=function () return not self.subviews.icon:getMousePos() end,
-                },
-                widgets.Label{
-                    text=widgets.makeButtonLabelText{
-                        chars=button_chars,
-                        pens={
-                            {COLOR_WHITE, COLOR_WHITE, COLOR_WHITE, COLOR_WHITE},
-                            {COLOR_WHITE, COLOR_GRAY,  COLOR_GRAY,  COLOR_WHITE},
-                            {COLOR_WHITE, COLOR_WHITE, COLOR_WHITE, COLOR_WHITE},
-                        },
-                        tileset=toolbar_textures,
-                        tileset_offset=5,
-                        tileset_stride=8,
-                    },
-                    on_click=launch_mass_remove,
+            view_id='tt_and_icon',
+            frame={ r=0, t=0, w=MR_WIDTH, h=MR_HEIGHT },
+                subviews={
+                widgets.Panel{
+                    frame={t=0, l=0, w=MR_WIDTH, h=MR_TOOLTIP_HEIGHT},
+                    frame_style=gui.FRAME_PANEL,
+                    frame_background=gui.CLEAR_PEN,
+                    frame_inset={l=1, r=1},
                     visible=function() return self.subviews.icon:getMousePos() end,
+                    subviews={
+                        widgets.Label{
+                            text={
+                                'Open mass removal', NEWLINE,
+                                'interface.', NEWLINE,
+                                NEWLINE,
+                                {text='Hotkey: ', pen=COLOR_GRAY}, {key='CUSTOM_M'},
+                            },
+                        },
+                    },
+                },
+                widgets.Panel{
+                    view_id='icon',
+                    frame={b=0, l=0, w=MR_BUTTON_WIDTH, h=tb.SECONDARY_TOOLBAR_HEIGHT},
+                    subviews={
+                        widgets.Label{
+                            text=widgets.makeButtonLabelText{
+                                chars=button_chars,
+                                pens=COLOR_GRAY,
+                                tileset=toolbar_textures,
+                                tileset_offset=1,
+                                tileset_stride=8,
+                            },
+                            on_click=launch_mass_remove,
+                            visible=function () return not self.subviews.icon:getMousePos() end,
+                        },
+                        widgets.Label{
+                            text=widgets.makeButtonLabelText{
+                                chars=button_chars,
+                                pens={
+                                    {COLOR_WHITE, COLOR_WHITE, COLOR_WHITE, COLOR_WHITE},
+                                    {COLOR_WHITE, COLOR_GRAY,  COLOR_GRAY,  COLOR_WHITE},
+                                    {COLOR_WHITE, COLOR_WHITE, COLOR_WHITE, COLOR_WHITE},
+                                },
+                                tileset=toolbar_textures,
+                                tileset_offset=5,
+                                tileset_stride=8,
+                            },
+                            on_click=launch_mass_remove,
+                            visible=function() return self.subviews.icon:getMousePos() end,
+                        },
+                    },
                 },
             },
         },
@@ -508,22 +513,22 @@ function MassRemoveToolbarOverlay:preUpdateLayout(parent_rect)
     local offsets = mass_remove_button_offsets(parent_rect)
     if self.frame.l then
         extra_width = offsets.l - MR_MIN_OFFSETS.l
-        self.subviews.tooltip.frame.l = nil
-        self.subviews.tooltip.frame.r = 0
-        self.subviews.icon.frame.l = nil
-        self.subviews.icon.frame.r = MR_WIDTH-MR_BUTTON_WIDTH
+        self.subviews.tt_and_icon.frame.l = nil
+        self.subviews.tt_and_icon.frame.r = 0
     else
         extra_width = offsets.r - MR_MIN_OFFSETS.r
-        self.subviews.tooltip.frame.r = nil
-        self.subviews.tooltip.frame.l = 0
-        self.subviews.icon.frame.r = nil
-        self.subviews.icon.frame.l = 0
+        self.subviews.tt_and_icon.frame.l = 0
+        self.subviews.tt_and_icon.frame.r = nil
     end
     local extra_height
     if self.frame.b then
         extra_height = offsets.b - MR_MIN_OFFSETS.b
+        self.subviews.tt_and_icon.frame.t = 0
+        self.subviews.tt_and_icon.frame.b = nil
     else
         extra_height = offsets.t - MR_MIN_OFFSETS.t
+        self.subviews.tt_and_icon.frame.t = nil
+        self.subviews.tt_and_icon.frame.b = 0
     end
     self.frame.w = MR_WIDTH + extra_width
     self.frame.h = MR_HEIGHT + extra_height
