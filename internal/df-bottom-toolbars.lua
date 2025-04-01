@@ -2,6 +2,137 @@
 -- screen. Not quite as nice as getting the data from DF directly, but better
 -- than hand-rolling calculations for each "interesting" button.
 
+--[[
+
+DF bottom toolbars module
+-------------------------
+
+This module provides a (black box) reproduction of how DF places its toolbar
+buttons at the bottom of the screen. Several DFHack overlay UI elements are
+placed with respect to (parts of) the toolbars that DF puts at the bottom of the
+screen.
+
+The three primary toolbars are placed flush left, "centered", and flush right in
+the interface area (which varies based on configured interface percentage and
+the width (in UI tiles) of the DF window itself).
+
+In narrow interfaces areas (114-130 UI columns) the center toolbar isn't exactly
+centered to avoid overlapping with the left toolbar. Furthermore the center
+toolbar has secondary toolbars that can be opened above it. These secondary
+toolbars are nominally opened directly above the button for the "tool" they
+belong to. If there is not room for a secondary toolbar placed above its
+"opening button", it will be pushed to the left to fit (even when most of the
+width of the toolbar is currently hidden because its advanced options are
+disabled). For example, the following secondary toolbars are "pushed left" when
+the interface area is narrow enough:
+
+* dig: 114-175 UI columns
+* chop, gather: 114-120 UI columns
+* smooth, 114-151 UI columns
+* traffic, 114-195 UI columns
+
+This nearly-centering and width-constrained placement can be derived manually
+for specific toolbars, but this often results in using the above-mentioned
+widths as "magic numbers". Instead of internalizing these values, this module
+implicitly derives them based on the static toolbar widths and dynamic interface
+sizes (combined with a few directly observable "padding" widths and a specific
+rounding method used for the center toolbar).
+
+The module provides the following fields:
+
+* ``MINIMUM_INTERFACE_RECT``
+
+  The UI tile dimensions (from ``gui.mkdims_wh``) of the minimum-size DF window:
+  114x46 UI tiles.
+
+* ``TOOLBAR_HEIGHT``
+
+  The UI tile height of the primary toolbars at the bottom of the DF window.
+
+* ``SECONDARY_TOOLBAR_HEIGHT``
+
+  The UI tile height of the secondary toolbars that are sometimes placed above
+  the primary toolbar.
+
+* ``fort``
+
+  The static "definitions" of the fortress mode toolbars. Each of
+  ``fort.right``, ``fort.center``, and ``fort.left`` has the following fields:
+
+  * ``toolbar.width``
+
+    The overall width of the DF toolbar.
+
+  * ``toolbar.buttons`` table that can be indexed by "button names" provided by
+    this module:
+
+    * ``fort.left.buttons`` has ``citizens``, ``tasks``, ``places``, ``labor``, ``orders``,
+    ``nobles``, ``objects``, and ``justice`` buttons
+
+    * ``fort.center.buttons`` has ``dig``, ``chop``, ``gather``, ``smooth``, ``erase``,
+    ``build``, ``stockpile``, ``zone``, ``burrow``, ``cart``, ``traffic``, and
+    ``mass_designation`` buttons
+
+    * ``fort.right.buttons`` has ``squads``, and ``world`` buttons
+
+    Each button (``toolbar.buttons[name]``) has two fields:
+
+    * ``button.offset``
+
+      The offset of the button from the left-most column of the toolbar.
+
+    * ``button.width``
+
+      The width of the button in UI tiles.
+
+  * ``toolbar:frame(interface_rect)`` method
+
+    The ``interface_rect`` parameter must have ``width`` and ``height`` fields,
+    and should represent the size of an interface area (e.g., from the
+    ``parent_rect`` parameter given to a non-fullscreen overlay's
+    ``updateLayout`` method, or directly from ``gui.get_interface_rect()``).
+
+    Returns a Widget-style "frame" table that has fields for the offsets (``l``,
+    ``r``, ``t``, ``b``) and size (``w``, ``h``) of the toolbar when it is
+    displayed in an interface area of ``interface_rect`` size.
+
+    The interface area left-offset of a specific button can be found by adding a
+    toolbar's frame's ``l`` field and the ``offset`` of one of its buttons::
+
+      local tb = reqscript('internal/df-bottom-toolbars')
+      ...
+      local right = tb.fort.right
+      local squads_offset = right:frame(interface_size) + right.buttons.squads.offset
+
+  The ``center`` definition has an additional field and method:
+
+  * ``fort.center.secondary_toolbars``
+
+    Provides the definitions of secondary toolbar for several "tools": ``dig``,
+    ``chop``, ``gather``, ``smooth``, ``erase``, ``stockpile``,
+    ``stockpile_paint``, ``burrow_paint``, ``traffic``, and
+    ``mass_designation``. See the complete list of secondary toolbar buttons in
+    the module's code.
+
+    The definition of a secondary toolbar uses the same ``width`` & ``buttons``
+    fields as the primary toolbars.
+
+  * ``fort.center:secondary_toolbar_frame(interface_rect, secondary_name)``
+
+    Provides the frame (like ``toolbar:frame()``) for the specified secondary
+    toolbar when displayed in the specified interface size.
+
+    Again, a button's ``offset`` can be combined with its secondary toolbar's
+    frame's ``l`` to find the location of a specific button::
+
+      local tb = reqscript('internal/df-bottom-toolbars')
+      ...
+      local center = tb.fort.center
+      local dig_advanced_offset = center:secondary_toolbar_frame(interface_size, 'dig')
+          + center.secondary_toolbars.dig.advanced_toggle.offset
+
+]]
+
 --@module = true
 
 TOOLBAR_HEIGHT = 3
