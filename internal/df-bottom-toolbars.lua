@@ -265,6 +265,7 @@ end
 local gui = require('gui')
 local Panel = require('gui.widgets.containers.panel')
 local Label = require('gui.widgets.labels.label')
+local utils = require('utils')
 local Window = require('gui.widgets.containers.window')
 local Toggle = require('gui.widgets.labels.toggle_hotkey_label')
 
@@ -294,22 +295,26 @@ local demo_panel_width = label_width + 4
 local demo_panel_height = 3
 
 local left_toolbar_demo = ToolbarDemoPanel{
+    frame_title = 'left toolbar',
     frame = { l = temp_x, t = temp_y, w = demo_panel_width, h = demo_panel_height },
-    subviews = { Label{ frame = { xalign = 0.5, w = label_width }, text = 'left' } },
+    subviews = { Label{ view_id = 'buttons', frame = { l = 0, r = 0 } } },
 }
 local center_toolbar_demo = ToolbarDemoPanel{
+    frame_title = 'center toolbar',
     frame = { l = temp_x + demo_panel_width, t = temp_y, w = demo_panel_width, h = demo_panel_height },
-    subviews = { Label{ frame = { xalign = 0.5, w = label_width }, text = 'center' } },
+    subviews = { Label{ view_id = 'buttons', frame = { l = 0, r = 0 } } },
 }
 local right_toolbar_demo = ToolbarDemoPanel{
+    frame_title = 'right toolbar',
     frame = { l = temp_x + 2 * demo_panel_width, t = temp_y, w = demo_panel_width, h = demo_panel_height },
-    subviews = { Label{ frame = { xalign = 0.5, w = label_width }, text = 'right' } },
+    subviews = { Label{ view_id = 'buttons', frame = { l = 0, r = 0 } } },
 }
 local secondary_visible = false
 local secondary_toolbar_demo
 secondary_toolbar_demo = ToolbarDemoPanel{
+    frame_title = 'secondary toolbar',
     frame = { l = temp_x + demo_panel_width, t = temp_y - demo_panel_height, w = demo_panel_width, h = demo_panel_height },
-    subviews = { Label{ frame = { xalign = 0.5, w = label_width }, text = 'secondary' } },
+    subviews = { Label{ view_id = 'buttons', frame = { l = 0, r = 0 } } },
     visible = function() return visible() and secondary_visible end,
 }
 
@@ -320,13 +325,27 @@ function update_demonstrations(secondary)
     -- [l tool]   [c tool]   [r tool]  (bottom of UI)
     local toolbar_demo_dy = -TOOLBAR_HEIGHT
     local ir = gui.get_interface_rect()
-    local function update(v, frame)
+    local function update(v, frame, buttons)
         v.frame = {
             w = frame.w,
             h = frame.h,
             l = frame.l + ir.x1,
             t = frame.t + ir.y1 + toolbar_demo_dy,
         }
+        local sorted = {}
+        for _, offset in pairs(buttons) do
+            utils.insert_sorted(sorted, offset)
+        end
+        local buttons = ''
+        for i, o in ipairs(sorted) do
+            if o > #buttons then
+                buttons = buttons .. (' '):rep(o - #buttons)
+            end
+            buttons = buttons .. '/--\\'
+        end
+        v.subviews.buttons:setText(
+            buttons:sub(2) -- the demo panel border is at offset 0, so trim first character to start at offset 1
+        )
     end
     if secondary then
         -- a secondary toolbar is active, move the primary demonstration up to
@@ -335,16 +354,17 @@ function update_demonstrations(secondary)
         --               {s demo}
         --               [s tool]
         -- [l tool]   [c tool]   [r tool]  (bottom of UI)
-        update(secondary_toolbar_demo, fort.center:secondary_toolbar_frame(ir, secondary))
+        update(secondary_toolbar_demo, fort.center:secondary_toolbar_frame(ir, secondary),
+            fort.center.secondary_toolbars[secondary].button_offsets)
         secondary_visible = true
         toolbar_demo_dy = toolbar_demo_dy - 2 * SECONDARY_TOOLBAR_HEIGHT
     else
         secondary_visible = false
     end
 
-    update(left_toolbar_demo, fort.left:frame(ir))
-    update(right_toolbar_demo, fort.right:frame(ir))
-    update(center_toolbar_demo, fort.center:frame(ir))
+    update(left_toolbar_demo, fort.left:frame(ir), fort.left.button_offsets)
+    update(right_toolbar_demo, fort.right:frame(ir), fort.right.button_offsets)
+    update(center_toolbar_demo, fort.center:frame(ir), fort.center.button_offsets)
 end
 
 local tool_from_designation = {
