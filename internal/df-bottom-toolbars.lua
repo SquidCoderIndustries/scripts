@@ -324,7 +324,7 @@ secondary_toolbar_demo = ToolbarDemoPanel{
 }
 
 ---@param secondary? CenterToolbarSecondaryToolbarNames
-function update_demonstrations(secondary)
+local function update_demonstrations(secondary)
     -- by default, draw primary toolbar demonstrations right above the primary toolbars:
     -- {l demo}   {c demo}   {r demo}
     -- [l tool]   [c tool]   [r tool]  (bottom of UI)
