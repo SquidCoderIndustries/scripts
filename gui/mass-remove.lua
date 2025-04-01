@@ -407,10 +407,17 @@ end
 -- l/r/t/b frame positioning fields). However, to preserve player-positioning,
 -- we take a more circuitous route.
 
--- The button and tooltip are anchored to one side of the overlay's frame (which
--- one depends on which edge the overlay itself is anchored to). Then, to
--- respond to different interface sizes, we adjust the width and height of the
--- overlay's frame to arrange for the button to land in its expected place.
+-- In a minimum-size interface area, the player is allowed to place the overlay
+-- (a combination of the button and the tooltip) anywhere inside the interface
+-- area. When the interface area is resized (usually through window resizes, but
+-- also through interface percentage changes), placement is maintained relative
+-- to the "ideal" position of the button (i.e. positions are relative to the
+-- "ideal" position). When repositioning the overlay in a larger-than-minimum
+-- interface area the overlays size is artificially inflated so that the overlay
+-- can not be positioned (with respect to the "ideal" button position) farther
+-- away than is possible in a minimum-size interface area. This limits the
+-- positioning, but keeps the (relative) position consistent across all possible
+-- resizes.
 
 local tb = reqscript('internal/df-bottom-toolbars')
 
@@ -509,29 +516,17 @@ function MassRemoveToolbarOverlay:init()
 end
 
 function MassRemoveToolbarOverlay:preUpdateLayout(parent_rect)
-    local extra_width
     local offsets = mass_remove_button_offsets(parent_rect)
-    if self.frame.l then
-        extra_width = offsets.l - MR_MIN_OFFSETS.l
-        self.subviews.tt_and_icon.frame.l = nil
-        self.subviews.tt_and_icon.frame.r = 0
-    else
-        extra_width = offsets.r - MR_MIN_OFFSETS.r
-        self.subviews.tt_and_icon.frame.l = 0
-        self.subviews.tt_and_icon.frame.r = nil
-    end
-    local extra_height
-    if self.frame.b then
-        extra_height = offsets.b - MR_MIN_OFFSETS.b
-        self.subviews.tt_and_icon.frame.t = 0
-        self.subviews.tt_and_icon.frame.b = nil
-    else
-        extra_height = offsets.t - MR_MIN_OFFSETS.t
-        self.subviews.tt_and_icon.frame.t = nil
-        self.subviews.tt_and_icon.frame.b = 0
-    end
-    self.frame.w = MR_WIDTH + extra_width
-    self.frame.h = MR_HEIGHT + extra_height
+    local r = offsets.r - MR_MIN_OFFSETS.r
+    local l = offsets.l - MR_MIN_OFFSETS.l
+    local t = offsets.t - MR_MIN_OFFSETS.t
+    local b = offsets.b - MR_MIN_OFFSETS.b
+    self.frame.w = MR_WIDTH + l + r
+    self.frame.h = MR_HEIGHT + t + b
+    self.subviews.tt_and_icon.frame.l = l
+    self.subviews.tt_and_icon.frame.r = r
+    self.subviews.tt_and_icon.frame.t = t
+    self.subviews.tt_and_icon.frame.b = b
 end
 
 function MassRemoveToolbarOverlay:onInput(keys)
