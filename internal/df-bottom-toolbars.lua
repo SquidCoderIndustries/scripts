@@ -330,6 +330,9 @@ function update_demonstrations(secondary)
     -- [l tool]   [c tool]   [r tool]  (bottom of UI)
     local toolbar_demo_dy = -TOOLBAR_HEIGHT
     local ir = gui.get_interface_rect()
+    ---@param v widgets.Panel
+    ---@param frame widgets.Widget.frame
+    ---@param buttons NamedButtons
     local function update(v, frame, buttons)
         v.frame = {
             w = frame.w,
@@ -338,15 +341,19 @@ function update_demonstrations(secondary)
             t = frame.t + ir.y1 + toolbar_demo_dy,
         }
         local sorted = {}
-        for _, offset in pairs(buttons) do
-            utils.insert_sorted(sorted, offset)
+        for _, button in pairs(buttons) do
+            utils.insert_sorted(sorted, button, 'offset')
         end
         local buttons = ''
         for i, o in ipairs(sorted) do
-            if o > #buttons then
-                buttons = buttons .. (' '):rep(o - #buttons)
+            if o.offset > #buttons then
+                buttons = buttons .. (' '):rep(o.offset - #buttons)
             end
-            buttons = buttons .. '/--\\'
+            if o.width == 1 then
+                buttons = buttons .. '|'
+            elseif o.width > 1 then
+                buttons = buttons .. '/'..('-'):rep(o.width - 2)..'\\'
+            end
         end
         v.subviews.buttons:setText(
             buttons:sub(2) -- the demo panel border is at offset 0, so trim first character to start at offset 1
@@ -360,16 +367,16 @@ function update_demonstrations(secondary)
         --               [s tool]
         -- [l tool]   [c tool]   [r tool]  (bottom of UI)
         update(secondary_toolbar_demo, fort.center:secondary_toolbar_frame(ir, secondary),
-            fort.center.secondary_toolbars[secondary].button_offsets)
+            fort.center.secondary_toolbars[secondary].buttons)
         secondary_visible = true
         toolbar_demo_dy = toolbar_demo_dy - 2 * SECONDARY_TOOLBAR_HEIGHT
     else
         secondary_visible = false
     end
 
-    update(left_toolbar_demo, fort.left:frame(ir), fort.left.button_offsets)
-    update(right_toolbar_demo, fort.right:frame(ir), fort.right.button_offsets)
-    update(center_toolbar_demo, fort.center:frame(ir), fort.center.button_offsets)
+    update(left_toolbar_demo, fort.left:frame(ir), fort.left.buttons)
+    update(right_toolbar_demo, fort.right:frame(ir), fort.right.buttons)
+    update(center_toolbar_demo, fort.center:frame(ir), fort.center.buttons)
 end
 
 local tool_from_designation = {
