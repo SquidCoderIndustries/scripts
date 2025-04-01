@@ -36,7 +36,7 @@ end
 
 ---@param widths NamedWidth[] single-name entries only!
 ---@return Toolbar
-local function button_widths_to_offsets(widths)
+local function button_widths_to_toolbar(widths)
     local offsets = {}
     local offset = 0
     for _, ww in ipairs(widths) do
@@ -63,15 +63,15 @@ end
 
 ---@param buttons string[]
 ---@return Toolbar
-local function buttons_to_offsets(buttons)
-    return button_widths_to_offsets(buttons_to_widths(buttons))
+local function buttons_to_toolbar(buttons)
+    return button_widths_to_toolbar(buttons_to_widths(buttons))
 end
 
 -- Fortress mode toolbar definitions
 fort = {}
 
 ---@class LeftToolbar : Toolbar
-fort.left = buttons_to_offsets{
+fort.left = buttons_to_toolbar{
     'citizens', 'tasks', 'places', 'labor',
     'orders', 'nobles', 'objects', 'justice',
 }
@@ -93,7 +93,7 @@ end
 fort.left_center_gap_minimum = 7
 
 ---@class CenterToolbar: Toolbar
-fort.center = button_widths_to_offsets{
+fort.center = button_widths_to_toolbar{
     { _left_border = 1 },
     { dig = 4 }, { chop = 4 }, { gather = 4 }, { smooth = 4 }, { erase = 4 },
     { _divider = 1 },
@@ -174,9 +174,9 @@ function fort.center:secondary_toolbar_frame(interface_rect, toolbar_name)
     }
 end
 
----@type table<CenterToolbarSecondaryToolbarNames,NamedOffsets>
+---@type table<CenterToolbarSecondaryToolbarNames,Toolbar>
 fort.center.secondary_toolbars = {
-    dig = buttons_to_offsets{
+    dig = buttons_to_toolbar{
         'dig', 'stairs', 'ramp', 'channel', 'remove_construction', '_gap',
         'rectangle', 'draw', '_gap',
         'advanced_toggle', '_gap',
@@ -184,43 +184,43 @@ fort.center.secondary_toolbars = {
         'p1', 'p2', 'p3', 'p4', 'p5', 'p6', 'p7', '_gap',
         'blueprint', 'blueprint_to_standard', 'standard_to_blueprint',
     },
-    chop = buttons_to_offsets{
+    chop = buttons_to_toolbar{
         'chop', '_gap',
         'rectangle', 'draw', '_gap',
         'advanced_toggle', '_gap',
         'p1', 'p2', 'p3', 'p4', 'p5', 'p6', 'p7', '_gap',
         'blueprint', 'blueprint_to_standard', 'standard_to_blueprint',
     },
-    gather = buttons_to_offsets{
+    gather = buttons_to_toolbar{
         'gather', '_gap',
         'rectangle', 'draw', '_gap',
         'advanced_toggle', '_gap',
         'p1', 'p2', 'p3', 'p4', 'p5', 'p6', 'p7', '_gap',
         'blueprint', 'blueprint_to_standard', 'standard_to_blueprint',
     },
-    smooth = buttons_to_offsets{
+    smooth = buttons_to_toolbar{
         'smooth', 'engrave', 'carve_track', 'carve_fortification', '_gap',
         'rectangle', 'draw', '_gap',
         'advanced_toggle', '_gap',
         'p1', 'p2', 'p3', 'p4', 'p5', 'p6', 'p7', '_gap',
         'blueprint', 'blueprint_to_standard', 'standard_to_blueprint',
     },
-    erase = buttons_to_offsets{
+    erase = buttons_to_toolbar{
         'rectangle',
         'draw',
     },
     -- build   -- completely different and quite variable
-    stockpile = buttons_to_offsets{ 'add_stockpile' },
-    stockpile_paint = buttons_to_offsets{
+    stockpile = buttons_to_toolbar{ 'add_stockpile' },
+    stockpile_paint = buttons_to_toolbar{
         'rectangle', 'draw', 'erase_toggle', 'remove',
     },
     -- zone    -- no secondary toolbar
     -- burrow -- no direct secondary toolbar
-    burrow_paint = buttons_to_offsets{
+    burrow_paint = buttons_to_toolbar{
         'rectangle', 'draw', 'erase_toggle', 'remove',
     },
     -- cart    -- no secondary toolbar
-    traffic = button_widths_to_offsets(
+    traffic = button_widths_to_toolbar(
         concat_sequences{ buttons_to_widths{
             'high', 'normal', 'low', 'restricted', '_gap',
             'rectangle', 'draw', '_gap',
@@ -231,14 +231,14 @@ fort.center.secondary_toolbars = {
             { weight_input = 6 },
         } }
     ),
-    mass_designation = buttons_to_offsets{
+    mass_designation = buttons_to_toolbar{
         'claim', 'forbid', 'dump', 'no_dump', 'melt', 'no_melt', 'hidden', 'visible', '_gap',
         'rectangle', 'draw',
     },
 }
 
 ---@class RightToolbar: Toolbar
-fort.right = buttons_to_offsets{
+fort.right = buttons_to_toolbar{
     'squads', 'world',
 }
 
