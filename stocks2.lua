@@ -3,7 +3,6 @@ local widgets = require("gui.widgets")
 local utils = require("utils")
 
 local common = reqscript('internal/caravan/common')
-local sCommon = reqscript('internal/stocks/common')
 
 local to_pen = dfhack.pen.parse
 SOME_PEN = to_pen{ch=':', fg=COLOR_YELLOW}
