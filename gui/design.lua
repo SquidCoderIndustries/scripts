@@ -175,11 +175,6 @@ function RightClickOverlay:onInput(keys)
     end
 end
 
-OVERLAY_WIDGETS = {
-    dimensions=DimensionsOverlay,
-    rightclick=RightClickOverlay,
-}
-
 ---
 --- HelpWindow
 ---
@@ -1705,7 +1700,11 @@ function DesignToolbarOverlay:onInput(keys)
     return DesignToolbarOverlay.super.onInput(self, keys)
 end
 
-OVERLAY_WIDGETS = {toolbar=DesignToolbarOverlay}
+OVERLAY_WIDGETS = {
+    dimensions=DimensionsOverlay,
+    rightclick=RightClickOverlay,
+    toolbar=DesignToolbarOverlay
+}
 
 if dfhack_flags.module then return end
 
