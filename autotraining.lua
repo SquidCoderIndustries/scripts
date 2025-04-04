@@ -203,7 +203,7 @@ function addTraining(unit)
     for _, squad in ipairs(getTrainingSquads()) do
         for i=1,9,1   do
             if ( squad.positions[i].occupant  == -1 ) then
-                dfhack.military.addToSquad(unit.id,squad.id)
+                dfhack.military.addToSquad(unit.id,squad.id,i)
                 -- squad.positions[i].occupant = unit.hist_figure_id
                 -- unit.military.squad_id = squad.id
                 -- unit.military.squad_position = i
