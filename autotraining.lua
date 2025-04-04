@@ -203,9 +203,10 @@ function addTraining(unit)
     for _, squad in ipairs(getTrainingSquads()) do
         for i=1,9,1   do
             if ( squad.positions[i].occupant  == -1 ) then
-                squad.positions[i].occupant = unit.hist_figure_id
-                unit.military.squad_id = squad.id
-                unit.military.squad_position = i
+                dfhack.military.addToSquad(unit.id,squad.id)
+                -- squad.positions[i].occupant = unit.hist_figure_id
+                -- unit.military.squad_id = squad.id
+                -- unit.military.squad_position = i
                 return true
             end
         end
@@ -218,9 +219,10 @@ function removeTraining(unit)
     for _, squad in ipairs(getTrainingSquads()) do
         for i=1,9,1   do
             if ( unit.hist_figure_id  == squad.positions[i].occupant ) then
-                unit.military.squad_id = -1
-                unit.military.squad_position = -1
-                squad.positions[i].occupant = -1
+                dfhack.military.removeFromSquad(unit.id)
+                -- unit.military.squad_id = -1
+                -- unit.military.squad_position = -1
+                -- squad.positions[i].occupant = -1
                 return true
             end
         end
@@ -234,9 +236,7 @@ function removeAll()
         for i=1,9,1 do
             local dwarf = getByID(squad.positions[i].occupant)
             if (dwarf ~= nil) then
-                dwarf.military.squad_id = -1
-                dwarf.military.squad_position = -1
-                squad.positions[i].occupant = -1
+                removeTraining(dwarf)
             end
         end
     end
