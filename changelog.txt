@@ -33,6 +33,8 @@ Template for new versions:
 ## Fixes
 
 ## Misc Improvements
+- `fix/loyaltycascade`: now also breaks up brawls and other intra-fort conflicts that *look* like loyalty cascades
+- `makeown`: remove selected unit from any current conflicts so they don't just start attacking other citizens when you make them a citizen of your fort
 
 ## Removed
 

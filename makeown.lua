@@ -81,6 +81,35 @@ function clear_enemy_status(unit)
     if status_cache.next_slot > status_slot then
         status_cache.next_slot = status_slot
     end
+
+    return true
+end
+
+function remove_from_conflict(unit)
+    -- Remove the unit from any conflict activity
+    -- They will prompty re-engage if there is an actual enemy around
+    local to_remove = {}
+    for act_idx,act_id in ipairs(unit.activities) do
+        local act = df.activity_entry.find(act_id)
+        if not act or act.type ~= df.activity_entry_type.Conflict then goto continue end
+        for _,ev in ipairs(act.events) do
+            if ev:getType() ~= df.activity_event_type.Conflict then goto next_ev end
+            for _,side in ipairs(ev.sides) do
+                utils.erase_sorted(side.histfig_ids, unit.hist_figure_id)
+                utils.erase_sorted(side.unit_ids, unit.id)
+            end
+            ::next_ev::
+        end
+        table.insert(to_remove, 1, act_idx)
+        ::continue::
+    end
+
+    for _,act_idx in ipairs(to_remove) do
+        unit.activities:erase(act_idx)
+    end
+
+    -- return whether we removed unit from any conflicts
+    return #to_remove > 0
 end
 
 local prof_map = {
@@ -162,7 +191,7 @@ local function fix_unit(unit)
     end
 
     clear_enemy_status(unit)
-
+    remove_from_conflict(unit)
     cancel_hostile_jobs(unit.job.current_job)
 end
 
