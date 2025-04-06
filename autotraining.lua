@@ -277,6 +277,7 @@ function start()
 end
 
 function stop()
+    removeAll()
     repeatUtil.cancel(GLOBAL_KEY)
     dfhack.println(GLOBAL_KEY  .. " | STOP")
 end
