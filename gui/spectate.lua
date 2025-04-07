@@ -199,8 +199,9 @@ function Spectate:init()
         create_toggle_button({t=11}, 'include-wildlife', 'CUSTOM_ALT_W', rpad('Include wildlife', lWidth)),
         create_toggle_button({t=12}, 'prefer-conflict', 'CUSTOM_ALT_B', rpad('Prefer conflict', lWidth)),
         create_toggle_button({t=13}, 'prefer-new-arrivals', 'CUSTOM_ALT_N', rpad('Prefer new arrivals', lWidth)),
+        create_toggle_button({t=14}, 'prefer-nicknamed', 'CUSTOM_ALT_I', rpad('Prefer nicknamed', lWidth)),
         widgets.Divider{
-            frame={t=15, h=1},
+            frame={t=16, h=1},
             frame_style=gui.FRAME_THIN,
             frame_style_l=false,
             frame_style_r=false,
