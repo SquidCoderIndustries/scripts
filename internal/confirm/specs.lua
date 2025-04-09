@@ -7,6 +7,7 @@
 
 local json = require('json')
 local trade_internal = reqscript('internal/caravan/trade')
+local gui = require('gui')
 
 local CONFIG_FILE = 'dfhack-config/confirm.json'
 
@@ -457,7 +458,7 @@ ConfirmSpec{
     message=function()
         local order_desc = ''
         local scroll_pos = mi.info.work_orders.scroll_position_work_orders
-        local y_offset = dfhack.screen.getWindowSize() > 154 and 8 or 10
+        local y_offset = gui.get_interface_rect().width > 154 and 8 or 10
         local _, y = dfhack.screen.getMousePos()
         if y then
             local order_idx = scroll_pos + (y - y_offset) // 3

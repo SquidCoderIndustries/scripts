@@ -39,6 +39,7 @@ Template for new versions:
 - `starvingdead`: ensure undead decay does not happen faster than the declared decay rate when saving and loading the game
 - `confirm`: only show pause option for pausable confirmations
 - `confirm`: when editing a uniform, confirm discard of changes when exiting with Escape
+- `confirm`: when removing a manager order, show correct order description when using non-100% interface setting
 
 ## Misc Improvements
 
