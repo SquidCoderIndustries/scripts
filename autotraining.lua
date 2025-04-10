@@ -75,6 +75,10 @@ local function load_state()
 end
 
 dfhack.onStateChange[GLOBAL_KEY] = function(sc)
+    if sc == SC_MAP_UNLOADED then
+        state.enabled = false
+        return
+    end
     -- the state changed, is a map loaded and is that map in fort mode?
     if sc ~= SC_MAP_LOADED or df.global.gamemode ~= df.game_mode.DWARF then
         -- no its isnt, so bail
