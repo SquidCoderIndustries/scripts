@@ -30,6 +30,7 @@ Template for new versions:
 
 ## New Features
 - `gui/spectate`: added "Prefer nicknamed" to the list of options
+- `gui/mod-manager`: when run in a loaded world, opens a copyable list of active mods.
 
 ## Fixes
 - `list-agreements`: fix date math when determining petition age
