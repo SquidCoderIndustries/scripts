@@ -609,7 +609,4 @@ if dfhack_flags.module then
     return
 end
 
--- TODO: when invoked as a command, should show information on which mods are loaded
--- and give the player the option to export the list (or at least copy it to the clipboard)
-
 view = view and view:raise() or ModlistScreen{}:show()
