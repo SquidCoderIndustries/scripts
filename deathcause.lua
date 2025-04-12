@@ -29,7 +29,7 @@ function displayDeathUnit(unit)
     str = str .. dfhack.units.getReadableName(unit)
 
     if not dfhack.units.isDead(unit) then
-        return(dfhack.df2console(str) .. " is not dead yet!")
+        return(str .. " is not dead yet!")
     end
 
     str = str .. (" %s"):format(getDeathStringFromCause(unit.counters.death_cause))
@@ -49,7 +49,7 @@ function displayDeathUnit(unit)
         end
     end
 
-    return(dfhack.df2console(str) .. '.')
+    return(str .. '.')
 end
 
 -- returns the item description if the item still exists; otherwise
@@ -86,7 +86,7 @@ function displayDeathEventHistFigUnit(histfig_unit, event)
         end
     end
 
-    return(dfhack.df2console(str) .. '.')
+    return( str .. '.')
 end
 
 -- Returns the death event for the given histfig or nil if not found
@@ -108,7 +108,7 @@ function displayDeathHistFig(histfig)
     end
 
     if not dfhack.units.isDead(histfig_unit) then
-        return(("%s is not dead yet!"):format(dfhack.df2console(dfhack.units.getReadableName(histfig_unit))))
+        return(("%s is not dead yet!"):format(dfhack.units.getReadableName(histfig_unit)))
     else
         local death_event = getDeathEventForHistFig(histfig.id)
         return displayDeathEventHistFigUnit(histfig_unit, death_event)
