@@ -154,7 +154,7 @@ elseif hist_figure_id == -1 then
     if not selected_unit then
         qerror("Cause of death not available")
     end
-    print(displayDeathUnit(selected_unit))
+    print(dfhack.df2console(displayDeathUnit(selected_unit)))
 else
-    print(displayDeathHistFig(df.historical_figure.find(hist_figure_id)))
+    print(dfhack.df2console(displayDeathHistFig(df.historical_figure.find(hist_figure_id))))
 end
