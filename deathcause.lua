@@ -1,4 +1,5 @@
 -- show death cause of a creature
+--@ module = true
 
 local DEATH_TYPES = reqscript('gui/unit-info-viewer').DEATH_TYPES
 
@@ -29,7 +30,7 @@ function displayDeathUnit(unit)
     str = str .. dfhack.units.getReadableName(unit)
 
     if not dfhack.units.isDead(unit) then
-        return(str .. " is not dead yet!")
+        return str .. " is not dead yet!"
     end
 
     str = str .. (" %s"):format(getDeathStringFromCause(unit.counters.death_cause))
@@ -49,7 +50,7 @@ function displayDeathUnit(unit)
         end
     end
 
-    return(str .. '.')
+    return str .. '.'
 end
 
 -- returns the item description if the item still exists; otherwise
@@ -86,7 +87,7 @@ function displayDeathEventHistFigUnit(histfig_unit, event)
         end
     end
 
-    return( str .. '.')
+    return  str .. '.'
 end
 
 -- Returns the death event for the given histfig or nil if not found
@@ -108,7 +109,7 @@ function displayDeathHistFig(histfig)
     end
 
     if not dfhack.units.isDead(histfig_unit) then
-        return(("%s is not dead yet!"):format(dfhack.units.getReadableName(histfig_unit)))
+        return ("%s is not dead yet!"):format(dfhack.units.getReadableName(histfig_unit))
     else
         local death_event = getDeathEventForHistFig(histfig.id)
         return displayDeathEventHistFigUnit(histfig_unit, death_event)
@@ -144,6 +145,10 @@ local function get_target()
         qerror("Please select a unit, a corpse, or a body part")
     end
     return selected_item.hist_figure_id, df.unit.find(selected_item.unit_id)
+end
+
+if dfhack_flags.module then
+    return
 end
 
 local hist_figure_id, selected_unit = get_target()
