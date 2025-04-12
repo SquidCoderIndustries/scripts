@@ -433,7 +433,7 @@ local function getWorldModlist()
         end
         local modlist = {}
         for _,mod in ipairs(mod_paths) do
-            table.insert(modlist,mod.id)
+            table.insert(modlist,('%s %s (%s)'):format(mod.name, mod.version, mod.id))
         end
         return modlist
     end
@@ -441,11 +441,6 @@ local function getWorldModlist()
 end
 
 function ModlistMenu:init()
-    local modlist = widgets.List{
-        view_id='modlist',
-        frame = {t=3},
-        choices = getWorldModlist()
-    }
     self:addviews{
         widgets.Label{
             frame = { l=0, t=0 },
@@ -461,9 +456,13 @@ function ModlistMenu:init()
                 local mods = table.concat(getWorldModlist(), ', ')
                 dfhack.internal.setClipboardTextCp437(mods)
             end,
-            enabled=function() return #modlist:getChoices() > 0 end,
+            enabled=function() return #self.subviews.modlist:getChoices() > 0 end,
         },
-        modlist
+        widgets.List{
+            view_id='modlist',
+            frame = {t=3},
+            choices = getWorldModlist()
+        }
     }
 end
 
