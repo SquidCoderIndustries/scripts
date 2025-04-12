@@ -404,15 +404,12 @@ end
 
 ModlistMenu = defclass(ModlistMenu, widgets.Window)
 ModlistMenu.ATTRS {
-    view_id = "modlist_menu",
     frame_title = "Active Modlist",
-    frame_style = gui.WINDOW_FRAME,
 
     resize_min = { w = 30, h = 15 },
     frame = { w = 40, t = 10, b = 15 },
 
     resizable = true,
-    autoarrange_subviews=false,
 }
 
 local function get_mod_id_and_version(path)
