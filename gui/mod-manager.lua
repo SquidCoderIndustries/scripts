@@ -414,7 +414,7 @@ ModlistMenu.ATTRS {
     resizable = true,
 }
 
-local function getWorldModlist()
+local function getWorldModlist(detailed)
     -- ordered map of mod id -> {handled=bool, versions=map of version -> path}
     local mods = utils.OrderedTable()
     local mod_paths = {}
@@ -433,7 +433,11 @@ local function getWorldModlist()
         end
         local modlist = {}
         for _,mod in ipairs(mod_paths) do
-            table.insert(modlist,('%s %s (%s)'):format(mod.name, mod.version, mod.id))
+            if detailed then
+                table.insert(modlist,('%s %s (%s)'):format(mod.name, mod.version, mod.id))
+            else
+                table.insert(modlist,mod.name)
+            end
         end
         return modlist
     end
@@ -458,9 +462,21 @@ function ModlistMenu:init()
             end,
             enabled=function() return #self.subviews.modlist:getChoices() > 0 end,
         },
+        widgets.HotkeyLabel{
+            view_id='copy',
+            frame={t=1, r=1},
+            label='Copy mod and details to clipboard',
+            text_pen=COLOR_YELLOW,
+            auto_width=true,
+            on_activate=function()
+                local mods = table.concat(getWorldModlist(true), NEWLINE)
+                dfhack.internal.setClipboardTextCp437Multiline(mods)
+            end,
+            enabled=function() return #self.subviews.modlist:getChoices() > 0 end,
+        },
         widgets.List{
             view_id='modlist',
-            frame = {t=3},
+            frame = {t=4},
             choices = getWorldModlist()
         }
     }
