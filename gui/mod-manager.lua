@@ -453,7 +453,7 @@ function ModlistMenu:init()
         widgets.HotkeyLabel{
             view_id='copy',
             frame={t=1, r=1},
-            label='Copy modlist to clipboard',
+            label='Copy mod names to clipboard',
             text_pen=COLOR_YELLOW,
             auto_width=true,
             on_activate=function()
@@ -465,7 +465,7 @@ function ModlistMenu:init()
         widgets.HotkeyLabel{
             view_id='copy',
             frame={t=1, r=1},
-            label='Copy mod and details to clipboard',
+            label='Copy list to clipboard',
             text_pen=COLOR_YELLOW,
             auto_width=true,
             on_activate=function()
@@ -477,7 +477,7 @@ function ModlistMenu:init()
         widgets.List{
             view_id='modlist',
             frame = {t=4},
-            choices = getWorldModlist()
+            choices = getWorldModlist(true)
         }
     }
 end
