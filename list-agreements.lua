@@ -35,16 +35,14 @@ function get_petition_age(agr)
     local agr_year = agr.details[0].year
     local cur_year_tick = df.global.cur_year_tick
     local cur_year = df.global.cur_year
-    local del_year, del_year_tick
-    --delta, check to prevent off by 1 error, not validated
-    if cur_year_tick > agr_year_tick then
-        del_year = cur_year - agr_year
-        del_year_tick = cur_year_tick - agr_year_tick
-    else
-        del_year = cur_year - agr_year - 1
-        del_year_tick = agr_year_tick - cur_year_tick
+    local del_year = cur_year - agr_year
+    local del_year_tick = cur_year_tick - agr_year_tick
+    if del_year_tick < 0 then
+        del_year = del_year - 1
+        del_year_tick = del_year_tick + 403200
     end
-    local julian_day = math.floor(del_year_tick / 1200) + 1
+    -- Round up to the nearest day, since we don't do fractions
+    local julian_day = math.ceil(del_year_tick / 1200)
     local del_month = math.floor(julian_day / 28)
     local del_day = julian_day % 28
     return {del_year,del_month,del_day}
