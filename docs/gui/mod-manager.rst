@@ -18,7 +18,7 @@ Usage
 Overlay
 -------
 
-This tool also provides one overlay that is managed by the `overlay`
+This tool also provides two overlays that are managed by the `overlay`
 framework.
 
 gui/mod-manager.button
