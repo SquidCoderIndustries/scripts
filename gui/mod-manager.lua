@@ -433,7 +433,6 @@ local function getWorldModlist(detailed)
         end
         local modlist = {}
         for _,mod in ipairs(mod_paths) do
-            printall_recurse(mods)
             if detailed then
                 local url
                 if mods[mod.id].steam_id then
