@@ -425,18 +425,23 @@ local function getWorldModlist(detailed)
             path = tostring(path.value)
             -- skip vanilla "mods"
             if not path:startswith(INSTALLED_MODS_PATH) then goto continue end
-            local id = scriptmanager.get_mod_id_and_version(path)
-            if not id then goto continue end
-            mods[id] = {handled=true}
+            local id, version, name, steam_id= scriptmanager.get_mod_id_and_version(path)
+            if not id or not version then goto continue end
+            mods[id]= {handled=true, name=name, version=version, steam_id=steam_id}
             scriptmanager.add_mod_paths(mod_paths, id, path, '.')
             ::continue::
         end
         local modlist = {}
         for _,mod in ipairs(mod_paths) do
+            printall_recurse(mods)
             if detailed then
-                table.insert(modlist,('%s %s (%s)'):format(mod.name, mod.version, mod.id))
+                local url
+                if mods[mod.id].steam_id then
+                    url = 'https://steamcommunity.com/sharedfiles/filedetails/?id='.. mods[mod.id].steam_id
+                end
+                table.insert(modlist,('%s %s (%s): %s'):format(mods[mod.id].name or mod.id, mods[mod.id].version or '', mod.id, url or ''))
             else
-                table.insert(modlist,mod.name)
+                table.insert(modlist,mods[mod.id].name or mod.id)
             end
         end
         return modlist
@@ -464,7 +469,7 @@ function ModlistMenu:init()
         },
         widgets.HotkeyLabel{
             view_id='copy',
-            frame={t=1, r=1},
+            frame={t=2, r=1},
             label='Copy list to clipboard',
             text_pen=COLOR_YELLOW,
             auto_width=true,
