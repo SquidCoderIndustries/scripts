@@ -408,7 +408,7 @@ ModlistMenu.ATTRS {
     frame_title = "Active Modlist",
 
     resize_min = { w = 30, h = 15 },
-    frame = { w = 40, h = 15 },
+    frame = { w = 40, h = 20 },
 
     resizable = true,
 }
@@ -439,7 +439,7 @@ local function getWorldModlist(detailed, include_vanilla)
 end
 
 function ModlistMenu:init()
-    local include_vanilla = false
+    self.include_vanilla = self.include_vanilla or false
     self:addviews{
         widgets.Label{
             frame = { l=0, t=0 },
@@ -452,7 +452,7 @@ function ModlistMenu:init()
             text_pen=COLOR_YELLOW,
             auto_width=true,
             on_activate=function()
-                local mods = table.concat(getWorldModlist(false, include_vanilla), ', ')
+                local mods = table.concat(getWorldModlist(false, self.include_vanilla), ', ')
                 dfhack.internal.setClipboardTextCp437(mods)
             end,
             enabled=function() return #self.subviews.modlist:getChoices() > 0 end,
@@ -464,7 +464,7 @@ function ModlistMenu:init()
             text_pen=COLOR_YELLOW,
             auto_width=true,
             on_activate=function()
-                local mods = table.concat(getWorldModlist(true,include_vanilla), NEWLINE)
+                local mods = table.concat(getWorldModlist(true, self.include_vanilla), NEWLINE)
                 dfhack.internal.setClipboardTextCp437Multiline(mods)
             end,
             enabled=function() return #self.subviews.modlist:getChoices() > 0 end,
@@ -472,12 +472,18 @@ function ModlistMenu:init()
         widgets.List{
             view_id='modlist',
             frame = {t=4,b=2},
-            choices = getWorldModlist(true,include_vanilla)
+            choices = getWorldModlist(true,self.include_vanilla)
         },
         widgets.HotkeyLabel{
-            frame={b=1},
-            label='Include Vanilla Mods: ' .. ((include_vanilla and 'Yes') or 'No'),
-            on_activate=function () include_vanilla = not include_vanilla end
+            view_id='include_vanilla',
+            frame={b=0},
+            key='CUSTOM_V',
+            label='Include Vanilla Mods: ' .. ((self.include_vanilla and 'Yes') or 'No'),
+            on_activate=function ()
+                self.include_vanilla = not self.include_vanilla
+                self.subviews.include_vanilla:setLabel('Include Vanilla Mods: ' .. ((self.include_vanilla and 'Yes') or 'No'))
+                self.subviews.modlist:setChoices(getWorldModlist(true,self.include_vanilla))
+            end
         }
     }
 end
