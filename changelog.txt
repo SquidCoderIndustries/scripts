@@ -33,6 +33,7 @@ Template for new versions:
 ## Fixes
 - `list-agreements`: fix date math when determining petition age
 - `gui/petitions`: fix date math when determining petition age
+- `gui/rename`: fix commandline processing when manually specifying target ids
 
 ## Misc Improvements
 - `fix/loyaltycascade`: now also breaks up brawls and other intra-fort conflicts that *look* like loyalty cascades
