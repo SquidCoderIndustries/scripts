@@ -8,9 +8,10 @@ local dialogs = require('gui.dialogs')
 local json = require('json')
 local utils = require('utils')
 
+local scriptmanager = require('script-manager')
+
 local presets_file = json.open("dfhack-config/mod-manager.json")
 local GLOBAL_KEY = 'mod-manager'
-local INSTALLED_MODS_PATH = 'data/installed_mods/'
 
 -- get_newregion_viewscreen and get_modlist_fields are declared as global functions
 -- so external tools can call them to get the DF mod list
@@ -404,66 +405,33 @@ end
 
 ModlistMenu = defclass(ModlistMenu, widgets.Window)
 ModlistMenu.ATTRS {
-    view_id = "modlist_menu",
     frame_title = "Active Modlist",
-    frame_style = gui.WINDOW_FRAME,
 
     resize_min = { w = 30, h = 15 },
-    frame = { w = 40, t = 10, b = 15 },
+    frame = { w = 40, h = 20 },
 
     resizable = true,
-    autoarrange_subviews=false,
 }
 
-local function get_mod_id_and_version(path)
-    local idfile = path .. '/info.txt'
-    local ok, lines = pcall(io.lines, idfile)
-    if not ok then return end
-    local id, version
-    for line in lines do
-        if not id then
-            _,_,id = line:find('^%[ID:([^%]]+)%]')
-        end
-        if not version then
-            -- note this doesn't include the closing brace since some people put
-            -- non-number characters in here, and DF only reads the leading digits
-            -- as the numeric version
-            _,_,version = line:find('^%[NUMERIC_VERSION:(%d+)')
-        end
-        -- note that we do *not* want to break out of this loop early since
-        -- lines has to hit EOF to close the file
-    end
-    return id, version
-end
-
-local function add_mod_paths(mod_paths, id, base_path, subdir)
-    local sep = base_path:endswith('/') and '' or '/'
-    local path = ('%s%s%s'):format(base_path, sep, subdir)
-    if dfhack.filesystem.isdir(path) then
-        table.insert(mod_paths, {id=id, path=path})
-    end
-end
-
-local function getWorldModlist()
+local function getWorldModlist(detailed, include_vanilla)
     -- ordered map of mod id -> {handled=bool, versions=map of version -> path}
     local mods = utils.OrderedTable()
     local mod_paths = {}
 
     -- if a world is loaded, process active mods first, and lock to active version
     if dfhack.isWorldLoaded() then
-        for _,path in ipairs(df.global.world.object_loader.object_load_order_src_dir) do
-            path = tostring(path.value)
-            -- skip vanilla "mods"
-            if not path:startswith(INSTALLED_MODS_PATH) then goto continue end
-            local id = get_mod_id_and_version(path)
-            if not id then goto continue end
-            mods[id] = {handled=true}
-            add_mod_paths(mod_paths, id, path, '.')
-            ::continue::
-        end
+        scriptmanager.getAllModsInfo(include_vanilla, mods, mod_paths)
         local modlist = {}
         for _,mod in ipairs(mod_paths) do
-            table.insert(modlist,mod.id)
+            if detailed then
+                local url
+                if mods[mod.id].steam_id then
+                    url = ': https://steamcommunity.com/sharedfiles/filedetails/?id='.. mods[mod.id].steam_id
+                end
+                table.insert(modlist,('%s %s (%s)%s'):format(mods[mod.id].name or mod.id, mods[mod.id].version or '', mod.id, url or ''))
+            else
+                table.insert(modlist,mods[mod.id].name or mod.id)
+            end
         end
         return modlist
     end
@@ -471,32 +439,52 @@ local function getWorldModlist()
 end
 
 function ModlistMenu:init()
-    local modlist = widgets.List{
-        view_id='modlist',
-        frame = {t=3},
-        choices = getWorldModlist()
-    }
+    self.include_vanilla = self.include_vanilla or false
     self:addviews{
         widgets.Label{
             frame = { l=0, t=0 },
             text = {'Active mods:'},
         },
         widgets.HotkeyLabel{
-            view_id='copy',
+            view_id='copy_names',
             frame={t=1, r=1},
-            label='Copy modlist to clipboard',
+            label='Copy mod names to clipboard',
             text_pen=COLOR_YELLOW,
             auto_width=true,
             on_activate=function()
-                local mods = ''
-                for _,mod in ipairs(getWorldModlist()) do
-                    mods = (mods == '' and mod) or (mods .. ', ' .. mod)
-                end
+                local mods = table.concat(getWorldModlist(false, self.include_vanilla), ', ')
                 dfhack.internal.setClipboardTextCp437(mods)
             end,
-            enabled=function() return #modlist:getChoices() > 0 end,
+            enabled=function() return #self.subviews.modlist:getChoices() > 0 end,
         },
-        modlist
+        widgets.HotkeyLabel{
+            view_id='copy_list',
+            frame={t=2, r=1},
+            label='Copy list to clipboard',
+            text_pen=COLOR_YELLOW,
+            auto_width=true,
+            on_activate=function()
+                local mods = table.concat(getWorldModlist(true, self.include_vanilla), NEWLINE)
+                dfhack.internal.setClipboardTextCp437Multiline(mods)
+            end,
+            enabled=function() return #self.subviews.modlist:getChoices() > 0 end,
+        },
+        widgets.List{
+            view_id='modlist',
+            frame = {t=4,b=2},
+            choices = getWorldModlist(true,self.include_vanilla)
+        },
+        widgets.HotkeyLabel{
+            view_id='include_vanilla',
+            frame={b=0},
+            key='CUSTOM_V',
+            label='Include Vanilla Mods: ' .. ((self.include_vanilla and 'Yes') or 'No'),
+            on_activate=function ()
+                self.include_vanilla = not self.include_vanilla
+                self.subviews.include_vanilla:setLabel('Include Vanilla Mods: ' .. ((self.include_vanilla and 'Yes') or 'No'))
+                self.subviews.modlist:setChoices(getWorldModlist(true,self.include_vanilla))
+            end
+        }
     }
 end
 
