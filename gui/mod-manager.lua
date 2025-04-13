@@ -425,9 +425,9 @@ local function getWorldModlist(detailed)
             path = tostring(path.value)
             -- skip vanilla "mods"
             if not path:startswith(INSTALLED_MODS_PATH) then goto continue end
-            local id, version, name, steam_id= scriptmanager.get_mod_id_and_version(path)
-            if not id or not version then goto continue end
-            mods[id]= {handled=true, name=name, version=version, steam_id=steam_id}
+            local id, numerical_version, name, steam_id, display_version = scriptmanager.get_mod_info(path)
+            if not id or not numerical_version then goto continue end
+            mods[id]= {handled=true, name=name, version=display_version, steam_id=steam_id}
             scriptmanager.add_mod_paths(mod_paths, id, path, '.')
             ::continue::
         end
@@ -436,9 +436,9 @@ local function getWorldModlist(detailed)
             if detailed then
                 local url
                 if mods[mod.id].steam_id then
-                    url = 'https://steamcommunity.com/sharedfiles/filedetails/?id='.. mods[mod.id].steam_id
+                    url = ': https://steamcommunity.com/sharedfiles/filedetails/?id='.. mods[mod.id].steam_id
                 end
-                table.insert(modlist,('%s %s (%s): %s'):format(mods[mod.id].name or mod.id, mods[mod.id].version or '', mod.id, url or ''))
+                table.insert(modlist,('%s %s (%s)%s'):format(mods[mod.id].name or mod.id, mods[mod.id].version or '', mod.id, url or ''))
             else
                 table.insert(modlist,mods[mod.id].name or mod.id)
             end
