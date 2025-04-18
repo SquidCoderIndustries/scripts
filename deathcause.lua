@@ -25,7 +25,8 @@ local function getDeathStringFromCause(cause)
     end
 end
 
-function getDeathUnit(unit)
+-- Returns a cause of death given a unit
+function getDeathCauseFromUnit(unit)
     local str = unit.name.has_name and '' or 'The '
     str = str .. dfhack.units.getReadableName(unit)
 
@@ -55,7 +56,7 @@ end
 
 -- returns the item description if the item still exists; otherwise
 -- returns the weapon name
-function getWeaponName(item_id, subtype)
+local function getWeaponName(item_id, subtype)
     local item = df.item.find(item_id)
     if not item then
         return df.global.world.raws.itemdefs.weapons[subtype].name
@@ -63,7 +64,7 @@ function getWeaponName(item_id, subtype)
     return dfhack.items.getDescription(item, 0, false)
 end
 
-function getDeathEventHistFigUnit(histfig_unit, event)
+local function getDeathEventHistFigUnit(histfig_unit, event)
     local str = ("The %s %s %s in year %d"):format(
             getRaceNameSingular(histfig_unit.race),
             dfhack.translation.translateName(dfhack.units.getVisibleName(histfig_unit)),
@@ -91,7 +92,7 @@ function getDeathEventHistFigUnit(histfig_unit, event)
 end
 
 -- Returns the death event for the given histfig or nil if not found
-function getDeathEventForHistFig(histfig_id)
+local function getDeathEventForHistFig(histfig_id)
     for i = #df.global.world.history.events - 1, 0, -1 do
         local event = df.global.world.history.events[i]
         if event:getType() == df.history_event_type.HIST_FIGURE_DIED then
@@ -102,7 +103,8 @@ function getDeathEventForHistFig(histfig_id)
     end
 end
 
-function getDeathHistFig(histfig)
+-- Returns the cause of death given a histfig
+function getDeathCauseFromHistFig(histfig)
     local histfig_unit = df.unit.find(histfig.unit_id)
     if not histfig_unit then
         qerror("Cause of death not available")
@@ -159,7 +161,7 @@ elseif hist_figure_id == -1 then
     if not selected_unit then
         qerror("Cause of death not available")
     end
-    print(dfhack.df2console(getDeathUnit(selected_unit)))
+    print(dfhack.df2console(getDeathCauseFromUnit(selected_unit)))
 else
-    print(dfhack.df2console(getDeathHistFig(df.historical_figure.find(hist_figure_id))))
+    print(dfhack.df2console(getDeathCauseFromHistFig(df.historical_figure.find(hist_figure_id))))
 end
