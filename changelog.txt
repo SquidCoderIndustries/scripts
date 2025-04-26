@@ -29,16 +29,27 @@ Template for new versions:
 ## New Tools
 
 ## New Features
+- `gui/mod-manager`: when run in a loaded world, shows a list of active mods -- click to export the list to the clipboard for easy sharing or posting
+
+## Fixes
+- `starvingdead`: properly restore to correct enabled state when loading a new game that is different from the first game loaded in this session
+- `starvingdead`: ensure undead decay does not happen faster than the declared decay rate when saving and loading the game
+
+## Misc Improvements
+
+## Removed
+
+# 51.11-r1
 
 ## Fixes
 - `list-agreements`: fix date math when determining petition age
 - `gui/petitions`: fix date math when determining petition age
+- `gui/rename`: fix commandline processing when manually specifying target ids
+- `gui/sandbox`: restore metal equipment options when spawning units
 
 ## Misc Improvements
 - `fix/loyaltycascade`: now also breaks up brawls and other intra-fort conflicts that *look* like loyalty cascades
 - `makeown`: remove selected unit from any current conflicts so they don't just start attacking other citizens when you make them a citizen of your fort
-
-## Removed
 
 # 51.09-r1
 

@@ -18,7 +18,7 @@ end
 Sitemap = defclass(Sitemap, widgets.Window)
 Sitemap.ATTRS {
     frame_title='Sitemap',
-    frame={w=57, r=2, t=18, h=25},
+    frame={w=67, r=2, t=18, h=25},
     resizable=true,
     resize_min={w=44, h=20},
     frame_inset={l=1, t=1, r=0, b=0},
