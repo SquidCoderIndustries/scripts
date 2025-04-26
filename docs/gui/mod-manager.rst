@@ -5,8 +5,8 @@ gui/mod-manager
     :summary: Manange your active mods.
     :tags: dfhack interface
 
-In a loaded world, shows a list of active mods with the ability to copy to clipboard.
-
+When run with a world loaded, shows a list of active mods. You can copy the
+list to the system clipboard for easy sharing or posting.
 
 Usage
 -----
@@ -24,8 +24,9 @@ framework.
 gui/mod-manager.button
 ~~~~~~~~~~~~~~~~~~~~~~
 
-Adds an optional overlay to the mod list screen that allows you to save and
-load mod list presets, as well as set a default mod list preset for new worlds.
+Adds a widget to the mod list screen that allows you to save and load mod list
+presets. You can also set a default mod list preset for new worlds so you don't
+have to manualy re-select the same mods every time you generate a world.
 
 gui/mod-manager.notification
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
