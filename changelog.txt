@@ -16,6 +16,8 @@ Template for new versions:
 
 ## New Features
 
+- `gui/design`: add option to draw N-point stars, hollow or filled or inverted, and change the main axis to orient in any direction
+
 ## Fixes
 
 ## Misc Improvements
@@ -27,6 +29,7 @@ Template for new versions:
 # Future
 
 ## New Tools
+- `modtools/moddable-gods`: (reinstated) create new deities from scratch
 
 ## New Features
 - `gui/mod-manager`: when run in a loaded world, shows a list of active mods -- click to export the list to the clipboard for easy sharing or posting

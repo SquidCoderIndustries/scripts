@@ -174,9 +174,15 @@ end
 
 local function get_name_chunk(unit)
     return {
-        text=dfhack.units.getReadableName(unit),
+        text=dfhack.units.getReadableName(unit, true),
         pen=dfhack.units.getProfessionColor(unit)
     }
+end
+
+local function get_translated_name_chunk(unit)
+    local tname = dfhack.translation.translateName(dfhack.units.getVisibleName(unit), true)
+    if #tname == 0 then return '' end
+    return ('"%s"'):format(tname)
 end
 
 local function get_description_chunk(unit)
@@ -456,8 +462,13 @@ function UnitInfo:init()
             auto_height=false,
         },
         widgets.Label{
+            view_id='translated_name',
+            frame={t=1, l=0, h=1},
+            auto_height=false,
+        },
+        widgets.Label{
             view_id='chunks',
-            frame={t=2, l=0, b=0, r=0},
+            frame={t=3, l=0, b=0, r=0},
             auto_height=false,
             text='Please select a unit.',
         },
@@ -483,6 +494,7 @@ end
 function UnitInfo:refresh(unit, width)
     self.unit_id = unit.id
     self.subviews.nameprof:setText{get_name_chunk(unit)}
+    self.subviews.translated_name:setText{get_translated_name_chunk(unit)}
 
     local chunks = {}
     add_chunk(chunks, get_description_chunk(unit), width)
