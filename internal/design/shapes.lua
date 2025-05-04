@@ -411,12 +411,11 @@ function LineDrawer:plot_bresenham(x0, y0, x1, y1, thickness)
     local sy = y0 < y1 and 1 or -1
     local e2, x, y
 
-    for i = 0, thickness - 1 do
+    for i = -math.floor(thickness / 2), math.ceil(thickness / 2) - 1 do
         x = x0
         y = y0 + i
         local err = dx - dy
-        local p = math.max(dx, dy)
-        while p >= 0 do
+        while true do
             for j = -math.floor(thickness / 2), math.ceil(thickness / 2) - 1 do
                 if not self.arr[x + j] then self.arr[x + j] = {} end
                 if not self.arr[x + j][y] then
@@ -440,7 +439,6 @@ function LineDrawer:plot_bresenham(x0, y0, x1, y1, thickness)
                 err = err + dx
                 y = y + sy
             end
-            p = p - 1
         end
     end
 end
@@ -492,7 +490,7 @@ function Line:cubic_bezier(x0, y0, x1, y1, bezier_point1, bezier_point2, thickne
             0.5)
         local y = math.floor(((1 - t) ^ 3 * y0 + 3 * (1 - t) ^ 2 * t * y2 + 3 * (1 - t) * t ^ 2 * y3 + t ^ 3 * y1) +
             0.5)
-        for i = 0, thickness - 1 do
+        for i = -math.floor(thickness / 2), math.ceil(thickness / 2) - 1 do
             for j = -math.floor(thickness / 2), math.ceil(thickness / 2) - 1 do
                 if not self.arr[x + j] then self.arr[x + j] = {} end
                 if not self.arr[x + j][y + i] then
@@ -509,7 +507,7 @@ function Line:cubic_bezier(x0, y0, x1, y1, bezier_point1, bezier_point2, thickne
         0.5)
     local y_end = math.floor(((1 - 1) ^ 3 * y0 + 3 * (1 - 1) ^ 2 * 1 * y2 + 3 * (1 - 1) * 1 ^ 2 * y3 + 1 ^ 3 * y1) +
         0.5)
-    for i = 0, thickness - 1 do
+    for i = -math.floor(thickness / 2), math.ceil(thickness / 2) - 1 do
         for j = -math.floor(thickness / 2), math.ceil(thickness / 2) - 1 do
             if not self.arr[x_end + j] then self.arr[x_end + j] = {} end
             if not self.arr[x_end + j][y_end + i] then
@@ -770,11 +768,17 @@ function Star:update(points, extra_points)
     self.arr = {}
     if #points < self.min_points then return end
     self.threshold = self.options.total_points.value - 2 * self.options.next_point_offset.value
+
+    local thickness = 1
+    if self.options.hollow.value then
+        thickness = self.options.thickness.value
+    end
+
     local top_left, bot_right = self:get_point_dims()
-    self.height = bot_right.y - top_left.y
-    self.width = bot_right.x - top_left.x
-    if self.height == 1 or self.width == 1 then return end
-    self.center = { x = self.width * 0.5, y = self.height * 0.5 }
+    self.height = bot_right.y - top_left.y - thickness + 1
+    self.width = bot_right.x - top_left.x - thickness + 1
+    if self.height < 2 or self.width < 2 then return end
+    self.center = { x = (bot_right.x - top_left.x + ((thickness - 1) % 2)) * 0.5, y = (bot_right.y - top_left.y + ((thickness - 1) % 2)) * 0.5 }
     local axes = {}
 
     axes[1] = (#extra_points > 0) and { x = extra_points[1].x - self.center.x - top_left.x, y = extra_points[1].y - self.center.y - top_left.y } or { x = 0, y = -self.center.y }
@@ -786,10 +790,6 @@ function Star:update(points, extra_points)
         axes[a] = { x = math.cos(angle) * axes[1].x - math.sin(angle) * axes[1].y, y = math.sin(angle) * axes[1].x + math.cos(angle) * axes[1].y }
     end
 
-    local thickness = 1
-    if self.options.hollow.value then
-        thickness = self.options.thickness.value
-    end
 
     self.lines = {}
     for l = 1, self.options.total_points.value do
