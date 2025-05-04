@@ -63,6 +63,7 @@ function ConfirmOverlay:init()
             }
         end
     end
+    self.paused_confs = {}
 end
 
 function ConfirmOverlay:preUpdateLayout()
@@ -77,11 +78,14 @@ function ConfirmOverlay:preUpdateLayout()
 end
 
 function ConfirmOverlay:overlay_onupdate()
-    if self.paused_conf and
-        not dfhack.gui.matchFocusString(self.paused_conf.context,
+    for conf in pairs(self.paused_confs) do
+        if not dfhack.gui.matchFocusString(conf.context,
                 dfhack.gui.getDFViewscreen(true))
-    then
-        self.paused_conf = nil
+        then
+            self.paused_confs[conf] = nil
+        end
+    end
+    if not next(self.paused_confs) then
         self.overlay_onupdate_max_freq_seconds = 300
     end
 end
@@ -114,7 +118,7 @@ function ConfirmOverlay:onInput(keys)
     local scr = dfhack.gui.getDFViewscreen(true)
     for id, conf in pairs(specs.REGISTRY) do
         if specs.config.data[id].enabled and self:matches_conf(conf, keys, scr) then
-            if conf == self.paused_conf then
+            if self.paused_confs[conf] then
                 return false
             end
             local mouse_pos = xy2pos(dfhack.screen.getMousePos())
@@ -123,7 +127,7 @@ function ConfirmOverlay:onInput(keys)
                     conf.on_propagate()
                 end
                 if pause then
-                    self.paused_conf = conf
+                    self.paused_confs[conf] = true
                     self.overlay_onupdate_max_freq_seconds = 0
                 end
                 if keys._MOUSE_L then
