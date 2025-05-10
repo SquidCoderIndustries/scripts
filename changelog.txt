@@ -20,6 +20,8 @@ Template for new versions:
 
 ## Fixes
 
+- `gui/design`: prevent line thickness from extending outside the map boundary
+
 ## Misc Improvements
 
 ## Removed

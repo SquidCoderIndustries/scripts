@@ -113,13 +113,30 @@ local function is_valid_corpse(item)
     return not is_entombed(item)
 end
 
+local usable_types = {
+    'plant',
+    'silk',
+    'leather',
+    'bone',
+    'shell',
+    'wood',
+    'soap',
+    'tooth',
+    'horn',
+    'pearl',
+    'skull',
+    'hair_wool',
+    'yarn',
+}
+
 local function is_usable_corpse_piece(item)
-    return item.corpse_flags.hair_wool or
-        item.corpse_flags.pearl or
-        item.corpse_flags.plant or
-        item.corpse_flags.shell or
-        item.corpse_flags.silk or
-        item.corpse_flags.yarn
+    if item.flags.dead_dwarf or item.corpse_flags.unbutchered then
+        return false
+    end
+    for _,flag in ipairs(usable_types) do
+        if item.corpse_flags[flag] then return true end
+    end
+    return false
 end
 
 local function is_valid_usable_corpse_piece(item)
@@ -256,7 +273,9 @@ dfhack.onStateChange[GLOBAL_KEY] = function(sc)
     state = get_default_state()
     utils.assign(state, dfhack.persistent.getSiteData(GLOBAL_KEY, state))
 
-    event_loop()
+    for _,category in ipairs(categories) do
+        event_loop(category)
+    end
 end
 
 ---------------------
@@ -297,7 +316,7 @@ local function status()
     local running_str = state.enabled and 'Running' or 'Would run'
     print(('deteriorate is %s'):format(state.enabled and 'enabled' or 'disabled'))
     print()
-    for _,category in pairs(categories) do
+    for _,category in ipairs(categories) do
         local status_str = 'Stopped'
         local category_data = state.categories[category]
         if category_data.enabled then

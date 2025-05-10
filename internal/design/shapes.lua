@@ -404,6 +404,19 @@ end
 
 LineDrawer = defclass(LineDrawer, Shape)
 
+function LineDrawer:plot_thickness(x, y, thickness)
+    local map_width, map_height = dfhack.maps.getTileSize()
+    for i = math.max(y - math.floor(thickness / 2), 0), math.min(y + math.ceil(thickness / 2) - 1, map_height - 1) do
+        for j = math.max(x - math.floor(thickness / 2), 0), math.min(x + math.ceil(thickness / 2) - 1, map_width - 1) do
+            if not self.arr[j] then self.arr[j] = {} end
+            if not self.arr[j][i] then
+                self.arr[j][i] = true
+                self.num_tiles = self.num_tiles + 1
+            end
+        end
+    end
+end
+
 function LineDrawer:plot_bresenham(x0, y0, x1, y1, thickness)
     local dx = math.abs(x1 - x0)
     local dy = math.abs(y1 - y0)
@@ -411,34 +424,26 @@ function LineDrawer:plot_bresenham(x0, y0, x1, y1, thickness)
     local sy = y0 < y1 and 1 or -1
     local e2, x, y
 
-    for i = -math.floor(thickness / 2), math.ceil(thickness / 2) - 1 do
-        x = x0
-        y = y0 + i
-        local err = dx - dy
-        while true do
-            for j = -math.floor(thickness / 2), math.ceil(thickness / 2) - 1 do
-                if not self.arr[x + j] then self.arr[x + j] = {} end
-                if not self.arr[x + j][y] then
-                    self.arr[x + j][y] = true
-                    self.num_tiles = self.num_tiles + 1
-                end
-            end
+    x = x0
+    y = y0
+    local err = dx - dy
+    while true do
+        self:plot_thickness(x, y, thickness)
 
-            if sx * x >= sx * x1 and sy * y >= sy * (y1 + i) then
-                break
-            end
+        if sx * x >= sx * x1 and sy * y >= sy * y1 then
+            break
+        end
 
-            e2 = 2 * err
+        e2 = 2 * err
 
-            if e2 > -dy then
-                err = err - dy
-                x = x + sx
-            end
+        if e2 > -dy then
+            err = err - dy
+            x = x + sx
+        end
 
-            if e2 < dx then
-                err = err + dx
-                y = y + sy
-            end
+        if e2 < dx then
+            err = err + dx
+            y = y + sy
         end
     end
 end
@@ -490,15 +495,7 @@ function Line:cubic_bezier(x0, y0, x1, y1, bezier_point1, bezier_point2, thickne
             0.5)
         local y = math.floor(((1 - t) ^ 3 * y0 + 3 * (1 - t) ^ 2 * t * y2 + 3 * (1 - t) * t ^ 2 * y3 + t ^ 3 * y1) +
             0.5)
-        for i = -math.floor(thickness / 2), math.ceil(thickness / 2) - 1 do
-            for j = -math.floor(thickness / 2), math.ceil(thickness / 2) - 1 do
-                if not self.arr[x + j] then self.arr[x + j] = {} end
-                if not self.arr[x + j][y + i] then
-                    self.arr[x + j][y + i] = true
-                    self.num_tiles = self.num_tiles + 1
-                end
-            end
-        end
+        self:plot_thickness(x, y, thickness)
         t = t + granularity
     end
 
@@ -507,15 +504,8 @@ function Line:cubic_bezier(x0, y0, x1, y1, bezier_point1, bezier_point2, thickne
         0.5)
     local y_end = math.floor(((1 - 1) ^ 3 * y0 + 3 * (1 - 1) ^ 2 * 1 * y2 + 3 * (1 - 1) * 1 ^ 2 * y3 + 1 ^ 3 * y1) +
         0.5)
-    for i = -math.floor(thickness / 2), math.ceil(thickness / 2) - 1 do
-        for j = -math.floor(thickness / 2), math.ceil(thickness / 2) - 1 do
-            if not self.arr[x_end + j] then self.arr[x_end + j] = {} end
-            if not self.arr[x_end + j][y_end + i] then
-                self.arr[x_end + j][y_end + i] = true
-                self.num_tiles = self.num_tiles + 1
-            end
-        end
-    end
+
+    self:plot_thickness(x_end, y_end, thickness)
 end
 
 function Line:quadratic_bezier(x0, y0, x1, y1, bezier_point1, thickness)
@@ -525,15 +515,7 @@ function Line:quadratic_bezier(x0, y0, x1, y1, bezier_point1, thickness)
     while t <= 1 do
         local x = math.floor(((1 - t) ^ 2 * x0 + 2 * (1 - t) * t * x2 + t ^ 2 * x1) + 0.5)
         local y = math.floor(((1 - t) ^ 2 * y0 + 2 * (1 - t) * t * y2 + t ^ 2 * y1) + 0.5)
-        for i = 0, thickness - 1 do
-            for j = -math.floor(thickness / 2), math.ceil(thickness / 2) - 1 do
-                if not self.arr[x + j] then self.arr[x + j] = {} end
-                if not self.arr[x + j][y + i] then
-                    self.arr[x + j][y + i] = true
-                    self.num_tiles = self.num_tiles + 1
-                end
-            end
-        end
+        self:plot_thickness(x, y, thickness)
         t = t + granularity
     end
 end
