@@ -5,11 +5,11 @@ autotraining
     :summary: Assigns citizens to a military squad until they have fulfilled their need for Martial Training
     :tags: fort auto bugfix units
 
-Automation script for citizens to hit the gym when they yearn for the gains. Also passively builds military skills and physical stats.
+This script automatically assigns citizens with the need for military training to designated training squads.
 
-You need to have at least one squad that is set up for training. This should be a new non-military-use squad. The uniform should be
-set to "No Uniform" and the squad should be set to "Constant Training" in the military screen. Edit the squad's schedule to full time training with around 8 units training.
-The squad doesn't need months off. The members leave the squad once they have gotten their gains.
+You need to have at least one squad that is set up for training. The squad should be set to "Constant Training" in the military screen. The squad doesn't need months off. The members leave the squad once they have satisfied their need for military training.
+
+The configured uniform determines the skills that are acquired by the training dwarves. Providing "No Uniform" is a perfectly valid choice and will make your militarily inclined civilians become wrestlers over time. However, you can also provide weapons and armor to pre-train civilians for future drafts.
 
 Once you have made squads for training use `gui/autotraining` to select the squads and ignored units, as well as the needs threshhold.
 

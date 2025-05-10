@@ -208,9 +208,6 @@ function addTraining(unit)
         for i=1,9,1   do
             if ( squad.positions[i].occupant  == -1 ) then
                 dfhack.military.addToSquad(unit.id,squad.id,i)
-                -- squad.positions[i].occupant = unit.hist_figure_id
-                -- unit.military.squad_id = squad.id
-                -- unit.military.squad_position = i
                 return true
             end
         end
@@ -224,9 +221,6 @@ function removeTraining(unit)
         for i=1,9,1   do
             if ( unit.hist_figure_id  == squad.positions[i].occupant ) then
                 dfhack.military.removeFromSquad(unit.id)
-                -- unit.military.squad_id = -1
-                -- unit.military.squad_position = -1
-                -- squad.positions[i].occupant = -1
                 return true
             end
         end
@@ -277,7 +271,7 @@ function start()
     if (args.t) then
         state.threshold = 0-tonumber(args.t)
     end
-    repeatUtil.scheduleEvery(GLOBAL_KEY, 1, 'days', check) -- 997 is the closest prime to 1000
+    repeatUtil.scheduleEvery(GLOBAL_KEY, 1, 'days', check)
 end
 
 function stop()
