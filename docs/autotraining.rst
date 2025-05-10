@@ -25,10 +25,10 @@ Examples
     Current status of script
 
 ``enable autotraining``
-    Checks to see if you have fullfilled the creation of a training gym.
+    Checks to see if you have fullfilled the creation of a training squad.
     If there is no squad marked for training use, a clickable notification will appear letting you know to set one up/
-    Searches your fort for dwarves with a need to go to the gym, and begins assigning them to said gym.
-    Once they have fulfilled their need they will be removed from the gym squad to be replaced by the next dwarf in the list.
+    Searches your fort for dwarves with a need for military training, and begins assigning them to a training squad.
+    Once they have fulfilled their need they will be removed from their squad to be replaced by the next dwarf in the list.
 
 ``disable autotraining``
     Stops adding new units to the squad.
