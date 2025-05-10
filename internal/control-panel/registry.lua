@@ -35,7 +35,7 @@ COMMANDS_BY_IDX = {
         params={'--time', '14', '--timeUnits', 'days', '--command', '[', 'workorder', 'ShearCreature', ']'}},
     {command='autoslab', group='automation', mode='enable'},
     {command='autotraining', group='automation', mode='enable',
-        desc='Automation script for citizens to hit the gym when they yearn for the gains.'},
+        desc='Automatically assign units with training needs to training squads. '},
     {command='ban-cooking all', group='automation', mode='run'},
     {command='buildingplan set boulders false', group='automation', mode='run',
         desc='Enable if you usually don\'t want to use boulders for construction.'},
