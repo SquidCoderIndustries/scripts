@@ -94,7 +94,6 @@ dfhack.onStateChange[GLOBAL_KEY] = function(sc)
     else
         stop()
     end
-    -- start can change the enabled state if the squad cant be found
     persist_state()
 end
 
