@@ -18,7 +18,7 @@ end
 Sitemap = defclass(Sitemap, widgets.Window)
 Sitemap.ATTRS {
     frame_title='Sitemap',
-    frame={w=57, r=2, t=18, h=25},
+    frame={w=67, r=2, t=18, h=26},
     resizable=true,
     resize_min={w=44, h=20},
     frame_inset={l=1, t=1, r=0, b=0},
@@ -133,7 +133,7 @@ local function get_unit_disposition_and_pen_and_affiliation(unit)
     elseif dfhack.units.isVisitor(unit) or dfhack.units.isDiplomat(unit) then
         return prefix..'visitor', COLOR_MAGENTA, get_affiliation(unit)
     elseif dfhack.units.isMerchant(unit) or dfhack.units.isForest(unit) then
-        return prefix..'merchant'..(dfhack.units.isAnimal(unit) and ' animal' or ''), COLOR_BROWN, get_affiliation(unit)
+        return prefix..'merchant'..(dfhack.units.isAnimal(unit) and ' animal' or ''), COLOR_BLUE, get_affiliation(unit)
     end
     return prefix..'friendly', COLOR_LIGHTGREEN
 end
@@ -141,12 +141,10 @@ end
 local function get_unit_choice_text(unit)
     local disposition, disposition_pen, affiliation = get_unit_disposition_and_pen_and_affiliation(unit)
     return {
-        dfhack.units.getReadableName(unit),
-        ' (',
-        {text=disposition, pen=disposition_pen},
+        dfhack.units.getReadableName(unit), NEWLINE,
+        {gap=2, text=disposition, pen=disposition_pen},
         affiliation and ': ' or '',
-        {text=affiliation, pen=COLOR_YELLOW},
-        ')',
+        {text=affiliation, pen=COLOR_BROWN},
     }
 end
 
@@ -277,6 +275,7 @@ function Sitemap:init()
                         },
                         widgets.FilteredList{
                             view_id='list',
+                            row_height=2,
                             on_submit=zoom_to_unit,
                             on_submit2=follow_unit,
                             choices=unit_choices,
@@ -368,7 +367,7 @@ end
 SitemapToolbarOverlay = defclass(SitemapToolbarOverlay, overlay.OverlayWidget)
 SitemapToolbarOverlay.ATTRS{
     desc='Adds a button to the toolbar at the bottom left corner of the screen for launching gui/sitemap.',
-    default_pos={x=35, y=-1},
+    default_pos={x=34, y=-1},
     default_enabled=true,
     viewscreens='dwarfmode',
     frame={w=28, h=10},
@@ -392,7 +391,7 @@ function SitemapToolbarOverlay:init()
                 widgets.Label{
                     text={
                         'Open the general search', NEWLINE,
-                        'interface.', NEWLINE,
+                        'and zoom interface.', NEWLINE,
                         NEWLINE,
                         {text='Hotkey: ', pen=COLOR_GRAY}, {key='CUSTOM_CTRL_G'},
                     },

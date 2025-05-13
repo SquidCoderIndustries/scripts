@@ -1,4 +1,5 @@
 -- Prevents a "loyalty cascade" (intra-fort civil war) when a citizen is killed.
+-- Also breaks up brawls and other conflicts.
 
 local makeown = reqscript('makeown')
 
@@ -76,7 +77,7 @@ local function fixUnit(unit)
         makeown.clear_enemy_status(unit)
     end
 
-    return false
+    return makeown.remove_from_conflict(unit) or fixed
 end
 
 local count = 0
@@ -87,7 +88,7 @@ for _, unit in pairs(dfhack.units.getCitizens()) do
 end
 
 if count > 0 then
-    print(('Fixed %s units from a loyalty cascade.'):format(count))
+    print(('Fixed %s units with loyalty issues.'):format(count))
 else
     print('No loyalty cascade found.')
 end
