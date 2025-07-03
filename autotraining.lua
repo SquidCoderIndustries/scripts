@@ -11,7 +11,7 @@ validArgs = utils.invert({
 
 local args = utils.processArgs({...}, validArgs)
 local GLOBAL_KEY  = "autotraining"
-local need_id = df.need_type['MartialTraining']
+local MartialTraining = df.need_type['MartialTraining']
 local ignore_count = 0
 
 local function get_default_state()
@@ -91,8 +91,6 @@ dfhack.onStateChange[GLOBAL_KEY] = function(sc)
     load_state()
     if ( state.enabled ) then
         start()
-    else
-        stop()
     end
     persist_state()
 end
@@ -121,11 +119,11 @@ function getTrainingCandidates()
                 if not isIgnNoble then
                     table.insert(ret, unit)
                 else
-                    removeTraining(unit)
+                    dfhack.military.removeFromSquad(unit)
                     ignore_count = ignore_count +1
                 end
             else
-                removeTraining(unit)
+                dfhack.military.removeFromSquad(unit)
                 ignore_count = ignore_count +1
             end
         end
@@ -147,10 +145,10 @@ function getTrainingSquads()
     return squads
 end
 
-function findNeed(unit)
+function getTrainingNeed(unit)
     local needs =  unit.status.current_soul.personality.needs
     for _, need in ipairs(needs) do
-        if need.id == need_id then
+        if need.id == MartialTraining then
             return need
         end
     end
@@ -160,16 +158,6 @@ end
 --######
 --Main
 --######
-
-function getByID(id)
-    for _, unit in ipairs(getTrainingCandidates()) do
-        if (unit.hist_figure_id == id) then
-            return unit
-        end
-    end
-
-    return nil
-end
 
 -- Find all training squads
 -- Abort if no squads found
@@ -211,17 +199,13 @@ function addTraining(unit)
     return false
 end
 
-function removeTraining(unit)
-    return dfhack.military.removeFromSquad(unit.id)
-end
-
 function removeAll()
     if ( state.training_squads == nil) then return end
     for _, squad in ipairs(getTrainingSquads()) do
         for i=1,9,1 do
-            local dwarf = getByID(squad.positions[i].occupant)
-            if (dwarf ~= nil) then
-                removeTraining(dwarf)
+            local hf = df.historical_figure.find(squad.positions[i].occupant)
+            if hf ~= nil then
+                dfhack.military.removeFromSquad(hf.unit_id)
             end
         end
     end
@@ -234,7 +218,7 @@ function check()
     local inque_count = 0
     if ( squads == nil) then return end
     for _, unit in ipairs(getTrainingCandidates()) do
-        local need = findNeed(unit)
+        local need = getTrainingNeed(unit)
         if ( need  ~= nil ) then
             if ( need.focus_level  < state.threshold ) then
                 local bol = addTraining(unit)
@@ -244,17 +228,15 @@ function check()
                     inque_count = inque_count +1
                 end
             else
-                removeTraining(unit)
+                dfhack.military.removeFromSquad(unit)
             end
         end
     end
 
-    dfhack.println(GLOBAL_KEY  .. " | IGN: " .. ignore_count .. " TRAIN: " .. intraining_count .. " QUE: " ..inque_count )
+    dfhack.println(GLOBAL_KEY  .. " | IGNORED: " .. ignore_count .. " TRAINING: " .. intraining_count .. " QUEUE: " ..inque_count )
 end
 
 function start()
-    dfhack.println(GLOBAL_KEY  .. " | START")
-
     if (args.t) then
         state.threshold = 0-tonumber(args.t)
     end
@@ -264,7 +246,6 @@ end
 function stop()
     removeAll()
     repeatUtil.cancel(GLOBAL_KEY)
-    dfhack.println(GLOBAL_KEY  .. " | STOP")
 end
 
 if dfhack_flags.enable then
@@ -282,9 +263,7 @@ end
 
 if ( state.enabled ) then
     start()
-    dfhack.println(GLOBAL_KEY  .." | Enabled")
 else
     stop()
-    dfhack.println(GLOBAL_KEY  .." | Disabled")
 end
 persist_state()
