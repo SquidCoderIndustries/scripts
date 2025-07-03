@@ -14,6 +14,10 @@ local buildings = df.global.world.buildings
 local caravans = df.global.plotinfo.caravans
 local units = df.global.world.units
 
+-- TODO: Add a proper API and UI for notification configuration
+-- this is global so one can use `:lua reqscript('internal/notify/notifications').save_time_threshold_mins=X` to change the threshold to X mins.
+save_time_threshold_mins = save_time_threshold_mins or 15
+
 function for_iter(vec, match_fn, action_fn, reverse)
     local offset = type(vec) == 'table' and 1 or 0
     local idx1 = reverse and #vec-1+offset or offset
@@ -303,6 +307,33 @@ local function get_bar(get_fn, get_max_fn, text, color)
     return nil
 end
 
+local function get_save_alert()
+    local mins_since_save = dfhack.persistent.getUnsavedSeconds()//60
+    local pen = COLOR_LIGHTCYAN
+    if mins_since_save < save_time_threshold_mins then return end
+    if mins_since_save >= 4*save_time_threshold_mins then
+        pen = COLOR_LIGHTRED
+    elseif mins_since_save >= 2*save_time_threshold_mins then
+        pen = COLOR_YELLOW
+    end
+    return {
+        {text='Last save: ', pen=COLOR_WHITE},
+        {text=dfhack.formatInt(mins_since_save) ..' mins ago', pen=pen},
+    }
+end
+
+local function save_popup()
+    local mins_since_save = dfhack.persistent.getUnsavedSeconds()//60
+    local message = 'It has been ' .. dfhack.formatInt(mins_since_save) .. ' minutes since your last save.'
+    if dfhack.world.isFortressMode() then
+        message = message .. '\n\nWould you like to save now? (Note: You can also close this reminder and save manually)'
+        dlg.showYesNoPrompt('Save now?', message, nil, function() dfhack.run_script('quicksave') end)
+    else
+        message = message .. '\n\nClose this popup to open the options menu and select "Save and continue playing"'
+        dlg.showMessage('Save reminder', message, COLOR_WHITE, function() gui.simulateInput(dfhack.gui.getDFViewscreen(true), 'OPTIONS') end)
+    end
+end
+
 -- the order of this list controls the order the notifications will appear in the overlay
 NOTIFICATIONS_BY_IDX = {
     {
@@ -526,20 +557,10 @@ NOTIFICATIONS_BY_IDX = {
     },
     {
         name='save-reminder',
-        desc='Shows a reminder if it has been more than 15 minutes since your last save.',
+        desc=('Shows a reminder if it has been more than %d minute%s since your last save.'):format(save_time_threshold_mins, save_time_threshold_mins == 1 and '' or 's'),
         default=true,
-        dwarf_fn=function ()
-            local minsSinceSave = dfhack.persistent.getUnsavedSeconds()//60
-            if minsSinceSave >= 15 then
-                return "Last save: ".. (dfhack.formatInt(minsSinceSave)) ..' mins ago'
-            end
-        end,
-        on_click=function()
-            local minsSinceSave = dfhack.persistent.getUnsavedSeconds()//60
-            local message = 'It has been ' .. dfhack.formatInt(minsSinceSave) .. ' minutes since your last save. \n\nWould you like to save now?\n\n' ..
-            'You can also close this reminder and save manually.'
-            dlg.showYesNoPrompt('Save now?', message, nil, function() dfhack.run_script('quicksave') end)
-        end,
+        fn=get_save_alert,
+        on_click=save_popup,
     },
 }
 

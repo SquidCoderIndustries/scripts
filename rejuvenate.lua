@@ -71,6 +71,11 @@ function rejuvenate(unit, quiet, force, dry_run, age)
         unit.profession2 = df.profession.STANDARD
         if hf then hf.profession = df.profession.STANDARD end
     end
+    unit.flags4.portrait_must_be_refreshed = true
+    unit.flags4.any_texture_must_be_refreshed = true
+    if dfhack.world.isFortressMode() then
+        dfhack.units.setAutomaticProfessions(unit)
+    end
     if not quiet then
         print(name .. ' is now ' .. age .. ' years old and will live a normal lifespan henceforth')
     end

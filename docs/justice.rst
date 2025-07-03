@@ -12,6 +12,7 @@ Usage
 -----
 
 ::
+
     justice [list]
     justice pardon [--unit <id>]
 

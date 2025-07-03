@@ -345,7 +345,7 @@ end
 local function analyze_noble(unit, risky_items, banned_items)
     for _, preference in ipairs(unit.status.current_soul.preferences) do
         if preference.type == df.unitpref_type.LikeItem and
-            preference.active
+            preference.flags.visible
         then
             register_item_type(risky_items, preference, banned_items)
         end

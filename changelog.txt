@@ -17,6 +17,7 @@ Template for new versions:
 ## New Features
 
 ## Fixes
+- `gui/gm-unit`: remove reference to ``think_counter``, removed in v51.12
 
 ## Misc Improvements
 
@@ -27,25 +28,111 @@ Template for new versions:
 # Future
 
 ## New Tools
+
+## New Features
+
+## Fixes
+- `gui/journal`: fix typo which caused the table of contents to always be regenerated even when not needed
+- `gui/mod-manager`: gracefully handle mods with missing or broken ``info.txt`` files
+- `uniform-unstick`: resolve overlap with new buttons in 51.13
+
+## Misc Improvements
+
+## Removed
+
+# 51.12-r1
+
+## New Tools
+- `deteriorate`: (reinstated) allow corpses, body parts, food, and/or damaged clothes to rot away
+- `modtools/moddable-gods`: (reinstated) create new deities from scratch
+
+## New Features
+- `gui/spectate`: added "Prefer nicknamed" to the list of options
+- `gui/mod-manager`: when run in a loaded world, shows a list of active mods -- click to export the list to the clipboard for easy sharing or posting
+- `gui/blueprint`: now records zone designations
+- `gui/design`: add option to draw N-point stars, hollow or filled or inverted, and change the main axis to orient in any direction
+
+## Fixes
+- `starvingdead`: properly restore to correct enabled state when loading a new game that is different from the first game loaded in this session
+- `starvingdead`: ensure undead decay does not happen faster than the declared decay rate when saving and loading the game
+- `gui/design`: prevent line thickness from extending outside the map boundary
+
+## Misc Improvements
+- `remove-stress`: also applied to long-term stress, immediately removing stressed and haggard statuses
+
+# 51.11-r1
+
+## Fixes
+- `list-agreements`: fix date math when determining petition age
+- `gui/petitions`: fix date math when determining petition age
+- `gui/rename`: fix commandline processing when manually specifying target ids
+- `gui/sandbox`: restore metal equipment options when spawning units
+
+## Misc Improvements
+- `fix/loyaltycascade`: now also breaks up brawls and other intra-fort conflicts that *look* like loyalty cascades
+- `makeown`: remove selected unit from any current conflicts so they don't just start attacking other citizens when you make them a citizen of your fort
+
+# 51.09-r1
+
+## New Features
+- `gui/mass-remove`: add a button to the bottom toolbar when eraser mode is active for launching `gui/mass-remove`
+- `idle-crafting`: default to only considering happy and ecstatic units for the highest need threshold
+- `gui/sitemap`: add a button to the toolbar at the bottom left corner of the screen for launching `gui/sitemap`
+
+## Fixes
+- `idle-crafting`: check that units still have crafting needs before creating a job for them
+- `gui/journal`: prevent pause/unpause events from leaking through the UI when keys are mashed
+
+# 51.07-r1
+
+## New Tools
 - `devel/export-map`: export map tile data to a JSON file
 - `autocheese`: automatically make cheese using barrels that have accumulated sufficient milk
 - `gui/spectate`: interactive UI for configuring `spectate`
+- `gui/notes`: UI for adding and managing notes attached to tiles on the map
+- `launch`: (reinstated) new adventurer fighting move: thrash your enemies with a flying suplex
+- `putontable`: (reinstated) make an item appear on a table
 
 ## New Features
-- `advtools`: new ``advtools.fastcombat`` overlay (enabled by default)  allows you to skip combat animations and the announcement "More" button by mashing the movement keys
+- `advtools`: ``advtools.fastcombat`` overlay (enabled by default) allows you to skip combat animations and the announcement "More" button by mashing the movement keys
+- `gui/journal`: now working in adventure mode -- journal is per-adventurer, so if you unretire an adventurer, you get the same journal
+- `emigration`: ``nobles`` command for sending freeloader barons back to the sites that they rule over
+- `toggle-kbd-cursor`: support adventure mode (Alt-k keybinding now toggles Look mode)
 
 ## Fixes
-- `position`: support for adv mode look cursor
+- `hfs-pit`: use correct wall types when making pits with walls
+- `gui/liquids`: don't add liquids to wall tiles
+- `gui/liquids`: using the remove tool with magma selected will no longer create unexpected unpathable tiles
+- `idle-crafting`: do not assign crafting jobs to nobles holding meetings (avoids dangling jobs)
+- `rejuvenate`: update unit portrait and sprite when aging up babies and children
+- `rejuvenate`: recalculate labor assignments for unit when aging up babies and children (so they can start accepting jobs)
 
 ## Misc Improvements
 - `hide-tutorials`: handle tutorial popups for adventure mode
 - `hide-tutorials`: new ``reset`` command that will re-enable popups in the current game (in case you hid them all and now want them back)
 - `gui/notify`: moody dwarf notification turns red when they can't reach workshop or items
+- `gui/notify`: save reminder now appears in adventure mode
+- `gui/notify`: save reminder changes color to yellow at 30 minutes and to orange at 60 minutes
 - `gui/confirm`: in the delete manager order confirmation dialog, show a description of which order you have selected to delete
 - `position`: display both adventurer and site pos simultaneously. Display map block pos+offset of selected tile.
 - `devel/hello-world`: updated to show off the new Slider widget
 
 ## Removed
+- `gui/create-item`: now accepts a ``pos`` argument of where to spawn items
+- `modtools/create-item`: exported ``hackWish`` function now supports ``opts.pos`` for determining spawn location
+- `hfs-pit`: improve placement of stairs w/r/t eerie pits and ramp tops
+- `position`: add adventurer tile position
+- `position`: add global site position
+- `position`: when a tile is selected, display relevant map block and intra-block offset
+- `gui/sitemap`: shift click to start following the selected unit or artifact
+- `prioritize`: when prioritizing jobs of a specified type, also output how many of those jobs were already prioritized before you ran the command
+- `prioritize`: don't include already-prioritized jobs in the output of ``prioritize -j``
+- `gui/design`: only display vanilla dimensions tooltip if the DFHack dimensions tooltip is disabled
+- `devel/query`: support adventure mode
+- `devel/tree-info`: support adventure mode
+- `hfs-pit`: support adventure mode
+- `colonies`: support adventure mode
+- `position`: report position of the adventure mode look cursor, if active
 
 # 51.04-r1.1
 
@@ -90,8 +177,6 @@ Template for new versions:
 - `caravan`: add filter for written works in display furniture assignment dialog
 - `fix/wildlife`: don't vaporize stuck wildlife that is onscreen -- kill them instead (as if they died from old age)
 - `gui/sitemap`: show primary group affiliation for visitors and invaders (e.g. civilization name or performance troupe)
-
-# 50.15-r1
 
 # 50.14-r2
 
@@ -689,8 +774,6 @@ Template for new versions:
 ## Removed
 - `gui/automelt`: replaced by an overlay panel that appears when you click on a stockpile
 
-# 50.08-r3
-
 # 50.08-r2
 
 ## New Scripts
@@ -739,8 +822,6 @@ Template for new versions:
 
 # 50.07-r1
 
-## New Scripts
-
 ## Fixes
 -@ `caravan`: fix trade good list sometimes disappearing when you collapse a bin
 -@ `gui/gm-editor`: no longer nudges last open window when opening a new one
@@ -752,8 +833,6 @@ Template for new versions:
 - `gui/gm-editor`: the key column now auto-fits to the widest key
 - `prioritize`: revise and simplify the default list of prioritized jobs -- be sure to tell us if your forts are running noticeably better (or worse!)
 -@ `gui/control-panel`: add `faststart` to the system services
-
-## Removed
 
 # 50.07-beta2
 

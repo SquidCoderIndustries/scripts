@@ -19,3 +19,16 @@ Usage
 ::
 
     gui/mass-remove
+
+Overlay
+-------
+
+This tool also provides one overlay that is managed by the `overlay`
+framework.
+
+gui/mass-remove.toolbar
+~~~~~~~~~~~~~~~~~~~~~~~
+
+The ``gui/mass-remove.toolbar`` overlay adds a button to the toolbar at the
+bottom of the screen when eraser mode is active. It allows you to conveniently
+open the ``gui/mass-remove`` interface.

@@ -67,7 +67,6 @@ end
 local function trade_goods_all_selected(which)
     local num_selected = 0
     trade_internal.for_selected_item(which, function(idx)
-        print(idx)
         num_selected = num_selected + 1
     end)
     return #mi.trade.goodflag[which] == num_selected
@@ -336,7 +335,6 @@ ConfirmSpec{
             return uniform_has_changes()
         end
         if clicked_on_confirm_button(mouse_offset) then
-            print('confirm click detected')
             clear_uniform_record()
         else
             ensure_uniform_record()
