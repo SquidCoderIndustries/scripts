@@ -225,6 +225,22 @@ function check()
     local intraining_count = 0
     local inque_count = 0
     if ( squads == nil) then return end
+    for _,squad in ipairs(squads) do
+        for i=1,9,1   do
+            if ( squad.positions[i].occupant  ~= -1 ) then
+                local hf = df.historical_figure.find(squad.positions[i].occupant)
+                if hf ~= nil then
+                    local unit df.unit.find(hf.unit_id)
+                    local training_need = getTrainingNeed(unit)
+                    if ( training_need ~= nil ) then
+                        if ( training_need.focus_level >= state.threshold ) then
+                            dfhack.military.removeFromSquad(unit)
+                        end
+                    end
+                end
+            end
+        end
+    end
     for _, unit in ipairs(getTrainingCandidates()) do
         local need = getTrainingNeed(unit)
         if ( need  ~= nil ) then
