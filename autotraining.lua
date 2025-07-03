@@ -212,14 +212,7 @@ function addTraining(unit)
 end
 
 function removeTraining(unit)
-    for _, squad in ipairs(getTrainingSquads()) do
-        for i=1,9,1   do
-            if ( unit.hist_figure_id  == squad.positions[i].occupant ) then
-                return dfhack.military.removeFromSquad(unit.id)
-            end
-        end
-    end
-    return false
+    return dfhack.military.removeFromSquad(unit.id)
 end
 
 function removeAll()
