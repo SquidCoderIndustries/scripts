@@ -109,13 +109,11 @@ function getTrainingCandidates()
             goto next_unit
         end
         if not dfhack.units.isAdult(unit) then
-            ignore_count = ignore_count +1
             goto next_unit
         end
         local need = getTrainingNeed(unit)
         if ( need  ~= nil ) then
             if ( need.focus_level >= state.threshold ) then
-                ignore_count = ignore_count +1
                 goto next_unit
             end
         end
