@@ -154,6 +154,7 @@ function getTrainingSquads()
 end
 
 function getTrainingNeed(unit)
+    if unit == nil then return nil end
     local needs =  unit.status.current_soul.personality.needs
     for _, need in ipairs(needs) do
         if need.id == MartialTraining then
