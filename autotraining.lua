@@ -244,7 +244,6 @@ function start()
 end
 
 function stop()
-    removeAll()
     repeatUtil.cancel(GLOBAL_KEY)
 end
 
@@ -265,5 +264,6 @@ if ( state.enabled ) then
     start()
 else
     stop()
+    removeAll()
 end
 persist_state()
