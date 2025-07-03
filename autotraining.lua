@@ -104,29 +104,37 @@ function getTrainingCandidates()
     local citizen = dfhack.units.getCitizens(true)
     ignore_count = 0
     for _, unit in ipairs(citizen) do
-        if dfhack.units.isAdult(unit) then
-            local noblePos = dfhack.units.getNoblePositions(unit)
-            local isIgnNoble = false
-            if ( not state.ignored[unit.id] ) then
-                if noblePos ~=nil then
-                    for _, position in ipairs(noblePos) do
-                        if state.ignored_nobles[position.position.code] then
-                            isIgnNoble = true
-                            break
-                        end
-                    end
-                end
-                if not isIgnNoble then
-                    table.insert(ret, unit)
-                else
-                    dfhack.military.removeFromSquad(unit)
-                    ignore_count = ignore_count +1
-                end
-            else
-                dfhack.military.removeFromSquad(unit)
+        if state.ignored[unit.id] then
+            ignore_count = ignore_count +1
+            goto next_unit
+        end
+        if not dfhack.units.isAdult(unit) then
+            ignore_count = ignore_count +1
+            goto next_unit
+        end
+        local need = getTrainingNeed(unit)
+        if ( need  ~= nil ) then
+            if ( need.focus_level >= state.threshold ) then
                 ignore_count = ignore_count +1
+                goto next_unit
             end
         end
+        local noblePos = dfhack.units.getNoblePositions(unit)
+        local isIgnNoble = false
+        if noblePos ~=nil then
+            for _, position in ipairs(noblePos) do
+                if state.ignored_nobles[position.position.code] then
+                    isIgnNoble = true
+                    break
+                end
+            end
+        end
+        if isIgnNoble then
+            ignore_count = ignore_count +1
+            goto next_unit
+        end
+        table.insert(ret, unit)
+        ::next_unit::
     end
     return ret
 end
