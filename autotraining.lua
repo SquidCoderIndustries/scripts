@@ -187,16 +187,16 @@ function checkSquads()
     return squads
 end
 
-function addTraining(unit)
+function addTraining(unit,good_squads)
     if (unit.military.squad_id ~= -1) then
-        for _, squad in ipairs(getTrainingSquads()) do
+        for _, squad in ipairs(good_squads) do
             if unit.military.squad_id == squad.id then
                 return true
             end
         end
         return false
     end
-    for _, squad in ipairs(getTrainingSquads()) do
+    for _, squad in ipairs(good_squads) do
         for i=1,9,1   do
             if ( squad.positions[i].occupant  == -1 ) then
                 return dfhack.military.addToSquad(unit.id,squad.id,i)
@@ -242,11 +242,11 @@ function check()
         end
     end
     for _, unit in ipairs(getTrainingCandidates()) do
-        local need = getTrainingNeed(unit)
-        if ( need  ~= nil ) then
-            if ( need.focus_level  < state.threshold ) then
-                local bol = addTraining(unit)
-                if ( bol ) then
+        local training_need = getTrainingNeed(unit)
+        if ( training_need  ~= nil ) then
+            if ( training_need.focus_level  < state.threshold ) then
+                local added = addTraining(unit, squads)
+                if added then
                     intraining_count = intraining_count +1
                 else
                     inque_count = inque_count +1
