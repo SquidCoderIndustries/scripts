@@ -112,10 +112,8 @@ function getTrainingCandidates()
             goto next_unit
         end
         local need = getTrainingNeed(unit)
-        if ( need  ~= nil ) then
-            if ( need.focus_level >= state.threshold ) then
-                goto next_unit
-            end
+        if not need or need.focus_level >= state.threshold  then
+            goto next_unit
         end
         local noblePos = dfhack.units.getNoblePositions(unit)
         local isIgnNoble = false
@@ -229,7 +227,7 @@ function check()
             if ( squad.positions[i].occupant  ~= -1 ) then
                 local hf = df.historical_figure.find(squad.positions[i].occupant)
                 if hf ~= nil then
-                    local unit df.unit.find(hf.unit_id)
+                    local unit = df.unit.find(hf.unit_id)
                     local training_need = getTrainingNeed(unit)
                     if ( training_need ~= nil ) then
                         if ( training_need.focus_level >= state.threshold ) then
