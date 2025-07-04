@@ -89,7 +89,7 @@ dfhack.onStateChange[GLOBAL_KEY] = function(sc)
     -- retrieve state saved in game. merge with default state so config
     -- saved from previous versions can pick up newer defaults.
     load_state()
-    if ( state.enabled ) then
+    if state.enabled then
         start()
     end
     persist_state()
@@ -101,9 +101,8 @@ end
 --######
 function getTrainingCandidates()
     local ret = {}
-    local citizen = dfhack.units.getCitizens(true)
     ignore_count = 0
-    for _, unit in ipairs(citizen) do
+    for _, unit in ipairs(dfhack.units.getCitizens(true)) do
         if state.ignored[unit.id] then
             ignore_count = ignore_count +1
             goto next_unit
@@ -171,13 +170,13 @@ function checkSquads()
     for _, squad in ipairs(getTrainingSquads()) do
         if squad.entity_id == df.global.plotinfo.group_id then
             local leader = squad.positions[0].occupant
-            if ( leader ~= -1) then
+            if leader ~= -1 then
                 table.insert(squads,squad)
             end
         end
     end
 
-    if (#squads == 0) then
+    if #squads == 0 then
         return nil
     end
 
@@ -185,7 +184,7 @@ function checkSquads()
 end
 
 function addTraining(unit,good_squads)
-    if (unit.military.squad_id ~= -1) then
+    if unit.military.squad_id ~= -1 then
         for _, squad in ipairs(good_squads) do
             if unit.military.squad_id == squad.id then
                 return true
@@ -195,7 +194,7 @@ function addTraining(unit,good_squads)
     end
     for _, squad in ipairs(good_squads) do
         for i=1,9,1   do
-            if ( squad.positions[i].occupant  == -1 ) then
+            if squad.positions[i].occupant  == -1 then
                 return dfhack.military.addToSquad(unit.id,squad.id,i)
             end
         end
@@ -205,7 +204,7 @@ function addTraining(unit,good_squads)
 end
 
 function removeAll()
-    if ( state.training_squads == nil) then return end
+    if state.training_squads == nil then return end
     for _, squad in ipairs(getTrainingSquads()) do
         for i=1,9,1 do
             local hf = df.historical_figure.find(squad.positions[i].occupant)
@@ -221,36 +220,27 @@ function check()
     local squads = checkSquads()
     local intraining_count = 0
     local inque_count = 0
-    if ( squads == nil) then return end
+    if squads == nil then return end
     for _,squad in ipairs(squads) do
         for i=1,9,1   do
-            if ( squad.positions[i].occupant  ~= -1 ) then
+            if squad.positions[i].occupant  ~= -1 then
                 local hf = df.historical_figure.find(squad.positions[i].occupant)
                 if hf ~= nil then
                     local unit = df.unit.find(hf.unit_id)
                     local training_need = getTrainingNeed(unit)
-                    if ( training_need ~= nil ) then
-                        if ( training_need.focus_level >= state.threshold ) then
-                            dfhack.military.removeFromSquad(unit)
-                        end
+                    if not training_need or training_need.focus_level >= state.threshold then
+                        dfhack.military.removeFromSquad(unit)
                     end
                 end
             end
         end
     end
     for _, unit in ipairs(getTrainingCandidates()) do
-        local training_need = getTrainingNeed(unit)
-        if ( training_need  ~= nil ) then
-            if ( training_need.focus_level  < state.threshold ) then
-                local added = addTraining(unit, squads)
-                if added then
-                    intraining_count = intraining_count +1
-                else
-                    inque_count = inque_count +1
-                end
-            else
-                dfhack.military.removeFromSquad(unit)
-            end
+        local added = addTraining(unit, squads)
+        if added then
+            intraining_count = intraining_count +1
+        else
+            inque_count = inque_count +1
         end
     end
 
@@ -258,7 +248,7 @@ function check()
 end
 
 function start()
-    if (args.t) then
+    if args.t then
         state.threshold = 0-tonumber(args.t)
     end
     repeatUtil.scheduleEvery(GLOBAL_KEY, 1, 'days', check)
@@ -281,7 +271,7 @@ if dfhack_flags.module then
     return
 end
 
-if ( state.enabled ) then
+if state.enabled then
     start()
 else
     stop()
