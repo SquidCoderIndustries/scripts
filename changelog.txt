@@ -17,6 +17,7 @@ Template for new versions:
 ## New Features
 
 ## Fixes
+- `gui/gm-unit`: remove reference to ``think_counter``, removed in v51.12
 
 ## Misc Improvements
 
@@ -31,6 +32,9 @@ Template for new versions:
 ## New Features
 
 ## Fixes
+- `gui/journal`: fix typo which caused the table of contents to always be regenerated even when not needed
+- `gui/mod-manager`: gracefully handle mods with missing or broken ``info.txt`` files
+- `uniform-unstick`: resolve overlap with new buttons in 51.13
 
 ## Misc Improvements
 
