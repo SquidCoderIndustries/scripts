@@ -18,6 +18,7 @@ Template for new versions:
 
 ## Fixes
 - `gui/gm-unit`: remove reference to ``think_counter``, removed in v51.12
+- fixed references to removed ``unit.curse`` compound
 
 ## Misc Improvements
 
