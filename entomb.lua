@@ -21,6 +21,7 @@ local function CheckTombZone(building, unit_id)
             return true
         end
     end
+    return false
 end
 
 -- Iterate through all available tomb zones.
@@ -28,6 +29,7 @@ local function IterateTombZones(unit_id)
     for _, building in ipairs(df.global.world.buildings.other.ZONE_TOMB) do
         if CheckTombZone(building, unit_id) then return building end
     end
+    return nil
 end
 
 -- Check if any of the unit's corpse items are not yet placed in a coffin.
@@ -92,15 +94,17 @@ end
 
 function PutInCoffin(coffin, item)
     if item then
-        -- Set df.building_item_role_type.PERM first before changing it to TEMP to turn the items
-        -- into interred burial items, otherwise the items will be hauled back to stockpiles.
-        -- https://discord.com/channels/793331351645323264/873014631315148840/1394242351345434654
-        dfhack.items.moveToBuilding(item, coffin, df.building_item_role_type.PERM)
+        -- Remove job from item to allow it to be teleported.
+        if item.flags.in_job then
+            local inJob = dfhack.items.getSpecificRef(item, df.specific_ref_type.JOB)
+            local job = inJob and inJob.data.job
+            if job then
+                dfhack.job.removeJob(job)
+            end
         end
-    for _, buildingItem in ipairs(coffin.contained_items) do
-        local item = buildingItem.item
-        if not df.item_coffinst:is_instance(item) then
-            buildingItem.use_mode = df.building_item_role_type.TEMP
+        if (dfhack.items.moveToBuilding(item, coffin, df.building_item_role_type.TEMP)) then
+            -- Flag the item become an interred item, otherwise it will be hauled back to stockpiles.
+            item.flags.in_building = true
         end
     end
 end
@@ -120,7 +124,9 @@ end
 
 function AssignToTomb(unit, tomb, forceBurial)
     local corpseParts = unit.corpse_parts
-    local strBurial = '%s assigned to a tomb zone for burial.'
+    local strBurial = '%s assigned to %s for burial.'
+    local strTomb = 'a tomb zone'
+    if #tomb.name > 0 then strTomb = tomb.name end
     local strCorpseItems = '(%d corpse or body part%s)'
     local strNoCorpse = '%s has no corpse or body parts available for burial.'
     local strUnitName = unit and dfhack.units.getReadableName(unit)
@@ -137,10 +143,9 @@ function AssignToTomb(unit, tomb, forceBurial)
         print(string.format(strNoCorpse, strUnitName))
     else
         tomb.assigned_unit_id = unit.id
-        print(string.format(strBurial, strUnitName))
+        print(string.format(strBurial, strUnitName, strTomb))
         if forceBurial then
             local coffin = GetCoffin(tomb)
-            print('Unit is already assigned to a tomb zone but may still have uninterred corpse or body part(s).')
             if coffin then
                 for _, item_id in ipairs(corpseParts) do
                     local item = df.item.find(item_id)
