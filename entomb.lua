@@ -189,6 +189,7 @@ function AssignToTomb(unit, tomb, forceBurial)
         print(string.format(strNoCorpse, strUnitName))
     else
         tomb.assigned_unit_id = unit.id
+        tomb.assigned_unit = unit
         print(string.format(strBurial, strUnitName, strTomb))
         if forceBurial then
             local coffin = GetCoffin(tomb)
