@@ -190,6 +190,9 @@ function AssignToTomb(unit, tomb, forceBurial)
     else
         tomb.assigned_unit_id = unit.id
         tomb.assigned_unit = unit
+        if not utils.linear_index(unit.owned_buildings, tomb) then
+            unit.owned_buildings:insert('#', tomb)
+        end
         print(string.format(strBurial, strUnitName, strTomb))
         if forceBurial then
             local coffin = GetCoffin(tomb)
