@@ -190,9 +190,16 @@ end
 function AssignToTomb(unit, tomb, options)
     local corpseParts = unit.corpse_parts
     local strBurial = '%s assigned to %s for burial.'
-    local strTomb = 'a tomb zone'
-    if #tomb.name > 0 then strTomb = tomb.name end
-    local strCorpseItems = '(%d corpse or body part%s)'
+    local strTomb = 'Tomb %d'
+    -- Provide the tomb's ID so users can invoke it when interring arbitrary items.
+    strTomb = string.format(strTomb, tomb.id)
+    if #tomb.name > 0 then
+        strTomb = tomb.name
+    else
+        -- Assign name to unnamed tombs for easier search/reference.
+        tomb.name = strTomb
+    end
+    local strCorpseItems = '(%d corpse, body part%s, or burial item%s)'
     local strPlural = ''
     local strNoCorpse = '%s has no corpse or body parts available for burial.'
     local strUnitName = unit and dfhack.units.getReadableName(unit)
@@ -213,7 +220,7 @@ function AssignToTomb(unit, tomb, options)
             unit.owned_buildings:insert('#', tomb)
         end
         print(string.format(strBurial, strUnitName, strTomb))
-        print(string.format(strCorpseItems, burialItemCount, strPlural))
+        print(string.format(strCorpseItems, burialItemCount, strPlural, strPlural))
         if options.haulNow or options.teleport then
             local coffin = GetCoffin(tomb)
             if coffin then
