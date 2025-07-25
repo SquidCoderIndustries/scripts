@@ -17,7 +17,7 @@ end
 
 -- Validate tomb zone assignment.
 local function CheckTombZone(building, unit_id)
-    if building.type == df.civzone_type.Tomb then
+    if df.building_civzonest:is_instance(building) and building.type == df.civzone_type.Tomb then
         if building.assigned_unit_id == unit_id then
             return true
         end
@@ -93,36 +93,21 @@ local function FlagForBurial(unit, corpseParts)
     return burialItemCount
 end
 
-function PutInCoffin(coffin, item)
-    if item then
-        -- Remove job from item to allow it to be teleported.
-        if item.flags.in_job then
-            local inJob = dfhack.items.getSpecificRef(item, df.specific_ref_type.JOB)
-            local job = inJob and inJob.data.job
-            if job then
-                dfhack.job.removeJob(job)
-            end
-        end
-        if (dfhack.items.moveToBuilding(item, coffin, df.building_item_role_type.TEMP)) then
-            -- Flag the item become an interred item, otherwise it will be hauled back to stockpiles.
-            item.flags.in_building = true
-        end
+-- Adapted from scripts/internal/caravan/pedestal.lua::is_displayable_item()
+-- Allow checks for possible use case of interring of non-corpse items.
+local function isMoveableItem(tomb, coffin, item, options)
+    if not item or
+        item.flags.hostile or
+        item.flags.removed or
+        item.flags.spider_web or
+        item.flags.construction or
+        item.flags.encased or
+        item.flags.trader or
+        item.flags.owned or
+        item.flags.on_fire
+    then
+        return false
     end
-end
-
-function HaulToCoffin(tomb, coffin, item)
-    if not tomb or not coffin or not item then return end
-
-    if dfhack.items.getHolderBuilding(item) == coffin and item.flags.in_building == true then
-print("DEBUG: item is already properly interred, skipping", tomb.id, dfhack.buildings.getName(tomb),
-coffin.id, dfhack.buildings.getName(coffin), item.id, dfhack.items.getReadableDescription(item))
-        return  -- already interred in this coffin, skip
-    end
-
-    -- TODO Consider what should happen when certain item.flags are set, particularly .forbid and .dump.
-    -- TODO Consider copy-paste-modify scripts/internal/caravan/pedestal.lua::is_displayable_item()
-
-    -- Remove current job from item to allow it to be moved to the tomb.
     if item.flags.in_job then
         local inJob = dfhack.items.getSpecificRef(item, df.specific_ref_type.JOB)
         local job = inJob and inJob.data.job or nil
@@ -130,34 +115,68 @@ coffin.id, dfhack.buildings.getName(coffin), item.id, dfhack.items.getReadableDe
             and job.job_type == df.job_type.PlaceItemInTomb
             and dfhack.job.getGeneralRef(job, df.general_ref_type.BUILDING_HOLDER) ~= nil
             and dfhack.job.getGeneralRef(job, df.general_ref_type.BUILDING_HOLDER).building_id == tomb.id
+            -- Allow task to be cancelled if teleporting.
+            and not options.teleport
         then
-print("DEBUG: desired job already exists, skipping", tomb.id, dfhack.buildings.getName(tomb),
-coffin.id, dfhack.buildings.getName(coffin), item.id, dfhack.items.getReadableDescription(item), job.id)
-            return  -- desired job already exists, skip
+            return false
         end
-        if job then
-print("DEBUG: removing current job from this item", item.id, dfhack.items.getReadableDescription(item),
-job.id, df.job_type[job.job_type])
-            dfhack.job.removeJob(job)
+    elseif item.flags.in_inventory then
+        local inContainer = dfhack.items.getGeneralRef(item, df.general_ref_type.CONTAINED_IN_ITEM)
+        if not inContainer then return false end
+    end
+    if not dfhack.maps.isTileVisible(xyz2pos(dfhack.items.getPosition(item))) then
+        return false
+    end
+    if item.flags.in_building then
+        local building = dfhack.items.getHolderBuilding(item)
+        -- Item is already interred.
+        if building and building == coffin then return false end
+        for _, containedItem in ipairs(building.contained_items) do
+            -- Item is part of a building.
+            if item == contained_item.item then return false end
         end
     end
+    return true
+end
 
+-- Remove job from item to allow for hauling or teleportation.
+local function RemoveJob(item)
+    local inJob = dfhack.items.getSpecificRef(item, df.specific_ref_type.JOB)
+    local job = inJob and inJob.data.job
+    if job then dfhack.job.removeJob(job) end
+end
+
+function TeleportToCoffin(tomb, coffin, item)
+    if not tomb or not coffin then return end
+    local itemName = item and dfhack.items.getReadableDescription(item) or nil
+    if item.flags.in_job then RemoveJob(item) end
+    if (dfhack.items.moveToBuilding(item, coffin, df.building_item_role_type.TEMP)) then
+        -- Flag the item to become an interred item, otherwise it will be hauled back to stockpiles.
+        item.flags.in_building = true
+        local strMove = 'Teleporting %d %s into a coffin.'
+        print(string.format(strMove, item.id, itemName))
+    end
+end
+
+function HaulToCoffin(tomb, coffin, item)
+    if not tomb or not coffin then return end
+    local itemName = item and dfhack.items.getReadableDescription(item) or nil
+    if item.flags.in_job then RemoveJob(item) end
     local pos = utils.getBuildingCenter(coffin)
-
     local job = df.job:new()
     job.job_type = df.job_type.PlaceItemInTomb
     job.pos = pos
-
     dfhack.job.attachJobItem(job, item, df.job_role_type.Hauled, -1, -1)
     dfhack.job.addGeneralRef(job, df.general_ref_type.BUILDING_HOLDER, tomb.id)
     tomb.jobs:insert('#', job)
-
     dfhack.job.linkIntoWorld(job, true)
+    local strMove = 'Tasking %d %s for immediate burial.'
+    print(string.format(strMove, item.id, itemName))
 end
 
-local function GetCoffin(tomb)
+function GetCoffin(tomb)
     local coffin
-    if tomb.type == df.civzone_type.Tomb then
+    if df.building_civzonest:is_instance(tomb) and tomb.type == df.civzone_type.Tomb then
         for _, building in ipairs(tomb.contained_buildings) do
             if df.building_coffinst:is_instance(building) then coffin = building end
         end
@@ -168,15 +187,15 @@ local function GetCoffin(tomb)
     return coffin
 end
 
-function AssignToTomb(unit, tomb, forceBurial)
+function AssignToTomb(unit, tomb, options)
     local corpseParts = unit.corpse_parts
     local strBurial = '%s assigned to %s for burial.'
     local strTomb = 'a tomb zone'
     if #tomb.name > 0 then strTomb = tomb.name end
     local strCorpseItems = '(%d corpse or body part%s)'
+    local strPlural = ''
     local strNoCorpse = '%s has no corpse or body parts available for burial.'
     local strUnitName = unit and dfhack.units.getReadableName(unit)
-    local strPlural = ''
     local incident_id = unit.counters.death_id
     if incident_id ~= -1 then
         local incident = df.incident.find(incident_id)
@@ -185,6 +204,7 @@ function AssignToTomb(unit, tomb, forceBurial)
         incident.flags.discovered = true
     end
     local burialItemCount = FlagForBurial(unit, corpseParts)
+    if burialItemCount > 1 then strPlural = 's' end
     if burialItemCount == 0 then
         print(string.format(strNoCorpse, strUnitName))
     else
@@ -193,28 +213,36 @@ function AssignToTomb(unit, tomb, forceBurial)
             unit.owned_buildings:insert('#', tomb)
         end
         print(string.format(strBurial, strUnitName, strTomb))
-        if forceBurial then
+        print(string.format(strCorpseItems, burialItemCount, strPlural))
+        if options.haulNow or options.teleport then
             local coffin = GetCoffin(tomb)
             if coffin then
                 for _, item_id in ipairs(corpseParts) do
                     local item = df.item.find(item_id)
-                    -- PutInCoffin(coffin, item)
-                    HaulToCoffin(tomb, coffin, item)
+                    if isMoveableItem(tomb, coffin, item, options) then
+                        if options.teleport then
+                            TeleportToCoffin(tomb, coffin, item)
+                        elseif options.haulNow then
+                            HaulToCoffin(tomb, coffin, item)
+                        end
+                    end
                 end
-                print('Corpse items have been teleported into a coffin.')
             else
-                print('No coffin in the assigned tomb zone.\nCorpse items will not be teleported into the tomb zone.')
+                print('No coffin in the assigned tomb zone.\nCorpse items will not be moved into the tomb zone.')
             end
         end
-        if burialItemCount > 1 then strPlural = 's' end
-        print(string.format(strCorpseItems, burialItemCount, strPlural))
     end
 end
 
-local function parseArgs(args)
-    local unit, tomb, forceBurial
+local function ParseArgs(args)
+    local unit, tomb
+    local options = {
+        haulNow = false,
+        teleport = false
+    }
     if args and #args > 0 then
         for i, v in ipairs(args) do
+            if v == 'help' then print(dfhack.script_help()) return end
             if v == 'unit' then
                 local unit_id = tonumber(args[i+1]) or nil
                 unit = unit_id and df.unit.find(unit_id)
@@ -231,22 +259,36 @@ local function parseArgs(args)
                     qerror('Specified zone ID does not point to an unassigned tomb zone.')
                 end
             end
-            if v == 'now' then forceBurial = true end
+            if v == 'now' then options.haulNow = true end
+            if v == 'teleport'  then options.teleport = true end
+            if options.haulNow and options.teleport then
+                qerror('Burial items cannot be teleported and tasked for hauling simultaneously.')
+            end
         end
     end
-    return unit, tomb, forceBurial
+    return unit, tomb, options
 end
 
 local function Main(args)
-    local unit, tomb, forceBurial = parseArgs(args)
-    local entombed
+    if not dfhack.isSiteLoaded() and not dfhack.world.isFortressMode() then
+        qerror('This script requires the game to be in fortress mode.')
+    end
+    local unit, tomb, options = ParseArgs(args)
     if not unit then unit = GetUnitFromCorpse() end
     if unit then
+        local entombed
         if not tomb then tomb, entombed = GetTombZone(unit) end
         if entombed then
             print('Unit is already completely interred in a tomb zone.')
         elseif tomb then
-            AssignToTomb(unit, tomb, forceBurial)
+            -- Prevent multiple tomb zone assignments when tomb ID is specified in the command line.
+            -- Iterating through building.assigned_unit_id is probably safer than checking in
+            -- unit.owned_buildings, as a reference in one does not guarantee a reference in the other.
+            building = IterateTombZones(unit.id)
+            if building and tomb ~= building then
+                qerror('Unit already has an assigned tomb zone.')
+            end
+            AssignToTomb(unit, tomb, options)
         else
             print('No unassigned tomb zones are available.')
         end
