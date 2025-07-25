@@ -93,6 +93,56 @@ local function FlagForBurial(unit, corpseParts)
     return burialItemCount
 end
 
+function AssignToTomb(unit, tomb)
+    local corpseParts = unit.corpse_parts
+    local strBurial = '%s assigned to %s for burial.'
+    local strTomb = 'Tomb %d'
+    -- Provide the tomb's ID so users can invoke it when interring arbitrary items.
+    strTomb = string.format(strTomb, tomb.id)
+    if #tomb.name > 0 then
+        strTomb = tomb.name
+    else
+        -- Assign name to unnamed tombs for easier search/reference.
+        tomb.name = strTomb
+    end
+    local strCorpseItems = '(%d corpse, body part%s, or burial item%s)'
+    local strPlural = ''
+    local strNoCorpse = '%s has no corpse or body parts available for burial.'
+    local strUnitName = unit and dfhack.units.getReadableName(unit)
+    local incident_id = unit.counters.death_id
+    if incident_id ~= -1 then
+        local incident = df.incident.find(incident_id)
+        -- Corpse will not be interred if not yet discovered,
+        -- which never happens for units not belonging to player's civ.
+        incident.flags.discovered = true
+    end
+    local burialItemCount = FlagForBurial(unit, corpseParts)
+    if burialItemCount > 1 then strPlural = 's' end
+    if burialItemCount == 0 then
+        print(string.format(strNoCorpse, strUnitName))
+    else
+        tomb.assigned_unit_id = unit.id
+        if not utils.linear_index(unit.owned_buildings, tomb) then
+            unit.owned_buildings:insert('#', tomb)
+        end
+        print(string.format(strBurial, strUnitName, strTomb))
+        print(string.format(strCorpseItems, burialItemCount, strPlural, strPlural))
+    end
+end
+
+function GetCoffin(tomb)
+    local coffin
+    if df.building_civzonest:is_instance(tomb) and tomb.type == df.civzone_type.Tomb then
+        for _, building in ipairs(tomb.contained_buildings) do
+            if df.building_coffinst:is_instance(building) then coffin = building end
+        end
+    -- Allow other scripts to call this function and pass the actual coffin building instead.
+    elseif df.building_coffinst:is_instance(tomb) then
+        coffin = tomb
+    end
+    return coffin
+end
+
 -- Adapted from scripts/internal/caravan/pedestal.lua::is_displayable_item()
 -- Allow checks for possible use case of interring of non-corpse items.
 local function isMoveableItem(tomb, coffin, item, options)
@@ -174,70 +224,22 @@ function HaulToCoffin(tomb, coffin, item)
     print(string.format(strMove, item.id, itemName))
 end
 
-function GetCoffin(tomb)
-    local coffin
-    if df.building_civzonest:is_instance(tomb) and tomb.type == df.civzone_type.Tomb then
-        for _, building in ipairs(tomb.contained_buildings) do
-            if df.building_coffinst:is_instance(building) then coffin = building end
-        end
-    -- Allow other scripts to call this function and pass the actual coffin building instead.
-    elseif df.building_coffinst:is_instance(tomb) then
-        coffin = tomb
-    end
-    return coffin
-end
-
-function AssignToTomb(unit, tomb, options)
+local function InterItems(tomb, unit, options)
     local corpseParts = unit.corpse_parts
-    local strBurial = '%s assigned to %s for burial.'
-    local strTomb = 'Tomb %d'
-    -- Provide the tomb's ID so users can invoke it when interring arbitrary items.
-    strTomb = string.format(strTomb, tomb.id)
-    if #tomb.name > 0 then
-        strTomb = tomb.name
-    else
-        -- Assign name to unnamed tombs for easier search/reference.
-        tomb.name = strTomb
-    end
-    local strCorpseItems = '(%d corpse, body part%s, or burial item%s)'
-    local strPlural = ''
-    local strNoCorpse = '%s has no corpse or body parts available for burial.'
-    local strUnitName = unit and dfhack.units.getReadableName(unit)
-    local incident_id = unit.counters.death_id
-    if incident_id ~= -1 then
-        local incident = df.incident.find(incident_id)
-        -- Corpse will not be interred if not yet discovered,
-        -- which never happens for units not belonging to player's civ.
-        incident.flags.discovered = true
-    end
-    local burialItemCount = FlagForBurial(unit, corpseParts)
-    if burialItemCount > 1 then strPlural = 's' end
-    if burialItemCount == 0 then
-        print(string.format(strNoCorpse, strUnitName))
-    else
-        tomb.assigned_unit_id = unit.id
-        if not utils.linear_index(unit.owned_buildings, tomb) then
-            unit.owned_buildings:insert('#', tomb)
-        end
-        print(string.format(strBurial, strUnitName, strTomb))
-        print(string.format(strCorpseItems, burialItemCount, strPlural, strPlural))
-        if options.haulNow or options.teleport then
-            local coffin = GetCoffin(tomb)
-            if coffin then
-                for _, item_id in ipairs(corpseParts) do
-                    local item = df.item.find(item_id)
-                    if isMoveableItem(tomb, coffin, item, options) then
-                        if options.teleport then
-                            TeleportToCoffin(tomb, coffin, item)
-                        elseif options.haulNow then
-                            HaulToCoffin(tomb, coffin, item)
-                        end
-                    end
+    local coffin = GetCoffin(tomb)
+    if coffin then
+        for _, item_id in ipairs(corpseParts) do
+            local item = df.item.find(item_id)
+            if isMoveableItem(tomb, coffin, item, options) then
+                if options.teleport then
+                    TeleportToCoffin(tomb, coffin, item)
+                elseif options.haulNow then
+                    HaulToCoffin(tomb, coffin, item)
                 end
-            else
-                print('No coffin in the assigned tomb zone.\nCorpse items will not be moved into the tomb zone.')
             end
         end
+    else
+        print('No coffin in the assigned tomb zone.\nCorpse items will not be moved into the tomb zone.')
     end
 end
 
@@ -295,9 +297,12 @@ local function Main(args)
             if building and tomb ~= building then
                 qerror('Unit already has an assigned tomb zone.')
             end
-            AssignToTomb(unit, tomb, options)
+            AssignToTomb(unit, tomb)
         else
             print('No unassigned tomb zones are available.')
+        end
+        if options.haulNow or options.teleport then
+            InterItems(tomb, unit, options)
         end
     else
         qerror('No item selected or unit specified.')
