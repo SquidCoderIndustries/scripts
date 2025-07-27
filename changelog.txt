@@ -36,6 +36,34 @@ Template for new versions:
 
 ## Removed
 
+# 52.02-r2
+
+## New Tools
+
+## New Features
+- `gui/mod-manager`: now supports arena mode
+
+## Fixes
+- `gui/mod-manager`: gracefully handle vanilla mods with different versions from the user's preset
+- `gui/mod-manager`: hide other versions of loaded mods and unhides them when unloaded
+
+## Misc Improvements
+
+## Removed
+
+# 52.02-r1
+
+## New Tools
+
+## New Features
+
+## Fixes
+- ``embark-anyone``: validate viewscreen before using, avoids a crash
+
+## Misc Improvements
+
+## Removed
+
 # 52.01-r1
 
 ## New Tools
