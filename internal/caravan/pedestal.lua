@@ -602,6 +602,7 @@ local function unassign_item(bld, item)
     local idx, _ = utils.linear_index(bld.displayed_items, item.id)
     if idx then
         bld.displayed_items:erase(idx)
+        item.flags.in_building = false
     end
 end
 
