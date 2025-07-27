@@ -290,7 +290,3 @@ else
     end
     print(("autotraining is %s"):format(state.enabled and "enabled" or "disabled"))
 end
-
-
-
-
