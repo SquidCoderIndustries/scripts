@@ -428,7 +428,8 @@ local function ParseCommandLine(args)
         },
         {'a', 'add-item', handler = function() options.addItem = true end},
         {'h', 'haul-now', handler = function() options.haulNow = true end},
-        {'', 'teleport', handler = function() options.teleport = true end}
+        -- Commenting out to make this script a non-Armok tool.
+        -- {'', 'teleport', handler = function() options.teleport = true end}
     })
     return unit, building, options
 end

@@ -5,7 +5,7 @@ entomb
     :summary: Entomb any corpse into tomb zones.
     :tags: fort items buildings
 
-Assign any corpse regardless of citizenship, residency, pet status,
+Assign any unit regardless of citizenship, residency, pet status,
 or affiliation to an unassigned tomb zone for burial.
 
 Usage
@@ -13,20 +13,20 @@ Usage
 
 ``entomb [<options>]``
 
-This script must be executed with either a unit's corpse or body part
-selected or with a unit ID specified. An unassigned tomb zone will then
-be assigned to the unit for burial and all its corpse and/or body parts
-will become valid items for interment.
+Select a unit's corpse or body part, or specify the unit's ID
+when executing this script to assign an unassigned tomb zone to
+the unit, and flag the unit's corpse as well as any severed body
+parts to become valid items for interment.
 
-Optionally, the zone ID may also be specified to assign a specific tomb
+Optionally, specify the tomb zone's ID to assign a specific tomb
 zone to the unit.
 
-A non-citizen, non-resident, or non-pet unit that is still alive may
-even be assigned a tomb zone if they have lost any body part that can
-be placed inside a tomb, e.g. teeth or severed limbs. New corpse items
-after a tomb has already been assigned will not be properly interred
-until the script is executed again on either the unit, its corpse, or
-any of its body parts.
+A non-citizen, non-resident, or non-pet unit that is still alive
+may even be assigned a tomb zone if they have lost any body part
+that can be placed inside a tomb, e.g. teeth or severed limbs.
+New corpse items after a tomb has already been assigned will not
+be properly interred until the script is executed again with the
+unit ID specified, or the unit's corpse or any body part selected.
 
 If executed on slaughtered animals, all its butchering returns will
 become valid burial items and no longer usable for cooking or crafting.
@@ -34,28 +34,33 @@ become valid burial items and no longer usable for cooking or crafting.
 Examples
 --------
 
-``entomb unit <id>``
+``entomb --unit <id>``
     Assign an unassigned tomb zone to the unit with the specified ID.
 
-``entomb tomb <id>``
+``entomb --tomb <id>``
     Assign a tomb zone with the specified ID to the selected corpse
     item's unit.
 
-``entomb unit <id> tomb <id> now``
+``entomb -u <id> -t <id> -h``
     Assign a tomb zone with the specified ID to the unit with the
-    specified ID and teleport its corpse and/or body parts into the
-    coffin in the tomb zone.
+    specified ID and task all its burial items for simultaneous
+    hauling into the coffin in the tomb zone.
 
 Options
 -------
 
-``unit <id>``
+``-u``, ``--unit <id>``
     Specify the ID of the unit to be assigned to a tomb zone.
 
-``tomb <id>``
+``-t``, ``--tomb <id>``
     Specify the ID of the zone into which a unit will be interred.
 
-``now``
-    Instantly teleport the unit's corpse and/or body parts into the
-    coffin of its assigned tomb zone. This option can be called on
-    corpse items or units that are already assigned a tomb zone.
+``-a``, ``add-item``
+    Add a selected item, or multiple items at the keyboard cursor's
+    position to be interred together with a unit. A unit or tomb
+    zone ID must be specified when calling this option.
+
+``-h``, ``haul-now``
+    Task all of the unit's burial items for simultaneous hauling
+    into the coffin of its assigned tomb zone. This option can be
+    called even after a tomb zone is already assigned to the unit.
