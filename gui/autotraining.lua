@@ -32,7 +32,7 @@ function AutoTrain:getSquads()
             goto continue
         end
         table.insert(squads, {
-            text = dfhack.translation.translateName(squad.name, true)..' ('..squad.alias..')',
+            text = dfhack.translation.translateName(squad.name, true)..(squad.alias ~= '' and ' ('..squad.alias..')' or ''),
             icon = self:callback("getSquadIcon", squad.id ),
             id   = squad.id
         })
@@ -192,25 +192,40 @@ function AutoTrain:init()
                 self.subviews.threshold:setText(tostring(entered_number))
             end
         },
-        widgets.Divider{ frame={t=9, h=1}, frame_style_l = false, frame_style_r = false},
+        widgets.ToggleHotkeyLabel {
+            view_id = 'enable_toggle',
+            frame = { t = 9, h = 1 },
+            label = 'Autotraining is',
+            key = 'CUSTOM_E',
+            options = { { value = true, label = 'Enabled', pen = COLOR_GREEN },
+                        { value = false, label = 'Disabled', pen = COLOR_RED } },
+            on_change = function(val)
+                if val then
+                    autotraining.enable()
+                else
+                    autotraining.disable()
+                end
+            end,
+        },
+        widgets.Divider{ frame={t=10, h=1}, frame_style_l = false, frame_style_r = false},
         widgets.Label{
-            frame={ t = 10 , h = 1 },
+            frame={ t = 11 , h = 1 },
             text = "Ignored noble positions:",
         },
         widgets.List{
-            frame = { t = 11 , h = 11},
+            frame = { t = 12 , h = 11},
             view_id = "nobles_list",
             icon_width = 2,
             choices = self:getPositions(),
             on_submit=self:callback("toggleNoble")
         },
-        widgets.Divider{ frame={t=22, h=1}, frame_style_l = false, frame_style_r = false},
+        widgets.Divider{ frame={t=23, h=1}, frame_style_l = false, frame_style_r = false},
         widgets.Label{
-            frame={ t = 23 , h = 1 },
+            frame={ t = 24 , h = 1 },
             text = "Select units to exclude from automatic training:"
         },
         widgets.FilteredList{
-            frame = { t = 24 },
+            frame = { t = 25 },
             view_id = "unit_list",
             edit_key = "CUSTOM_CTRL_F",
             icon_width = 2,
@@ -219,6 +234,10 @@ function AutoTrain:init()
         }
     }
     --self.subviews.unit_list:setChoices(unit_choices)
+end
+
+function AutoTrain:onRenderBody(painter)
+    self.subviews.enable_toggle:setOption(autotraining.state.enabled)
 end
 
 function AutoTrain:onDismiss()

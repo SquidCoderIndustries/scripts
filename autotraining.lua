@@ -99,14 +99,23 @@ end
 --######
 --Functions
 --######
+local function isIgnoredNoble(unit)
+    local noblePos = dfhack.units.getNoblePositions(unit)
+    if noblePos ~= nil then
+        for _, position in ipairs(noblePos) do
+            if state.ignored_nobles[position.position.code] then
+                return true
+            end
+        end
+    end
+    return false
+end
+
+---@return table<integer, { ['unit']: df.unit, ['need']: integer }>
 function getTrainingCandidates()
     local ret = {}
     ignore_count = 0
     for _, unit in ipairs(dfhack.units.getCitizens(true)) do
-        if state.ignored[unit.id] then
-            ignore_count = ignore_count +1
-            goto next_unit
-        end
         if not dfhack.units.isAdult(unit) then
             goto next_unit
         end
@@ -114,23 +123,19 @@ function getTrainingCandidates()
         if not need or need.focus_level >= state.threshold  then
             goto next_unit
         end
-        local noblePos = dfhack.units.getNoblePositions(unit)
-        local isIgnNoble = false
-        if noblePos ~=nil then
-            for _, position in ipairs(noblePos) do
-                if state.ignored_nobles[position.position.code] then
-                    isIgnNoble = true
-                    break
-                end
-            end
-        end
-        if isIgnNoble then
-            ignore_count = ignore_count +1
+        -- ignored units are those that would like to train but are forbidden from doing so
+        if state.ignored[unit.id] then
+            ignore_count = ignore_count + 1
             goto next_unit
         end
-        table.insert(ret, unit)
+        if isIgnoredNoble(unit) then
+            ignore_count = ignore_count + 1
+            goto next_unit
+        end
+        table.insert(ret, { unit = unit, need = need.focus_level })
         ::next_unit::
     end
+    table.sort(ret, function (a, b) return a.need < b.need end)
     return ret
 end
 
@@ -229,28 +234,25 @@ function check()
                     local unit = df.unit.find(hf.unit_id)
                     local training_need = getTrainingNeed(unit)
                     if not training_need or training_need.focus_level >= state.threshold then
-                        dfhack.military.removeFromSquad(unit)
+                        dfhack.military.removeFromSquad(unit.id)
                     end
                 end
             end
         end
     end
-    for _, unit in ipairs(getTrainingCandidates()) do
-        local added = addTraining(unit, squads)
+    for _, p in ipairs(getTrainingCandidates()) do
+        local added = addTraining(p.unit, squads)
         if added then
             intraining_count = intraining_count +1
         else
             inque_count = inque_count +1
         end
     end
-
-    dfhack.println(GLOBAL_KEY  .. " | IGNORED: " .. ignore_count .. " TRAINING: " .. intraining_count .. " QUEUE: " ..inque_count )
+    print(("%s: %d training, %d waiting, and %d excluded units with training needs"):
+        format(GLOBAL_KEY, intraining_count, inque_count, ignore_count))
 end
 
 function start()
-    if args.t then
-        state.threshold = 0-tonumber(args.t)
-    end
     repeatUtil.scheduleEvery(GLOBAL_KEY, 1, 'days', check)
 end
 
@@ -258,23 +260,33 @@ function stop()
     repeatUtil.cancel(GLOBAL_KEY)
 end
 
-if dfhack_flags.enable then
-    if dfhack_flags.enable_state then
-        state.enabled = true
-    else
-        state.enabled = false
-    end
+function enable()
+    state.enabled = true
     persist_state()
+    start()
+end
+
+function disable()
+    state.enabled = false
+    persist_state()
+    stop()
+    removeAll()
 end
 
 if dfhack_flags.module then
     return
 end
 
-if state.enabled then
-    start()
+if dfhack_flags.enable then
+    if dfhack_flags.enable_state then
+        enable()
+    else
+        disable()
+    end
 else
-    stop()
-    removeAll()
+    -- called on the command-line
+    if args.t then
+        state.threshold = 0-tonumber(args.t)
+    end
+    print(("autotraining is %s"):format(state.enabled and "enabled" or "disabled"))
 end
-persist_state()
