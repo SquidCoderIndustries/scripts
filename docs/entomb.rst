@@ -55,12 +55,12 @@ Options
 ``-t``, ``--tomb <id>``
     Specify the ID of the zone into which a unit will be interred.
 
-``-a``, ``add-item``
+``-a``, ``--add-item``
     Add a selected item, or multiple items at the keyboard cursor's
     position to be interred together with a unit. A unit or tomb
     zone ID must be specified when calling this option.
 
-``-n``, ``haul-now``
+``-n``, ``--haul-now``
     Task all of the unit's burial items for simultaneous hauling
     into the coffin of its assigned tomb zone. This option can be
     called even after a tomb zone is already assigned to the unit.
