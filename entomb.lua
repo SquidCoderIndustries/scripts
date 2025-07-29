@@ -427,7 +427,7 @@ local function ParseCommandLine(args)
             if not building then qerror('Invalid zone ID.') end end
         },
         {'a', 'add-item', handler = function() options.addItem = true end},
-        {'h', 'haul-now', handler = function() options.haulNow = true end},
+        {'n', 'haul-now', handler = function() options.haulNow = true end},
         -- Commenting out to make this script a non-Armok tool.
         -- {'', 'teleport', handler = function() options.teleport = true end}
     })

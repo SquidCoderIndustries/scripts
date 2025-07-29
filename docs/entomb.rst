@@ -60,7 +60,7 @@ Options
     position to be interred together with a unit. A unit or tomb
     zone ID must be specified when calling this option.
 
-``-h``, ``haul-now``
+``-n``, ``haul-now``
     Task all of the unit's burial items for simultaneous hauling
     into the coffin of its assigned tomb zone. This option can be
     called even after a tomb zone is already assigned to the unit.
