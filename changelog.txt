@@ -36,6 +36,19 @@ Template for new versions:
 
 ## Removed
 
+# 52.03-r1
+
+## New Tools
+
+## New Features
+
+## Fixes
+- `make-legendary`: ``make-legendary all`` will no longer corrupt souls
+
+## Misc Improvements
+
+## Removed
+
 # 52.02-r2
 
 ## New Tools
