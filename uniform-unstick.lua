@@ -16,7 +16,7 @@ local validArgs = utils.invert({
 -- Functions
 
 local function item_description(item)
-    return dfhack.df2console(dfhack.items.getDescription(item, 0, true))
+    return "item #" .. item.id .. " '" .. dfhack.df2console(dfhack.items.getDescription(item, 0, true)) .. "'"
 end
 
 local function get_item_pos(item)
@@ -166,11 +166,10 @@ local function process(unit, args, need_newline)
     for u_id, item in pairs(assigned_items) do
         if not worn_items[u_id] then
             if not silent then
-                need_newline = print_line(unit_name .. " is missing an assigned item, object #" .. u_id .. " '" ..
-                    item_description(item) .. "'", need_newline)
+                need_newline = print_line(unit_name .. " is missing an assigned item, " .. item_description(item), need_newline)
             end
             if dfhack.items.getGeneralRef(item, df.general_ref_type.UNIT_HOLDER) then
-                need_newline = print_line(unit_name .. " cannot equip item: another unit has a claim on object #" .. u_id .. " '" .. item_description(item) .. "'", need_newline)
+                need_newline = print_line(unit_name .. " cannot equip item: another unit has a claim on " .. item_description(item), need_newline)
                 if args.free then
                     print("  Removing from uniform")
                     assigned_items[u_id] = nil
@@ -204,9 +203,9 @@ local function process(unit, args, need_newline)
         if assigned_items[u_id] == nil and u_id ~= squad_position.equipment.quiver and u_id ~= squad_position.equipment.backpack and u_id ~= squad_position.equipment.flask then
             local item = df.item.find(u_id)
             if item ~= nil then
-                need_newline = print_line(unit_name .. " has an improperly assigned item, item # " .. u_id .. " '" .. item_description(item) .. "'; removing it")
+                need_newline = print_line(unit_name .. " has an improperly assigned item, " .. item_description(item) .. '; removing it')
             else
-                need_newline = print_line(unit_name .. " has a nonexistent item assigned, item # " .. u_id .. "; removing it")
+                need_newline = print_line(unit_name .. " has a nonexistent item assigned, item # " .. u_id .. '; removing it')
             end
             squad_position.equipment.assigned_items:erase(i)
         end
@@ -240,9 +239,7 @@ local function process(unit, args, need_newline)
     for w_id, item in pairs(worn_items) do
         if assigned_items[w_id] == nil then -- don't drop uniform pieces (including shields, weapons for hands)
             if uncovered[worn_parts[w_id]] then
-                need_newline = print_line(unit_name ..
-                    " potentially has object #" ..
-                    w_id .. " '" .. item_description(item) .. "' blocking a missing uniform item.", need_newline)
+                need_newline = print_line(unit_name .. " potentially has " .. item_description(item) .. " blocking a missing uniform item.", need_newline)
                 if args.drop then
                     to_drop[w_id] = item
                 end
@@ -261,12 +258,12 @@ local function do_drop(item_list)
     for id, item in pairs(item_list) do
         local pos = get_item_pos(item)
         if not pos then
-            dfhack.printerr("Could not find drop location for item #" .. id .. "  " .. item_description(item))
+            dfhack.printerr("Could not find drop location for " .. item_description(item))
         else
             if dfhack.items.moveToGround(item, pos) then
-                print("Dropped item #" .. id .. " '" .. item_description(item) .. "'")
+                print("Dropped " .. item_description(item))
             else
-                dfhack.printerr("Could not drop object #" .. id .. "  " .. item_description(item))
+                dfhack.printerr("Could not drop " .. item_description(item))
             end
         end
     end
