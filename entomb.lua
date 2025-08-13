@@ -52,14 +52,10 @@ end
 -- Iterate through all available tomb zones.
 local function IterateTombZones(unit_id)
     for _, building in ipairs(df.global.world.buildings.other.ZONE_TOMB) do
-        if unit_id == -1 then
-            -- Use only active (unpaused) zones when assigning unassigned tomb zones.
-            if building.spec_sub_flag.active then
-                if CheckTombZone(building, unit_id) then return building end
-            end
-        else
-            if CheckTombZone(building, unit_id) then return building end
-        end
+        -- Use only active (unpaused) zones when assigning unassigned tomb zones.
+        if unit_id == -1 and not building.spec_sub_flag.active then goto skipIteration end
+        if CheckTombZone(building, unit_id) then return building end
+        ::skipIteration::
     end
     return nil
 end
