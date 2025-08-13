@@ -196,6 +196,22 @@ local function process(unit, args, need_newline)
         end
     end
 
+    -- Make the equipment.assigned_items list consistent with what is present in equipment.uniform
+    for i=#(squad_position.equipment.assigned_items)-1,0,-1 do
+        local u_id = squad_position.equipment.assigned_items[i]
+        -- Quiver, backpack, and flask are assigned in their own locations rather than in equipment.uniform, and thus need their own checks
+        -- If more separately-assigned items are added in the future, this handling will need to be updated accordingly
+        if assigned_items[u_id] == nil and u_id ~= squad_position.equipment.quiver and u_id ~= squad_position.equipment.backpack and u_id ~= squad_position.equipment.flask then
+            local item = df.item.find(u_id)
+            if item ~= nil then
+                need_newline = print_line(unit_name .. " has an improperly assigned item, item # " .. u_id .. " '" .. item_description(item) .. "'; removing it")
+            else
+                need_newline = print_line(unit_name .. " has a nonexistent item assigned, item # " .. u_id .. "; removing it")
+            end
+            squad_position.equipment.assigned_items:erase(i)
+        end
+    end
+
     -- Figure out which worn items should be dropped
 
     -- First, figure out which body parts are covered by the uniform pieces we have.
