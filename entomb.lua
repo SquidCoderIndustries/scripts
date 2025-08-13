@@ -52,7 +52,14 @@ end
 -- Iterate through all available tomb zones.
 local function IterateTombZones(unit_id)
     for _, building in ipairs(df.global.world.buildings.other.ZONE_TOMB) do
-        if CheckTombZone(building, unit_id) then return building end
+        if unit_id == -1 then
+            -- Use only active (unpaused) zones when assigning unassigned tomb zones.
+            if building.spec_sub_flag.active then
+                if CheckTombZone(building, unit_id) then return building end
+            end
+        else
+            if CheckTombZone(building, unit_id) then return building end
+        end
     end
     return nil
 end
@@ -60,9 +67,9 @@ end
 -- Use when user inputs coffin building ID instead of tomb zone ID.
 function GetTombFromCoffin(building)
     if #building.relations > 0 then
-        for _, v in ipairs(building.relations) do
-            if df.building_civzonest:is_instance(v) and v.type == df.civzone_type.Tomb then
-                return v
+        for _, zone in ipairs(building.relations) do
+            if df.building_civzonest:is_instance(zone) and zone.type == df.civzone_type.Tomb then
+                return zone
             end
         end
     end
@@ -134,6 +141,7 @@ function AssignToTomb(unit, tomb)
         local incident = df.incident.find(incident_id)
         -- Corpse will not be interred if not yet discovered,
         -- which never happens for units not belonging to player's civ.
+        -- Only needed for units that have a death incident.
         incident.flags.discovered = true
     end
     local burialItemCount = FlagForBurial(unit, corpseParts)
@@ -145,6 +153,9 @@ function AssignToTomb(unit, tomb)
         if not utils.linear_index(unit.owned_buildings, tomb) then
             unit.owned_buildings:insert('#', tomb)
         end
+        -- Make tomb zone unavailable for automatic assignment to other dead units.
+        tomb.zone_settings.tomb.flags.no_pets = true
+        tomb.zone_settings.tomb.flags.no_citizens = true
         print(string.format(strBurial, strUnitName, strTomb))
         print(string.format(strCorpseItems, burialItemCount, strPlural, strPlural))
     end
