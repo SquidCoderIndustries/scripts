@@ -28,6 +28,8 @@ Template for new versions:
 
 ## New Tools
 
+- `husbandry`: Automatically milk and shear animals at nearby farmer's workshops
+
 ## New Features
 
 ## Fixes
