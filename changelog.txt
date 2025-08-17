@@ -17,7 +17,6 @@ Template for new versions:
 ## New Features
 
 ## Fixes
-- `gui/gm-unit`: remove reference to ``think_counter``, removed in v51.12
 
 ## Misc Improvements
 
@@ -28,10 +27,13 @@ Template for new versions:
 # Future
 
 ## New Tools
+- `autotraining`: new tool to assign citizens to a military squad when they need Martial Training
+- `gui/autotraining`: configuration tool for autotraining
 
 ## New Features
 
 ## Fixes
+- `gui/gm-unit`: remove reference to ``think_counter``, removed in v51.12
 - `gui/journal`: fix typo which caused the table of contents to always be regenerated even when not needed
 - `gui/mod-manager`: gracefully handle mods with missing or broken ``info.txt`` files
 - `uniform-unstick`: resolve overlap with new buttons in 51.13
