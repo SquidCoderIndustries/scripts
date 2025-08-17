@@ -31,6 +31,8 @@ Template for new versions:
 - `gui/autotraining`: configuration tool for autotraining
 - `entomb`: allow any unit that has a corpse or body parts to be assigned a tomb zone
 
+- `husbandry`: Automatically milk and shear animals at nearby farmer's workshops
+
 ## New Features
 - `deathcause`: added functionality to this script to fetch cause of death programatically
 
