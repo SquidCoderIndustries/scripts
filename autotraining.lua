@@ -5,11 +5,6 @@
 local repeatUtil = require('repeat-util')
 local utils=require('utils')
 
-validArgs = utils.invert({
-    't'
-})
-
-local args = utils.processArgs({...}, validArgs)
 local GLOBAL_KEY  = "autotraining"
 local MartialTraining = df.need_type['MartialTraining']
 local ignore_count = 0
@@ -276,6 +271,12 @@ end
 if dfhack_flags.module then
     return
 end
+
+validArgs = utils.invert({
+    't'
+})
+
+local args = utils.processArgs({...}, validArgs)
 
 if dfhack_flags.enable then
     if dfhack_flags.enable_state then

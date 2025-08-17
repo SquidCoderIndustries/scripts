@@ -27,10 +27,14 @@ Template for new versions:
 # Future
 
 ## New Tools
+- `autotraining`: new tool to assign citizens to a military squad when they need Martial Training
+- `gui/autotraining`: configuration tool for autotraining
 
 ## New Features
 
 ## Fixes
+
+- `immortal-cravings`: prioritize high-value meals, properly split of portions, and don't go eating or drinking on a full stomach
 
 ## Misc Improvements
 
