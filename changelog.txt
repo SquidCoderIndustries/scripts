@@ -27,11 +27,11 @@ Template for new versions:
 # Future
 
 ## New Tools
+- `devel/hello-world`: updated to show off the new Slider widget
 
 ## New Features
 
 ## Fixes
-
 - `immortal-cravings`: prioritize high-value meals, properly split of portions, and don't go eating or drinking on a full stomach
 
 ## Misc Improvements
@@ -171,7 +171,6 @@ Template for new versions:
 - `gui/notify`: save reminder changes color to yellow at 30 minutes and to orange at 60 minutes
 - `gui/confirm`: in the delete manager order confirmation dialog, show a description of which order you have selected to delete
 - `position`: display both adventurer and site pos simultaneously. Display map block pos+offset of selected tile.
-- `devel/hello-world`: updated to show off the new Slider widget
 
 ## Removed
 - `gui/create-item`: now accepts a ``pos`` argument of where to spawn items
