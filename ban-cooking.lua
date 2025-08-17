@@ -81,7 +81,9 @@ end
 
 funcs.honey = function()
     local mat = dfhack.matinfo.find("CREATURE:HONEY_BEE:HONEY")
-    ban_cooking('honey bee honey', mat.type, mat.index, df.item_type.LIQUID_MISC, -1)
+    if mat then
+        ban_cooking('honey bee honey', mat.type, mat.index, df.item_type.LIQUID_MISC, -1)
+    end
 end
 
 funcs.tallow = function()
