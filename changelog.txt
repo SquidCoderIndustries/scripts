@@ -27,7 +27,6 @@ Template for new versions:
 # Future
 
 ## New Tools
-- `devel/hello-world`: updated to show off the new Slider widget
 - `autotraining`: new tool to assign citizens to a military squad when they need Martial Training
 - `gui/autotraining`: configuration tool for autotraining
 
@@ -37,6 +36,7 @@ Template for new versions:
 - `immortal-cravings`: prioritize high-value meals, properly split of portions, and don't go eating or drinking on a full stomach
 
 ## Misc Improvements
+- `devel/hello-world`: updated to show off the new Slider widget
 
 ## Removed
 
