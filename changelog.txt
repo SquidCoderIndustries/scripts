@@ -37,6 +37,7 @@ Template for new versions:
 - `deathcause`: added functionality to this script to fetch cause of death programatically
 
 ## Fixes
+- `ban-cooking`: will not fail trying to ban honey if the world has no honey
 - `immortal-cravings`: prioritize high-value meals, properly split of portions, and don't go eating or drinking on a full stomach
 
 ## Misc Improvements
