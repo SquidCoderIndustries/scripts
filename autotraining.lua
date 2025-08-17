@@ -127,6 +127,9 @@ function getTrainingCandidates()
             ignore_count = ignore_count + 1
             goto next_unit
         end
+        if unit.military.squad_id ~= -1 then
+            goto next_unit
+        end
         table.insert(ret, { unit = unit, need = need.focus_level })
         ::next_unit::
     end
