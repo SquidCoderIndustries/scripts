@@ -173,22 +173,12 @@ function PhasesPanel:init()
             subviews={widgets.ToggleHotkeyLabel{view_id='place_phase',
                         frame={t=0, l=0, w=19}, key='CUSTOM_P', label='place',
                         initial_option=self:get_default('place'), label_width=9},
---                     widgets.ToggleHotkeyLabel{view_id='zone_phase',
---                         frame={t=0, l=15, w=19},
---                         key='CUSTOM_Z', label='zone',
---                         initial_option=self:get_default('zone'),
---                         label_width=5}
+                    widgets.ToggleHotkeyLabel{view_id='zone_phase',
+                        frame={t=0, l=19, w=19},
+                        key='CUSTOM_Z', label='zone',
+                        initial_option=self:get_default('zone'),
+                        label_width=5}
                     }},
---         widgets.Panel{frame={h=1},
---             subviews={widgets.ToggleHotkeyLabel{view_id='query_phase',
---                         frame={t=0, l=0, w=19},
---                         key='CUSTOM_Q', label='query',
---                         initial_option=self:get_default('query')},
---                     widgets.ToggleHotkeyLabel{view_id='rooms_phase',
---                         frame={t=0, l=15, w=19},
---                         key='CUSTOM_SHIFT_Q', label='rooms',
---                         initial_option=self:get_default('rooms')}
---                     }},
         widgets.TooltipLabel{
             text_to_wrap='Select blueprint phases to export.',
             show_tooltip=true},
