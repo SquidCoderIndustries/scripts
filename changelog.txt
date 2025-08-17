@@ -40,6 +40,7 @@ Template for new versions:
 - `immortal-cravings`: prioritize high-value meals, properly split of portions, and don't go eating or drinking on a full stomach
 
 ## Misc Improvements
+- `devel/hello-world`: updated to show off the new Slider widget
 
 ## Removed
 
