@@ -23,14 +23,11 @@ commandline interface with ``dfhack.run_script()`` or via the API functions
 defined in :source-scripts:`deathcause.lua`, available from the return value of
 ``reqscript('deathcause')``:
 
-* ``getDeathCauseFromHistFig(histfig)``
+* ``getDeathCause(unit or historical_figure)``
 
-Returns a string with the historical figure's cause of death, sometimes with more information
-than with a unit.
+Returns a string with the unit or historical figure's cause of death. Note that using a historical
+figure will sometimes provide more information than using a unit.
 
-* ``getDeathCauseFromUnit(unit)``
-
-Returns a string with the unit's cause of death.
 
  API usage example::
 
