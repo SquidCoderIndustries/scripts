@@ -28,6 +28,8 @@ Template for new versions:
 
 ## New Tools
 - `devel/hello-world`: updated to show off the new Slider widget
+- `autotraining`: new tool to assign citizens to a military squad when they need Martial Training
+- `gui/autotraining`: configuration tool for autotraining
 
 ## New Features
 
