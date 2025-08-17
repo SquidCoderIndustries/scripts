@@ -6,6 +6,7 @@ local DEATH_TYPES = reqscript('gui/unit-info-viewer').DEATH_TYPES
 -- Gets the first corpse item at the given location
 local function getItemAtPosition(pos)
     for _, item in ipairs(df.global.world.items.other.ANY_CORPSE) do
+        -- could this maybe be `if same_xyz(pos, item.pos) then`?
         if item.pos.x == pos.x and item.pos.y == pos.y and item.pos.z == pos.z then
             print("Automatically chose first corpse at the selected location.")
             return item
@@ -26,7 +27,7 @@ local function getDeathStringFromCause(cause)
 end
 
 -- Returns a cause of death given a unit
-function getDeathCauseFromUnit(unit)
+local function getDeathCauseFromUnit(unit)
     local str = unit.name.has_name and '' or 'The '
     str = str .. dfhack.units.getReadableName(unit)
 
@@ -104,7 +105,7 @@ local function getDeathEventForHistFig(histfig_id)
 end
 
 -- Returns the cause of death given a histfig
-function getDeathCauseFromHistFig(histfig)
+local function getDeathCauseFromHistFig(histfig)
     local histfig_unit = df.unit.find(histfig.unit_id)
     if not histfig_unit then
         qerror("Cause of death not available")
@@ -149,6 +150,15 @@ local function get_target()
     return selected_item.hist_figure_id, df.unit.find(selected_item.unit_id)
 end
 
+-- wrapper function to take either a unit or a histfig and get the death cause
+function getDeathCause(target)
+    if df.unit:is_instance(target) then
+        return getDeathCauseFromUnit(target)
+    else
+        return getDeathCauseFromHistFig(target)
+    end
+end
+
 if dfhack_flags.module then
     return
 end
@@ -161,7 +171,7 @@ elseif hist_figure_id == -1 then
     if not selected_unit then
         qerror("Cause of death not available")
     end
-    print(dfhack.df2console(getDeathCauseFromUnit(selected_unit)))
+    print(dfhack.df2console(getDeathCause(selected_unit)))
 else
-    print(dfhack.df2console(getDeathCauseFromHistFig(df.historical_figure.find(hist_figure_id))))
+    print(dfhack.df2console(getDeathCause(df.historical_figure.find(hist_figure_id))))
 end
