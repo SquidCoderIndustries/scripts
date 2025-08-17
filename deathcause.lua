@@ -6,6 +6,7 @@ local DEATH_TYPES = reqscript('gui/unit-info-viewer').DEATH_TYPES
 -- Gets the first corpse item at the given location
 local function getItemAtPosition(pos)
     for _, item in ipairs(df.global.world.items.other.ANY_CORPSE) do
+        -- could this maybe be `if same_xyz(pos, item.pos) then`?
         if item.pos.x == pos.x and item.pos.y == pos.y and item.pos.z == pos.z then
             print("Automatically chose first corpse at the selected location.")
             return item
