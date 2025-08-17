@@ -27,10 +27,15 @@ Template for new versions:
 # Future
 
 ## New Tools
+- `autotraining`: new tool to assign citizens to a military squad when they need Martial Training
+- `gui/autotraining`: configuration tool for autotraining
+- `entomb`: allow any unit that has a corpse or body parts to be assigned a tomb zone
 
 ## New Features
+- `deathcause`: added functionality to this script to fetch cause of death programatically
 
 ## Fixes
+- `immortal-cravings`: prioritize high-value meals, properly split of portions, and don't go eating or drinking on a full stomach
 - `uniform-unstick`: no longer causes units to equip multiples of assigned items
 
 ## Misc Improvements
