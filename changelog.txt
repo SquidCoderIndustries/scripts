@@ -37,6 +37,7 @@ Template for new versions:
 - `deathcause`: added functionality to this script to fetch cause of death programatically
 
 ## Fixes
+- `ban-cooking`: will not fail trying to ban honey if the world has no honey
 - `confirm`: only show pause option for pausable confirmations
 - `confirm`: when editing a uniform, confirm discard of changes when exiting with Escape
 - `confirm`: when removing a manager order, show correct order description when using non-100% interface setting
