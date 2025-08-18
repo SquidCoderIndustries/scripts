@@ -27,10 +27,39 @@ Template for new versions:
 # Future
 
 ## New Tools
+- `autotraining`: new tool to assign citizens to a military squad when they need Martial Training
+- `gui/autotraining`: configuration tool for autotraining
+- `entomb`: allow any unit that has a corpse or body parts to be assigned a tomb zone
+
+- `husbandry`: Automatically milk and shear animals at nearby farmer's workshops
+
+## New Features
+- `deathcause`: added functionality to this script to fetch cause of death programatically
+
+## Fixes
+- `ban-cooking`: will not fail trying to ban honey if the world has no honey
+- `confirm`: only show pause option for pausable confirmations
+- `confirm`: when editing a uniform, confirm discard of changes when exiting with Escape
+- `confirm`: when removing a manager order, show correct order description when using non-100% interface setting
+- `confirm`: when removing a manager order, show correct order description after prior order removal or window resize (when scrolled to bottom of order list)
+- `confirm`: when removing a manager order, show specific item/job type for ammo, shield, helm, gloves, shoes, trap component, and meal orders
+- `confirm`: the pause option now pauses individual confirmation types, allowing multiple different confirmations to be paused independently
+- `immortal-cravings`: prioritize high-value meals, properly split of portions, and don't go eating or drinking on a full stomach
+- `uniform-unstick`: no longer causes units to equip multiples of assigned items
+
+## Misc Improvements
+- `devel/hello-world`: updated to show off the new Slider widget
+
+## Removed
+
+# 52.03-r1
+
+## New Tools
 
 ## New Features
 
 ## Fixes
+- `make-legendary`: ``make-legendary all`` will no longer corrupt souls
 
 ## Misc Improvements
 
