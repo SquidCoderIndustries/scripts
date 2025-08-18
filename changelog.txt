@@ -38,6 +38,12 @@ Template for new versions:
 
 ## Fixes
 - `ban-cooking`: will not fail trying to ban honey if the world has no honey
+- `confirm`: only show pause option for pausable confirmations
+- `confirm`: when editing a uniform, confirm discard of changes when exiting with Escape
+- `confirm`: when removing a manager order, show correct order description when using non-100% interface setting
+- `confirm`: when removing a manager order, show correct order description after prior order removal or window resize (when scrolled to bottom of order list)
+- `confirm`: when removing a manager order, show specific item/job type for ammo, shield, helm, gloves, shoes, trap component, and meal orders
+- `confirm`: the pause option now pauses individual confirmation types, allowing multiple different confirmations to be paused independently
 - `immortal-cravings`: prioritize high-value meals, properly split of portions, and don't go eating or drinking on a full stomach
 
 ## Misc Improvements
