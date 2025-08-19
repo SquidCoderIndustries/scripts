@@ -272,10 +272,10 @@ end
 
 if dfhack_flags.enable then
     if dfhack_flags.enable_state then
-        enabled = true
+        state.enabled = true
         start()
     else
-        enabled = false
+        state.enabled = false
         stop()
     end
     persist_state()
