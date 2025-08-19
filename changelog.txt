@@ -46,6 +46,8 @@ Template for new versions:
 - `confirm`: the pause option now pauses individual confirmation types, allowing multiple different confirmations to be paused independently
 - `immortal-cravings`: prioritize high-value meals, properly split of portions, and don't go eating or drinking on a full stomach
 - `uniform-unstick`: no longer causes units to equip multiples of assigned items
+- `caravan`: in the pedestal item assignment dialog, add new items at the end of the list of displayed items instead of at a random position
+- `caravan`: in the pedestal item assignment dialog, consistently remove items from the list of displayed items
 
 ## Misc Improvements
 - `devel/hello-world`: updated to show off the new Slider widget
