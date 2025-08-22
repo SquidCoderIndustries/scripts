@@ -116,7 +116,7 @@ local function getAppropriateWorkshop(unit, collection)
             end
         end
     end
-    return #closest.jobs < 10 and closest or nil
+    return (closest and #closest.jobs < 10) and closest or nil
 end
 
 local function shearCreature(unit, workshop)
